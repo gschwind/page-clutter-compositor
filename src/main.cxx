@@ -10,6 +10,7 @@
 #include <clutter/clutter.h>
 #include <clutter/wayland/clutter-wayland-compositor.h>
 
+#include "exception.hxx"
 #include "config_handler.hxx"
 
 
@@ -71,6 +72,12 @@ gboolean page_event_filter(const ClutterEvent *event, gpointer user_data) {
 
 }
 
+static FILE * g_logfile = nullptr;
+static void log_print(const char * fmt, va_list args) {
+	if(vfprintf(g_logfile, fmt, args) < 0)
+		throw std::runtime_error{"could not write the log file"};
+}
+
 int main(int argc, char** argv) {
 	page::config_handler_t configuration;
 
@@ -81,12 +88,24 @@ int main(int argc, char** argv) {
 		auto home_directory = g_getenv("HOME");
 		if(home_directory) {
 			char * home_configuration_file = nullptr;
-			if(asprintf(&home_configuration_file, "%s/page.conf", home_directory) < 0)
+			if(asprintf(&home_configuration_file, "%s/.page.conf", home_directory) < 0)
 				throw std::bad_alloc{};
 			configuration.merge_from_file_if_exist(home_configuration_file);
 			free(home_configuration_file);
 		}
 	}
+
+	{ // setup the log file.
+		auto log_file_name = configuration.get_string("default", "log_file").c_str();
+		if(g_logfile)
+			fclose(g_logfile);
+		g_logfile = fopen(log_file_name, "w");
+		if(not g_logfile)
+			throw page::except("could not open the log file `%s'", log_file_name);
+	}
+
+	// setup the wayland log handler.
+	wl_log_set_handler_server(&log_print);
 
 	auto display = wl_display_create();
 

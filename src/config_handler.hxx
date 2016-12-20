@@ -14,6 +14,8 @@
 #include <map>
 #include <string>
 
+#include "exception.hxx"
+
 namespace page {
 
 using namespace std;

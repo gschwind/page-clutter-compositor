@@ -8,6 +8,7 @@ AC_CONFIG_HEADERS([src/config.hxx])
 CHECK_GNU_MAKE
 
 dnl Check for required programs
+AC_GNU_SOURCE
 AC_PROG_CXX
 AC_PROG_LIBTOOL
 
