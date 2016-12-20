@@ -1,11 +1,16 @@
 
 #include <cstdio>
+#include <cstring>
+#include <cstdlib>
 #include <iostream>
+#include <stdexcept>
 
 #include <wayland-server-core.h>
 
 #include <clutter/clutter.h>
 #include <clutter/wayland/clutter-wayland-compositor.h>
+
+#include "config_handler.hxx"
 
 
 static
@@ -67,6 +72,21 @@ gboolean page_event_filter(const ClutterEvent *event, gpointer user_data) {
 }
 
 int main(int argc, char** argv) {
+	page::config_handler_t configuration;
+
+	// load default configuration from page data directory
+	configuration.merge_from_file_if_exist(std::string{DATADIR "/page/page.conf"});
+
+	{ // load configuration located in the home directory
+		auto home_directory = g_getenv("HOME");
+		if(home_directory) {
+			char * home_configuration_file = nullptr;
+			if(asprintf(&home_configuration_file, "%s/page.conf", home_directory) < 0)
+				throw std::bad_alloc{};
+			configuration.merge_from_file_if_exist(home_configuration_file);
+			free(home_configuration_file);
+		}
+	}
 
 	auto display = wl_display_create();
 

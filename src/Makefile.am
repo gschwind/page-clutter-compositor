@@ -26,6 +26,8 @@ BUILT_SOURCES = \
 	wayland-interface.hxx
 
 page_compositor_SOURCES = \
+	config_handler.cxx \
+	congig_handler_hxx \
 	main.cxx 
 
 page_compositor_LDADD = \
