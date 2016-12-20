@@ -1,7 +1,7 @@
 /*
  * config_handler.hxx
  *
- * copyright (2010-2014) Benoit Gschwind
+ * copyright (2010-2016) Benoit Gschwind
  *
  * This code is licensed under the GPLv3. see COPYING file for more details.
  *
@@ -16,25 +16,30 @@
 
 namespace page {
 
+using namespace std;
+
 class config_handler_t {
 
-	typedef std::pair<std::string, std::string> _key_t;
-	std::map<_key_t, std::string> _data;
+	// key are compound by (group,identifier)
+	typedef pair<string, string> _key_t;
+	map<_key_t, string> _data;
 
-	std::string const & find(char const * group, char const * key) const;
+	auto find(char const * group, char const * key) const -> string const &;
 
+	config_handler_t(config_handler_t const &) = delete;
+	config_handler_t & operator=(config_handler_t const &) = delete;
 public:
 	config_handler_t();
 	~config_handler_t();
 
-	void merge_from_file_if_exist(std::string const & filename);
+	void merge_from_file_if_exist(string const & filename);
 
 	bool has_key(char const * groups, char const * key) const;
 
-	std::string get_string(char const * groups, char const * key) const;
-	double get_double(char const * groups, char const * key) const;
-	long get_long(char const * group, char const * key) const;
-	std::string get_value(char const * group, char const * key) const;
+	auto get_value(char const * group, char const * key) const -> string;
+	auto get_string(char const * groups, char const * key) const -> string;
+	auto get_double(char const * groups, char const * key) const -> double;
+	auto get_long(char const * group, char const * key) const -> long;
 
 };
 

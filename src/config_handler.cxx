@@ -1,7 +1,7 @@
 /*
  * config_handler.cxx
  *
- * copyright (2010-2014) Benoit Gschwind
+ * copyright (2010-2016) Benoit Gschwind
  *
  * This code is licensed under the GPLv3. see COPYING file for more details.
  *
@@ -75,18 +75,18 @@ void config_handler_t::merge_from_file_if_exist(string const & f) {
 	g_key_file_free(kf);
 }
 
-string config_handler_t::get_string(char const * group, char const * key) const {
+auto config_handler_t::get_string(char const * group, char const * key) const -> string {
 	string const & tmp = find(group, key);
 	shared_ptr<gchar> p_ret{g_strcompress(tmp.c_str()), &g_free};
 	return string(p_ret.get());
 }
 
-double config_handler_t::get_double(char const * group, char const * key) const {
+auto config_handler_t::get_double(char const * group, char const * key) const -> double{
 	std::string const & tmp = find(group, key);
 	return g_strtod(tmp.c_str(), NULL);
 }
 
-long config_handler_t::get_long(char const * group, char const * key) const {
+auto config_handler_t::get_long(char const * group, char const * key) const -> long {
 	std::string const & tmp = find(group, key);
 	return g_ascii_strtoll(tmp.c_str(), NULL, 10);
 }
@@ -98,7 +98,7 @@ bool config_handler_t::has_key(char const * group, char const * key) const {
 	return true;
 }
 
-std::string const & config_handler_t::find(char const * group, char const * key) const {
+auto config_handler_t::find(char const * group, char const * key) const -> string const & {
 	auto x = _data.find(_key_t(group, key));
 	if(x == _data.end())
 		throw runtime_error("following group/key not found");
