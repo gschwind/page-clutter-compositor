@@ -2,7 +2,11 @@
 #include <cstdio>
 #include <iostream>
 
+#include <wayland-server-core.h>
+
 #include <clutter/clutter.h>
+#include <clutter/wayland/clutter-wayland-compositor.h>
+
 
 static
 void on_destroy(ClutterActor *actor, gpointer user_data) {
@@ -63,6 +67,11 @@ gboolean page_event_filter(const ClutterEvent *event, gpointer user_data) {
 }
 
 int main(int argc, char** argv) {
+
+	auto display = wl_display_create();
+
+	/* before clutter_init, give the wayland server display */
+	clutter_wayland_set_compositor_display(display);
 
 	if(clutter_init(&argc, &argv) != CLUTTER_INIT_SUCCESS) {
 		printf("fail to initialize clutter");
