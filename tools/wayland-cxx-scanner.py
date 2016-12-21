@@ -7,7 +7,7 @@ import argparse
 
 r_invalid = re.compile('(\W+)')
 
-interface_blacklist = set(['wl_registry', 'wl_callback'])
+interface_blacklist = set(['wl_display', 'wl_registry', 'wl_callback'])
 
 #parser = argparse.ArgumentParser(description='Generate wayland API C++ to C wrapper')
 #parser.add_argument('integers', metavar='N', type=int, nargs='+',
@@ -90,13 +90,14 @@ namespace wcxx {{
   if interface_name in interface_blacklist:
    continue
   fo.write("struct {0}_vtable {{\n".format(interface_name))
+  fo.write('\tstruct wl_resource * _self_resource;\n'.format(interface_name))
+  fo.write('\t{0}_vtable(struct wl_client *client, uint32_t version, uint32_t id);\n'.format(interface_name))
   fo.write("\tvirtual ~{0}_vtable() = default;\n".format(interface_name))
   funclist = []
   for request in interface.findall('request'):
    args = request.findall('arg')
    fo.write('\tvirtual void {0}_{1}({2}) = 0;\n'.format(interface_name, request.attrib['name'], gen_args_with_type(args, ['struct wl_client * client', 'struct wl_resource * resource'])))
   fo.write('\tvirtual void {0}_delete_resource(struct wl_resource * resource) = 0;\n'.format(interface_name))
-  fo.write('\tvoid set_implementation(struct wl_resource * resource);\n')
   fo.write('};\n')
  fo.write("}}\n#endif /* WCXX_{UNAME}_HXX_ */\n".format(UNAME = fi_uname))
 
@@ -166,11 +167,10 @@ namespace hidden {{
   if interface_name in interface_blacklist:
    continue
   fo.write("""
-void {0}_vtable::set_implementation(
-    struct wl_resource * resource) {{
-wl_resource_set_implementation(resource,
-        &hidden::{0}_implementation,
-        this, &hidden::{0}_delete_resource);
+void {0}_vtable::{0}_vtable(struct wl_client *client, uint32_t version, uint32_t id)
+{{
+_self_resource = wl_resource_create(client, &xdg_shell_interface, version, id);
+wl_resource_set_implementation(_self_resource, &hidden::{0}_implementation, this, &hidden::{0}_delete_resource);
 }}
 """.format(interface_name))
  fo.write('}\n')
