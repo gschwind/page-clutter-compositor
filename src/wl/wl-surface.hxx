@@ -197,10 +197,10 @@ struct wl_surface : public wl_surface_vtable {
 	virtual void recv_destroy(struct wl_client * client, struct wl_resource * resource) override;
 	virtual void recv_attach(struct wl_client * client, struct wl_resource * resource, struct wl_resource * buffer, int32_t x, int32_t y) override;
 	virtual void recv_damage(struct wl_client * client, struct wl_resource * resource, int32_t x, int32_t y, int32_t width, int32_t height) override;
-	virtual void recv_frame(struct wl_client * client, struct wl_resource * resource, uint32_t callback) = 0;
+	virtual void recv_frame(struct wl_client * client, struct wl_resource * resource, uint32_t callback) override;
 	virtual void recv_set_opaque_region(struct wl_client * client, struct wl_resource * resource, struct wl_resource * region) override;
 	virtual void recv_set_input_region(struct wl_client * client, struct wl_resource * resource, struct wl_resource * region) override;
-	virtual void recv_commit(struct wl_client * client, struct wl_resource * resource) = 0;
+	virtual void recv_commit(struct wl_client * client, struct wl_resource * resource) override;
 	virtual void recv_set_buffer_transform(struct wl_client * client, struct wl_resource * resource, int32_t transform) override;
 	virtual void recv_set_buffer_scale(struct wl_client * client, struct wl_resource * resource, int32_t scale) override;
 	virtual void recv_damage_buffer(struct wl_client * client, struct wl_resource * resource, int32_t x, int32_t y, int32_t width, int32_t height) override;

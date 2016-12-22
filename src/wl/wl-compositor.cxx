@@ -22,6 +22,7 @@
 
 #include "wl-region.hxx"
 #include "wl-buffer.hxx"
+#include "wl-surface.hxx"
 
 namespace page {
 namespace wl {
@@ -54,7 +55,7 @@ wl_buffer * wl_compositor::ensure_wl_buffer(struct wl_resource * r) {
 }
 
 void wl_compositor::recv_create_surface(struct wl_client * client, struct wl_resource * resource, uint32_t id) {
-
+	new wl_surface(this, client, wl_resource_get_version(resource), id);
 }
 
 void wl_compositor::recv_create_region(struct wl_client * client, struct wl_resource * resource, uint32_t id) {
