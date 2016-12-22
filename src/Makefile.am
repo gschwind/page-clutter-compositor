@@ -44,6 +44,8 @@ page_compositor_SOURCES = \
 	wl/wl-compositor.hxx \
 	wl/wl-buffer.cxx \
 	wl/wl-buffer.hxx \
+	wl/wl-region.cxx \
+	wl/wl-region.hxx \
 	wayland-interface.cxx \
 	wayland-interface.hxx \
 	utils.cxx \
