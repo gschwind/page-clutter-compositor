@@ -102,11 +102,13 @@ void wl_seat::recv_get_pointer(struct wl_client * client, struct wl_resource * r
 }
 
 void wl_seat::recv_get_keyboard(struct wl_client * client, struct wl_resource * resource, uint32_t id) {
-	new wl_keyboard(client, wl_resource_get_version(resource), id);
+	auto keyboard = make_shared<wl_keyboard>(client, wl_resource_get_version(resource), id);
+	keyboards.push_back(keyboard);
 }
 
 void wl_seat::recv_get_touch(struct wl_client * client, struct wl_resource * resource, uint32_t id) {
-	new wl_touch(client, wl_resource_get_version(resource), id);
+	auto touch = make_shared<wl_touch>(client, wl_resource_get_version(resource), id);
+	touchs.push_back(touch);
 }
 
 void wl_seat::recv_release(struct wl_client * client, struct wl_resource * resource) {
