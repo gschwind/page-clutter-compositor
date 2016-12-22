@@ -20,11 +20,29 @@
 
 #include "wl-surface.hxx"
 
+#include <limits>
+#include <cassert>
+#include <wayland-server-protocol.h>
+
+#include "wl-compositor.hxx"
+#include "wl-buffer.hxx"
+#include "wl-region.hxx"
+#include "wl-callback.hxx"
+
 namespace page {
 namespace wl {
 
-wl_surface::wl_surface(struct wl_client *client, uint32_t version, uint32_t id) :
-	wl_surface_vtable{client, version, id}
+using namespace std;
+
+void wl_surface_state::on_buffer_destroy(wl_buffer * b) {
+	assert(buffer == b);
+	buffer = nullptr;
+	buffer_destroy_listener.reset();
+}
+
+wl_surface::wl_surface(wl_compositor * compositor, struct wl_client *client, uint32_t version, uint32_t id) :
+	wl_surface_vtable{client, version, id},
+	compositor{compositor}
 {
 	// TODO Auto-generated constructor stub
 
@@ -34,43 +52,167 @@ wl_surface::~wl_surface() {
 	// TODO Auto-generated destructor stub
 }
 
-void wl_surface::recv_destroy(struct wl_client * client, struct wl_resource * resource) {
+void wl_surface::state_set_buffer(wl_surface_state * state, wl_buffer * buffer) {
+	if(state->buffer == buffer)
+		return;
+
+	if(not buffer) {
+		state->buffer = nullptr;
+		state->buffer_destroy_listener.reset();
+	} else {
+		state->buffer = buffer;
+		state->buffer_destroy_listener =
+				buffer->destroy_signal.connect(&pending, &wl_surface_state::on_buffer_destroy);
+	}
 
 }
 
-void wl_surface::recv_attach(struct wl_client * client, struct wl_resource * resource, struct wl_resource * buffer, int32_t x, int32_t y) {
+void wl_surface::recv_destroy(struct wl_client * client, struct wl_resource * resource) {
+	wl_resource_destroy(_self_resource);
+}
 
+void wl_surface::recv_attach(struct wl_client * client, struct wl_resource * resource, struct wl_resource * buffer_resource, int32_t x, int32_t y) {
+
+	wl_buffer * buffer = nullptr;
+	if(buffer_resource) {
+		buffer = compositor->ensure_wl_buffer(buffer_resource);
+		if (buffer == NULL) {
+			wl_client_post_no_memory(client);
+			return;
+		}
+	}
+
+	/* Attach, attach, without commit in between does not send
+	 * wl_buffer.release. */
+	state_set_buffer(&pending, buffer);
+
+	pending.sx = x;
+	pending.sy = y;
+	pending.newly_attached = true;
 }
 
 void wl_surface::recv_damage(struct wl_client * client, struct wl_resource * resource, int32_t x, int32_t y, int32_t width, int32_t height) {
+
+	if (width <= 0 || height <= 0)
+		return;
+
+	cairo_rectangle_int_t rect = {x, y, width, height};
+	cairo_region_union_rectangle(pending.damage_surface, &rect);
 
 }
 
 void wl_surface::recv_frame(struct wl_client * client, struct wl_resource * resource, uint32_t callback) {
 
+	auto cb = new wl_callback{client, 1, callback};
+	if (cb == NULL) {
+		wl_resource_post_no_memory(resource);
+		return;
+	}
+
+	pending.frame_callback_list.push_back(cb);
+
 }
 
-void wl_surface::recv_set_opaque_region(struct wl_client * client, struct wl_resource * resource, struct wl_resource * region) {
-
+void wl_surface::recv_set_opaque_region(struct wl_client * client, struct wl_resource * resource, struct wl_resource * region_resource) {
+	if(pending.opaque)
+		cairo_region_destroy(pending.opaque);
+	if (region_resource) {
+		auto region = wl_region::get(region_resource);
+		pending.opaque = cairo_region_copy(region->_region);
+	} else {
+		pending.opaque = cairo_region_create();
+	}
 }
 
-void wl_surface::recv_set_input_region(struct wl_client * client, struct wl_resource * resource, struct wl_resource * region) {
-
+void wl_surface::recv_set_input_region(struct wl_client * client, struct wl_resource * resource, struct wl_resource * region_resource) {
+	if(pending.input)
+		cairo_region_destroy(pending.input);
+	if (region_resource) {
+		auto region = wl_region::get(region_resource);
+		pending.input = cairo_region_copy(region->_region);
+	} else {
+		cairo_rectangle_int_t rect = {
+				numeric_limits<int>::min(), numeric_limits<int>::min(),
+				numeric_limits<int>::max(), numeric_limits<int>::max()
+		};
+		pending.input = cairo_region_create_rectangle(&rect);
+	}
 }
 
 void wl_surface::recv_commit(struct wl_client * client, struct wl_resource * resource){
-
+//	struct weston_surface *surface = wl_resource_get_user_data(resource);
+//	struct weston_subsurface *sub = weston_surface_to_subsurface(surface);
+//
+//	if (!weston_surface_is_pending_viewport_source_valid(surface)) {
+//		assert(surface->viewport_resource);
+//
+//		wl_resource_post_error(surface->viewport_resource,
+//			WP_VIEWPORT_ERROR_OUT_OF_BUFFER,
+//			"wl_surface@%d has viewport source outside buffer",
+//			wl_resource_get_id(resource));
+//		return;
+//	}
+//
+//	if (!weston_surface_is_pending_viewport_dst_size_int(surface)) {
+//		assert(surface->viewport_resource);
+//
+//		wl_resource_post_error(surface->viewport_resource,
+//			WP_VIEWPORT_ERROR_BAD_SIZE,
+//			"wl_surface@%d viewport dst size not integer",
+//			wl_resource_get_id(resource));
+//		return;
+//	}
+//
+//	if (sub) {
+//		weston_subsurface_commit(sub);
+//		return;
+//	}
+//
+//	weston_surface_commit(surface);
+//
+//	wl_list_for_each(sub, &surface->subsurface_list, parent_link) {
+//		if (sub->surface != surface)
+//			weston_subsurface_parent_commit(sub, 0);
+//	}
 }
 
 void wl_surface::recv_set_buffer_transform(struct wl_client * client, struct wl_resource * resource, int32_t transform) {
+	/* if wl_output.transform grows more members this will need to be updated. */
+	if (transform < 0 ||
+	    transform > WL_OUTPUT_TRANSFORM_FLIPPED_270) {
+		wl_resource_post_error(resource,
+			WL_SURFACE_ERROR_INVALID_TRANSFORM,
+			"buffer transform must be a valid transform "
+			"('%d' specified)", transform);
+		return;
+	}
 
+	pending.buffer_viewport.buffer.transform = transform;
+	pending.buffer_viewport.changed = 1;
 }
 
 void wl_surface::recv_set_buffer_scale(struct wl_client * client, struct wl_resource * resource, int32_t scale) {
 
+	if (scale < 1) {
+		wl_resource_post_error(resource,
+			WL_SURFACE_ERROR_INVALID_SCALE,
+			"buffer scale must be at least one "
+			"('%d' specified)", scale);
+		return;
+	}
+
+	pending.buffer_viewport.buffer.scale = scale;
+	pending.buffer_viewport.changed = 1;
+
 }
 
 void wl_surface::recv_damage_buffer(struct wl_client * client, struct wl_resource * resource, int32_t x, int32_t y, int32_t width, int32_t height) {
+
+	if (width <= 0 || height <= 0)
+		return;
+
+	cairo_rectangle_int_t rect = {x, y, width, height};
+	cairo_region_union_rectangle(pending.damage_buffer, &rect);
 
 }
 

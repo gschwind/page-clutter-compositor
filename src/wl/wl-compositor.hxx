@@ -21,17 +21,27 @@
 #ifndef SRC_COMPOSITOR_HXX_
 #define SRC_COMPOSITOR_HXX_
 
+#include <map>
+
 #include "wayland-interface.hxx"
+#include "wl-types.hxx"
+
 
 namespace page {
 namespace wl {
 
+using namespace std;
 using namespace wcxx;
 
 struct wl_compositor : private wl_compositor_vtable {
 
+	map<struct wl_resource *, wl_buffer *> buffer_register;
+
 	wl_compositor(struct wl_client *client, uint32_t version, uint32_t id);
 	virtual ~wl_compositor();
+
+	void on_buffer_destroy(struct wl_resource * r);
+	wl_buffer * ensure_wl_buffer(struct wl_resource * r);
 
 	virtual void recv_create_surface(struct wl_client * client, struct wl_resource * resource, uint32_t id) override;
 	virtual void recv_create_region(struct wl_client * client, struct wl_resource * resource, uint32_t id) override;

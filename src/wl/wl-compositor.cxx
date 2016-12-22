@@ -21,6 +21,7 @@
 #include "wl-compositor.hxx"
 
 #include "wl-region.hxx"
+#include "wl-buffer.hxx"
 
 namespace page {
 namespace wl {
@@ -34,6 +35,22 @@ wl_compositor::wl_compositor(struct wl_client *client, uint32_t version, uint32_
 
 wl_compositor::~wl_compositor() {
 	// TODO Auto-generated destructor stub
+}
+
+void wl_compositor::on_buffer_destroy(struct wl_resource * r) {
+	auto buffer = ensure_wl_buffer(r);
+	buffer_register.erase(r);
+	delete buffer;
+}
+
+wl_buffer * wl_compositor::ensure_wl_buffer(struct wl_resource * r) {
+	auto i = buffer_register.find(r);
+	if(i != buffer_register.end())
+		return i->second;
+	auto buffer = new wl_buffer(r);
+
+	buffer->destroy_listener.resource_add_destroy_listener(r, this, &wl_compositor::on_buffer_destroy);
+
 }
 
 void wl_compositor::recv_create_surface(struct wl_client * client, struct wl_resource * resource, uint32_t id) {

@@ -23,23 +23,15 @@
 namespace page {
 namespace wl {
 
-wl_buffer::wl_buffer(struct wl_client *client, uint32_t version, uint32_t id) :
-	wl_buffer_vtable{client, version, id}
+wl_buffer::wl_buffer(struct wl_resource * resource) :
+	_self_resource{resource}
 {
 	// TODO Auto-generated constructor stub
 
 }
 
 wl_buffer::~wl_buffer() {
-	// TODO Auto-generated destructor stub
-}
-
-void wl_buffer::recv_destroy(struct wl_client * client, struct wl_resource * resource) {
-
-}
-
-void wl_buffer::delete_resource(struct wl_resource * resource) {
-	delete this;
+	destroy_signal.emit(this);
 }
 
 }

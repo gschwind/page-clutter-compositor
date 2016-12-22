@@ -21,20 +21,29 @@
 #ifndef SRC_BUFFER_HXX_
 #define SRC_BUFFER_HXX_
 
+#include "utils.hxx"
 #include "wayland-interface.hxx"
+#include "wl-listener.hxx"
 
 namespace page {
 namespace wl {
 
 using namespace wcxx;
 
-struct wl_buffer : private wl_buffer_vtable {
-	wl_buffer(struct wl_client *client, uint32_t version, uint32_t id);
-	virtual ~wl_buffer();
+/* wl_buffer never get attached to a resource, they are managed by libwayland internaly.
+ * Nevertheless they are mapped to the compositor to map resource to wl_buffer.
+ */
+struct wl_buffer {
+	struct wl_resource * _self_resource;
 
-	/* wl_buffer_vtable */
-	virtual void recv_destroy(struct wl_client * client, struct wl_resource * resource) override;
-	virtual void delete_resource(struct wl_resource * resource) override;
+	signal<wl_buffer*> destroy_signal;
+
+	/* a listener used by the compositor to know when this buffer will be destroyed */
+	wl_listener_t<struct wl_resource> destroy_listener;
+
+	wl_buffer(struct wl_resource * resource);
+	~wl_buffer();
+
 };
 
 }

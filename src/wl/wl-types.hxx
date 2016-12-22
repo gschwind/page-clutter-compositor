@@ -35,6 +35,7 @@ struct wl_seat;
 struct wl_shell;
 struct wl_surface;
 struct wl_touch;
+struct wl_callback;
 
 }
 }
