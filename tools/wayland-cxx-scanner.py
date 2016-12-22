@@ -7,7 +7,7 @@ import argparse
 
 r_invalid = re.compile('(\W+)')
 
-interface_blacklist = set(['wl_display', 'wl_registry', 'wl_callback'])
+interface_blacklist = set(['wl_display', 'wl_registry'])
 
 #parser = argparse.ArgumentParser(description='Generate wayland API C++ to C wrapper')
 #parser.add_argument('integers', metavar='N', type=int, nargs='+',
@@ -115,22 +115,24 @@ namespace wcxx {{
   interface_name = interface.attrib['name']
   if interface_name in interface_blacklist:
    continue
+  events = interface.findall('event')
+  requests = interface.findall('request')
   fo.write("struct {0}_vtable {{\n".format(interface_name))
   fo.write('\tstatic uint32_t const INTERFACE_VERSION = {1};\n\n'.format(interface_name, interface.attrib['version']))
   fo.write('\tstruct wl_resource * _self_resource;\n\n'.format(interface_name))
   fo.write('\t{0}_vtable(struct wl_client *client, uint32_t version, uint32_t id);\n'.format(interface_name))
   fo.write("\tvirtual ~{0}_vtable() = default;\n".format(interface_name))
   funclist = []
-  if len(interface.findall('event')) != 0:
+  if len(events) > 0:
    fo.write('\n\t/* events */\n')
-  for event in interface.findall('event'):
-   args = event.findall('arg')
-   fo.write('\tvoid send_{1}({2});\n'.format(interface_name, event.attrib['name'], gen_event_args_with_type(args)))
-  if len(interface.findall('request')) != 0:
+   for event in events:
+    args = event.findall('arg')
+    fo.write('\tvoid send_{1}({2});\n'.format(interface_name, event.attrib['name'], gen_event_args_with_type(args)))
+  if len(requests) > 0:
    fo.write('\t\n\t/* requests */\n')
-  for request in interface.findall('request'):
-   args = request.findall('arg')
-   fo.write('\tvirtual void recv_{1}({2}) = 0;\n'.format(interface_name, request.attrib['name'], gen_request_args_with_type(args, ['struct wl_client * client', 'struct wl_resource * resource'])))
+   for request in interface.findall('request'):
+    args = request.findall('arg')
+    fo.write('\tvirtual void recv_{1}({2}) = 0;\n'.format(interface_name, request.attrib['name'], gen_request_args_with_type(args, ['struct wl_client * client', 'struct wl_resource * resource'])))
   fo.write('\n\t/* called when libwayland is destroying the resource */\n')
   fo.write('\tvirtual void delete_resource(struct wl_resource * resource) = 0;\n'.format(interface_name))
   fo.write('};\n\n')
@@ -175,46 +177,52 @@ namespace hidden {{
   interface_name = interface.attrib['name']
   if interface_name in interface_blacklist:
    continue
+  requests = interface.findall('request')
   fo.write('inline {0}_vtable * {0}_get(struct wl_resource * resource) {{\n'.format(interface_name))
   fo.write('\treturn reinterpret_cast<{0}_vtable *>(wl_resource_get_user_data(resource));\n'.format(interface_name))
   fo.write('}\n\n')
-  for request in interface.findall('request'):
-   args = request.findall('arg')
-   args_with_type = gen_request_args_with_type(args, ['struct wl_client * client', 'struct wl_resource * resource'])
-   args_no_type = gen_args(args, ['client', 'resource'])
-   fo.write('void {0}_{1}({2}) {{\n'.format(interface_name, request.attrib['name'], args_with_type))
-   fo.write('\t{0}_get(resource)->recv_{1}({2});\n'.format(interface_name, request.attrib['name'], args_no_type))
-   fo.write('}\n\n')
+  if len(requests) > 0:
+   for request in requests:
+    args = request.findall('arg')
+    args_with_type = gen_request_args_with_type(args, ['struct wl_client * client', 'struct wl_resource * resource'])
+    args_no_type = gen_args(args, ['client', 'resource'])
+    fo.write('void {0}_{1}({2}) {{\n'.format(interface_name, request.attrib['name'], args_with_type))
+    fo.write('\t{0}_get(resource)->recv_{1}({2});\n'.format(interface_name, request.attrib['name'], args_no_type))
+    fo.write('}\n\n')
   fo.write('void {0}_delete_resource(struct wl_resource * resource) {{\n'.format(interface_name))
   fo.write('\t{0}_get(resource)->delete_resource(resource);\n'.format(interface_name))
   fo.write('}\n\n')
-  fo.write('static struct {0}_interface const {0}_implementation = {{\n'.format(interface_name))
-  requests = interface.findall('request')
-  for request in requests[:-1]:
-   fo.write('\t{0}_{1},\n'.format(interface_name, request.attrib['name']))
   if len(requests) > 0:
+   fo.write('static struct {0}_interface const {0}_implementation = {{\n'.format(interface_name))
+   for request in requests[:-1]:
+    fo.write('\t{0}_{1},\n'.format(interface_name, request.attrib['name']))
    fo.write('\t{0}_{1}\n'.format(interface_name, requests[-1].attrib['name']))
-  fo.write('};\n\n')
+   fo.write('};\n\n')
  fo.write('}\n')
  
  for interface in root.findall('interface'):
   interface_name = interface.attrib['name']
   if interface_name in interface_blacklist:
    continue
-  for event in interface.findall('event'):
-   args = event.findall('arg')
-   args_with_type = gen_event_args_with_type(args)
-   args_no_type = gen_args(args, ['_self_resource'])
-   fo.write('void {0}_vtable::send_{1}({2}) {{\n'.format(interface_name, event.attrib['name'], args_with_type))
-   fo.write('\t{0}_send_{1}({2});\n'.format(interface_name, event.attrib['name'], args_no_type))
-   fo.write('}\n\n')
-  fo.write("""
-{0}_vtable::{0}_vtable(struct wl_client *client, uint32_t version, uint32_t id)
-{{
-_self_resource = wl_resource_create(client, &{0}_interface, version, id);
-wl_resource_set_implementation(_self_resource, &hidden::{0}_implementation, this, &hidden::{0}_delete_resource);
-}}
-""".format(interface_name))
+  events = interface.findall('event')
+  requests = interface.findall('request')
+  if len(events) > 0:
+   for event in events:
+    args = event.findall('arg')
+    args_with_type = gen_event_args_with_type(args)
+    args_no_type = gen_args(args, ['_self_resource'])
+    fo.write('void {0}_vtable::send_{1}({2}) {{\n'.format(interface_name, event.attrib['name'], args_with_type))
+    fo.write('\t{0}_send_{1}({2});\n'.format(interface_name, event.attrib['name'], args_no_type))
+    fo.write('}\n\n')
+  fo.write('\n')
+  fo.write('{0}_vtable::{0}_vtable(struct wl_client *client, uint32_t version, uint32_t id)\n'.format(interface_name))
+  fo.write('{\n')
+  fo.write('\t_self_resource = wl_resource_create(client, &{0}_interface, version, id);\n'.format(interface_name))
+  if len(requests) > 0:
+   fo.write('\twl_resource_set_implementation(_self_resource, &hidden::{0}_implementation, this, &hidden::{0}_delete_resource);\n'.format(interface_name))
+  else:
+   fo.write('\twl_resource_set_implementation(_self_resource, NULL, this, &hidden::{0}_delete_resource);\n'.format(interface_name))
+  fo.write('}\n')
  fo.write('}\n')
  
 fi_name = sys.argv[2]
