@@ -96,6 +96,7 @@ namespace wcxx {{
   if interface_name in interface_blacklist:
    continue
   fo.write("struct {0}_vtable {{\n".format(interface_name))
+  fo.write('\tstatic uint32_t const VERSION = {1};\n\n'.format(interface_name, interface.attrib['version']))
   fo.write('\tstruct wl_resource * _self_resource;\n\n'.format(interface_name))
   fo.write('\t{0}_vtable(struct wl_client *client, uint32_t version, uint32_t id);\n'.format(interface_name))
   fo.write("\tvirtual ~{0}_vtable() = default;\n".format(interface_name))
