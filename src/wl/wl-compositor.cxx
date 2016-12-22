@@ -20,6 +20,8 @@
 
 #include "wl-compositor.hxx"
 
+#include "wl-region.hxx"
+
 namespace page {
 namespace wl {
 
@@ -39,7 +41,7 @@ void wl_compositor::recv_create_surface(struct wl_client * client, struct wl_res
 }
 
 void wl_compositor::recv_create_region(struct wl_client * client, struct wl_resource * resource, uint32_t id) {
-
+	new wl_region(client, wl_resource_get_version(resource), id);
 }
 
 void wl_compositor::delete_resource(struct wl_resource * resource) {
