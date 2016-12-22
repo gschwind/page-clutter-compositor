@@ -23,7 +23,9 @@
 namespace page {
 namespace wl {
 
-wl_compositor::wl_compositor(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
+wl_compositor::wl_compositor(struct wl_client *client, uint32_t version, uint32_t id) :
+	wl_compositor_vtable{client, version, id}
+{
 	// TODO Auto-generated constructor stub
 
 }

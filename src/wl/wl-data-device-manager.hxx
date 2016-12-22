@@ -30,7 +30,7 @@ using namespace wcxx;
 
 struct wl_data_device_manager : private wl_data_device_vtable {
 
-	wl_data_device_manager();
+	wl_data_device_manager(struct wl_client *client, uint32_t version, uint32_t id);
 	virtual ~wl_data_device_manager();
 
 	/* wl_data_device_vtable */

@@ -29,7 +29,7 @@ namespace wl {
 using namespace wcxx;
 
 struct wl_shell : private wl_shell_vtable {
-	wl_shell();
+	wl_shell(struct wl_client *client, uint32_t version, uint32_t id);
 	virtual ~wl_shell();
 
 	/* wl_shell_vtable */

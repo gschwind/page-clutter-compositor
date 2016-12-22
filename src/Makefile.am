@@ -26,8 +26,30 @@ BUILT_SOURCES = \
 	wayland-interface.hxx
 
 page_compositor_SOURCES = \
+	wl/wl-data-device-manager.cxx \
+	wl/wl-data-device-manager.hxx \
+	wl/wl-touch.cxx \
+	wl/wl-touch.hxx \
+	wl/wl-surface.cxx \
+	wl/wl-surface.hxx \
+	wl/wl-shell.cxx \
+	wl/wl-shell.hxx \
+	wl/wl-seat.cxx \
+	wl/wl-seat.hxx \
+	wl/wl-pointer.cxx \
+	wl/wl-pointer.hxx \
+	wl/wl-keyboard.cxx \
+	wl/wl-keyboard.hxx \
+	wl/wl-compositor.cxx \
+	wl/wl-compositor.hxx \
+	wl/wl-buffer.cxx \
+	wl/wl-buffer.hxx \
+	wayland-interface.cxx \
+	wayland-interface.hxx \
+	utils.cxx \
+	utils.hxx \
 	config_handler.cxx \
-	congig_handler_hxx \
+	congig_handler.hxx \
 	main.cxx 
 
 page_compositor_LDADD = \

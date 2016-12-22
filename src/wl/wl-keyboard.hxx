@@ -31,7 +31,7 @@ using namespace wcxx;
 
 struct wl_keyboard : private wl_keyboard_vtable {
 
-	wl_keyboard(struct wl_client * client, struct wl_resource * resource, uint32_t id);
+	wl_keyboard(struct wl_client *client, uint32_t version, uint32_t id);
 	virtual ~wl_keyboard();
 
 	/* wl_keyboard_vtable */

@@ -1,7 +1,7 @@
 /*
  * Copyright (2016) Benoit Gschwind
  *
- * buffer.hxx is part of page-compositor.
+ * wl-type.hxx is part of page-compositor.
  *
  * page-compositor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,26 +18,27 @@
  *
  */
 
-#ifndef SRC_BUFFER_HXX_
-#define SRC_BUFFER_HXX_
+#ifndef SRC_WL_WL_TYPES_HXX_
+#define SRC_WL_WL_TYPES_HXX_
 
-#include "wayland-interface.hxx"
+#include "config.hxx"
 
 namespace page {
 namespace wl {
 
-using namespace wcxx;
-
-struct wl_buffer : private wl_buffer_vtable {
-	wl_buffer(struct wl_client *client, uint32_t version, uint32_t id);
-	virtual ~wl_buffer();
-
-	/* wl_buffer_vtable */
-	virtual void recv_destroy(struct wl_client * client, struct wl_resource * resource) override;
-	virtual void delete_resource(struct wl_resource * resource) override;
-};
+struct wl_buffer;
+struct wl_compositor;
+struct wl_data_device_manager;
+struct wl_keyboard;
+struct wl_pointer;
+struct wl_seat;
+struct wl_shell;
+struct wl_surface;
+struct wl_touch;
 
 }
-} /* namespace page */
+}
 
-#endif /* SRC_BUFFER_HXX_ */
+
+
+#endif /* SRC_WL_WL_TYPES_HXX_ */

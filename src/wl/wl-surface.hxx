@@ -30,7 +30,7 @@ using namespace wcxx;
 
 struct wl_surface : private wl_surface_vtable {
 
-	wl_surface();
+	wl_surface(struct wl_client *client, uint32_t version, uint32_t id);
 	virtual ~wl_surface();
 
 	/* wl_surface_vtable */

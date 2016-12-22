@@ -23,7 +23,9 @@
 namespace page {
 namespace wl {
 
-wl_surface::wl_surface() {
+wl_surface::wl_surface(struct wl_client *client, uint32_t version, uint32_t id) :
+	wl_surface_vtable{client, version, id}
+{
 	// TODO Auto-generated constructor stub
 
 }

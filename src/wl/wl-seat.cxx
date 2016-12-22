@@ -18,34 +18,95 @@
  *
  */
 
+#include "utils.hxx"
+
 #include "wl-seat.hxx"
 #include "wl-pointer.hxx"
 #include "wl-keyboard.hxx"
+#include "wl-touch.hxx"
+
+#include "page-seat.hxx"
 
 namespace page {
 namespace wl {
 
-wl_seat::wl_seat(struct wl_client *client, void *data, uint32_t version, uint32_t id) :
-		wl_seat_vtable{client, version, id}
+wl_seat::wl_seat(page_seat * seat, struct wl_client *client, uint32_t version, uint32_t id) :
+		wl_seat_vtable{client, version, id},
+		seat{seat}
 {
 
 }
 
-virtual wl_seat::~wl_seat() {
+wl_seat::~wl_seat() {
 
+}
+
+wl_seat * wl_seat::get(struct wl_resource * r) {
+	return dynamic_cast<wl_seat*>(resource_get<wl_seat_vtable>(r));
 }
 
 /* wl_seat_vtable */
 void wl_seat::recv_get_pointer(struct wl_client * client, struct wl_resource * resource, uint32_t id) {
-	new pointer{client, wl_resource_get_version(resource), id};
+	auto pointer = make_shared<wl_pointer>(client, wl_resource_get_version(resource), id);
+	pointers.push_back(pointer);
+
+
+//	/* We use the pointer_state directly, which means we'll
+//	 * give a wl_pointer if the seat has ever had one - even though
+//	 * the spec explicitly states that this request only takes effect
+//	 * if the seat has the pointer capability.
+//	 *
+//	 * This prevents a race between the compositor sending new
+//	 * capabilities and the client trying to use the old ones.
+//	 */
+//	struct weston_pointer *pointer = seat->pointer_state;
+//	struct wl_resource *cr;
+//	struct weston_pointer_client *pointer_client;
+//
+//	if (!pointer)
+//		return;
+//
+//        cr = wl_resource_create(client, &wl_pointer_interface,
+//				wl_resource_get_version(resource), id);
+//	if (cr == NULL) {
+//		wl_client_post_no_memory(client);
+//		return;
+//	}
+//
+//	pointer_client = weston_pointer_ensure_pointer_client(pointer, client);
+//	if (!pointer_client) {
+//		wl_client_post_no_memory(client);
+//		return;
+//	}
+//
+//	wl_list_insert(&pointer_client->pointer_resources,
+//		       wl_resource_get_link(cr));
+//	wl_resource_set_implementation(cr, &pointer_interface, pointer,
+//				       unbind_pointer_client_resource);
+//
+//	if (pointer->focus && pointer->focus->surface->resource &&
+//	    wl_resource_get_client(pointer->focus->surface->resource) == client) {
+//		wl_fixed_t sx, sy;
+//
+//		weston_view_from_global_fixed(pointer->focus,
+//					      pointer->x,
+//					      pointer->y,
+//					      &sx, &sy);
+//
+//		wl_pointer_send_enter(cr,
+//				      pointer->focus_serial,
+//				      pointer->focus->surface->resource,
+//				      sx, sy);
+//		pointer_send_frame(cr);
+//	}
 }
 
 void wl_seat::recv_get_keyboard(struct wl_client * client, struct wl_resource * resource, uint32_t id) {
-	new keyboard{client, wl_resource_get_version(resource), id};
+	new wl_keyboard(client, wl_resource_get_version(resource), id);
 }
 
 void wl_seat::recv_get_touch(struct wl_client * client, struct wl_resource * resource, uint32_t id) {
-	new touch{client, wl_resource_get_version(resource), id};
+	new wl_touch(client, wl_resource_get_version(resource), id);
 }
 
 void wl_seat::recv_release(struct wl_client * client, struct wl_resource * resource) {

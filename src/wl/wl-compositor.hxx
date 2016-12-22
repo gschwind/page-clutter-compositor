@@ -29,8 +29,8 @@ namespace wl {
 using namespace wcxx;
 
 struct wl_compositor : private wl_compositor_vtable {
-public:
-	wl_compositor(struct wl_client *client, void *data, uint32_t version, uint32_t id);
+
+	wl_compositor(struct wl_client *client, uint32_t version, uint32_t id);
 	virtual ~wl_compositor();
 
 	virtual void recv_create_surface(struct wl_client * client, struct wl_resource * resource, uint32_t id) override;

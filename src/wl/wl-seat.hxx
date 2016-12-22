@@ -8,16 +8,33 @@
 #ifndef SRC_SEAT_HXX_
 #define SRC_SEAT_HXX_
 
+#include "config.hxx"
+#include <list>
+#include <memory>
+
 #include "wayland-interface.hxx"
+
+#include "page-types.hxx"
+
+#include "wl-types.hxx"
 
 namespace page {
 namespace wl {
 
+using namespace std;
 using namespace wcxx;
 
 struct wl_seat : private wl_seat_vtable {
-	wl_seat(struct wl_client *client, void *data, uint32_t version, uint32_t id);
+	page_seat * seat;
+
+	list<shared_ptr<wl_pointer>> pointers;
+	list<shared_ptr<wl_keyboard>> keyboards;
+	list<shared_ptr<wl_touch>> touchs;
+
+	wl_seat(page_seat * seat, struct wl_client *client, uint32_t version, uint32_t id);
 	virtual ~wl_seat();
+
+	static wl_seat * get(struct wl_resource * r);
 
 	/* wl_seat_vtable */
 	virtual void recv_get_pointer(struct wl_client * client, struct wl_resource * resource, uint32_t id) override;

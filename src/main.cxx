@@ -15,6 +15,9 @@
 #include "exception.hxx"
 #include "config_handler.hxx"
 
+#include "wl/wl-compositor.hxx"
+#include "wl/wl-seat.hxx"
+
 
 using namespace page;
 
@@ -68,7 +71,7 @@ wayland_event_source_new (struct wl_display *display)
   source->display = display;
   g_source_add_unix_fd (&source->source,
                         wl_event_loop_get_fd (loop),
-                        G_IO_IN | G_IO_ERR);
+                        static_cast<GIOCondition>(static_cast<unsigned>(G_IO_IN) | static_cast<unsigned>(G_IO_ERR)));
 
   return &source->source;
 }
@@ -174,11 +177,12 @@ static void log_print(const char * fmt, va_list args) {
 }
 
 static void bind_compositor(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
-	new compositor{client, data, version, id};
+	new wl::wl_compositor{client, version, id};
 }
 
 static void bind_seat(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
-	new seat{client, data, version, id};
+	auto seat = reinterpret_cast<page_seat*>(data);
+	new wl::wl_seat{seat, client, version, id};
 }
 
 int main(int argc, char** argv) {

@@ -1,7 +1,7 @@
 /*
  * Copyright (2016) Benoit Gschwind
  *
- * buffer.hxx is part of page-compositor.
+ * utils.cxx is part of page-compositor.
  *
  * page-compositor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,26 +18,10 @@
  *
  */
 
-#ifndef SRC_BUFFER_HXX_
-#define SRC_BUFFER_HXX_
-
-#include "wayland-interface.hxx"
+#include "utils.hxx"
 
 namespace page {
-namespace wl {
-
-using namespace wcxx;
-
-struct wl_buffer : private wl_buffer_vtable {
-	wl_buffer(struct wl_client *client, uint32_t version, uint32_t id);
-	virtual ~wl_buffer();
-
-	/* wl_buffer_vtable */
-	virtual void recv_destroy(struct wl_client * client, struct wl_resource * resource) override;
-	virtual void delete_resource(struct wl_resource * resource) override;
-};
 
 }
-} /* namespace page */
 
-#endif /* SRC_BUFFER_HXX_ */
+

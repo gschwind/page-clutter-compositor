@@ -23,8 +23,8 @@
 namespace page {
 namespace wl {
 
-wl_keyboard::wl_keyboard(struct wl_client * client, struct wl_resource * resource, uint32_t id) :
-		wl_keyboard_vtable{client, 1, id}
+wl_keyboard::wl_keyboard(struct wl_client *client, uint32_t version, uint32_t id) :
+		wl_keyboard_vtable{client, version, id}
 {
 	// TODO Auto-generated constructor stub
 

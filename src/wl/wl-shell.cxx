@@ -23,7 +23,9 @@
 namespace page {
 namespace wl {
 
-wl_shell::wl_shell() {
+wl_shell::wl_shell(struct wl_client *client, uint32_t version, uint32_t id) :
+	wl_shell_vtable{client, version, id}
+{
 	// TODO Auto-generated constructor stub
 
 }

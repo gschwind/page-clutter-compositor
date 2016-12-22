@@ -18,30 +18,30 @@
  *
  */
 
-#include "touch.hxx"
+#include "wl-touch.hxx"
 
 namespace page {
 namespace wl {
 
 using namespace wcxx;
 
-touch::touch(struct wl_client *client, uint32_t version, uint32_t id) :
+wl_touch::wl_touch(struct wl_client *client, uint32_t version, uint32_t id) :
 		wl_touch_vtable{client, version, id}
 {
 	// TODO Auto-generated constructor stub
 
 }
 
-touch::~touch() {
+wl_touch::~wl_touch() {
 	// TODO Auto-generated destructor stub
 }
 
 /* wl_touch_vtable */
-void touch::recv_release(struct wl_client * client, struct wl_resource * resource) {
+void wl_touch::recv_release(struct wl_client * client, struct wl_resource * resource) {
 	/* TODO */
 }
 
-void touch::delete_resource(struct wl_resource * resource) {
+void wl_touch::delete_resource(struct wl_resource * resource) {
 	/* TODO */
 }
 

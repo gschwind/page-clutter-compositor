@@ -23,7 +23,9 @@
 namespace page {
 namespace wl {
 
-wl_buffer::wl_buffer() {
+wl_buffer::wl_buffer(struct wl_client *client, uint32_t version, uint32_t id) :
+	wl_buffer_vtable{client, version, id}
+{
 	// TODO Auto-generated constructor stub
 
 }

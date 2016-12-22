@@ -23,7 +23,9 @@
 namespace page {
 namespace wl {
 
-wl_data_device_manager::wl_data_device_manager() {
+wl_data_device_manager::wl_data_device_manager(struct wl_client *client, uint32_t version, uint32_t id) :
+	wl_data_device_vtable{client, version, id}
+{
 	// TODO Auto-generated constructor stub
 
 }
