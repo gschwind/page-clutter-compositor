@@ -6,18 +6,113 @@
 #include <stdexcept>
 
 #include <wayland-server-core.h>
+#include <wayland-server-protocol.h>
 
 #include <clutter/clutter.h>
 #include <clutter/wayland/clutter-wayland-compositor.h>
+#include <wl/wl-compositor.hxx>
 
 #include "exception.hxx"
 #include "config_handler.hxx"
 
 
+using namespace page;
+
+typedef struct
+{
+  GSource source;
+  struct wl_display *display;
+} WaylandEventSource;
+
+static gboolean
+wayland_event_source_prepare (GSource *base, int *timeout)
+{
+  WaylandEventSource *source = (WaylandEventSource *)base;
+
+  *timeout = -1;
+
+  wl_display_flush_clients (source->display);
+
+  return FALSE;
+}
+
+static gboolean
+wayland_event_source_dispatch (GSource *base,
+                               GSourceFunc callback,
+                               void *data)
+{
+  WaylandEventSource *source = (WaylandEventSource *)base;
+  struct wl_event_loop *loop = wl_display_get_event_loop (source->display);
+
+  wl_event_loop_dispatch (loop, 0);
+
+  return TRUE;
+}
+
+static GSourceFuncs wayland_event_source_funcs =
+{
+  wayland_event_source_prepare,
+  NULL,
+  wayland_event_source_dispatch,
+  NULL
+};
+
+static GSource *
+wayland_event_source_new (struct wl_display *display)
+{
+  WaylandEventSource *source;
+  struct wl_event_loop *loop = wl_display_get_event_loop (display);
+
+  source = (WaylandEventSource *) g_source_new (&wayland_event_source_funcs,
+                                                sizeof (WaylandEventSource));
+  source->display = display;
+  g_source_add_unix_fd (&source->source,
+                        wl_event_loop_get_fd (loop),
+                        G_IO_IN | G_IO_ERR);
+
+  return &source->source;
+}
+
 static
 void on_destroy(ClutterActor *actor, gpointer user_data) {
 	clutter_main_quit();
 }
+
+uint32_t lookup_device_capabilities(ClutterDeviceManager * device_manager) {
+
+	auto devices = clutter_device_manager_peek_devices(device_manager);
+	uint32_t capabilities = 0;
+
+	for(auto i = devices; i != NULL; i = i->next) {
+		auto dev = CLUTTER_INPUT_DEVICE(i->data);
+
+		if (clutter_input_device_get_device_mode(dev) == CLUTTER_INPUT_MODE_MASTER)
+			continue;
+
+		switch(clutter_input_device_get_device_type (dev)) {
+		case CLUTTER_POINTER_DEVICE:
+		case CLUTTER_TOUCHPAD_DEVICE:
+			printf("CLUTTER_POINTER_DEVICE (%s)\n", clutter_input_device_get_device_name(dev));
+			capabilities |= WL_SEAT_CAPABILITY_POINTER;
+			break;
+		case CLUTTER_KEYBOARD_DEVICE:
+			printf("CLUTTER_KEYBOARD_DEVICE (%s)\n", clutter_input_device_get_device_name(dev));
+			capabilities |= WL_SEAT_CAPABILITY_KEYBOARD;
+			break;
+		case CLUTTER_TOUCHSCREEN_DEVICE:
+			capabilities |= WL_SEAT_CAPABILITY_TOUCH;
+			printf("CLUTTER_TOUCHSCREEN_DEVICE (%s)\n", clutter_input_device_get_device_name(dev));
+			break;
+		default:
+			break;
+		}
+	}
+
+	return capabilities;
+
+}
+
+
 
 static
 gboolean page_event_filter(const ClutterEvent *event, gpointer user_data) {
@@ -78,6 +173,14 @@ static void log_print(const char * fmt, va_list args) {
 		throw std::runtime_error{"could not write the log file"};
 }
 
+static void bind_compositor(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
+	new compositor{client, data, version, id};
+}
+
+static void bind_seat(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
+	new seat{client, data, version, id};
+}
+
 int main(int argc, char** argv) {
 	page::config_handler_t configuration;
 
@@ -130,6 +233,19 @@ int main(int argc, char** argv) {
 	g_signal_connect(stage, "destroy", G_CALLBACK (on_destroy), NULL);
 
 	clutter_actor_show(CLUTTER_ACTOR(stage));
+
+	auto device_manager = clutter_device_manager_get_default();
+	lookup_device_capabilities(device_manager);
+
+	wl_display_init_shm (display);
+
+	/* TODO: wl_global_bind compositor */
+	wl_global_create(display, &wl_compositor_interface, 4, nullptr, &bind_compositor);
+	wl_global_create(display, &wl_seat_interface, 6, nullptr, &bind_seat);
+	/* TODO: wl_global_bind data_device_manager */
+
+
+
 	clutter_main();
 
 	return 0;
