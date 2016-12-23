@@ -50,10 +50,6 @@ static void wrapper_bind_wl_compositor(struct wl_client *client, void *data, uin
 	reinterpret_cast<page_core*>(data)->bind_wl_compositor(client, version, id);
 }
 
-static void wrapper_bind_wl_seat(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
-	reinterpret_cast<page_core*>(data)->bind_wl_seat(client, version, id);
-}
-
 static void wrapper_bind_wl_data_device_manager(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
 	reinterpret_cast<page_core*>(data)->bind_wl_data_device_manager(client, version, id);
 }
@@ -118,9 +114,6 @@ void page_core::clutter_init(int * argc, char *** argv)
 		throw except("fail to initialize clutter");
 	}
 
-	auto device_manager = clutter_device_manager_get_default();
-	uint32_t capabilities = lookup_device_capabilities(device_manager);
-	seat = new page_seat{capabilities};
 
 	_main_stage = clutter_stage_new();
 	clutter_stage_set_minimum_size(CLUTTER_STAGE(_main_stage), 200, 200);
@@ -141,12 +134,15 @@ void page_core::clutter_init(int * argc, char *** argv)
 void page_core::wayland_init() {
 	wl_display_init_shm (dpy);
 	wl_global_create(dpy, &wl_compositor_interface, wl_compositor_vtable::INTERFACE_VERSION, this, &wrapper_bind_wl_compositor);
-	wl_global_create(dpy, &wl_seat_interface, wl_seat_vtable::INTERFACE_VERSION, this, &wrapper_bind_wl_seat);
 	wl_global_create(dpy, &wl_data_device_manager_interface, wl_data_device_manager_vtable::INTERFACE_VERSION, this, &wrapper_bind_wl_data_device_manager);
 	wl_global_create(dpy, &wl_shell_interface, wl_shell_vtable::INTERFACE_VERSION, this, &wrapper_bind_wl_shell);
 
-	auto default_output = new page_output(this);
+	auto default_output = new page_output{this};
 	output_list.push_back(default_output);
+
+	auto device_manager = clutter_device_manager_get_default();
+	uint32_t capabilities = lookup_device_capabilities(device_manager);
+	auto default_seat = new page_seat{this, capabilities};
 
 }
 
@@ -260,11 +256,6 @@ gboolean page_core::event_filter(ClutterEvent const * event)
 void page_core::bind_wl_compositor(struct wl_client *client, uint32_t version, uint32_t id)
 {
 
-}
-
-void page_core::bind_wl_seat(struct wl_client *client, uint32_t version, uint32_t id)
-{
-	auto wl_seat = new wl::wl_seat(seat, client, version, id);
 }
 
 void page_core::bind_wl_data_device_manager(struct wl_client *client, uint32_t version, uint32_t id)

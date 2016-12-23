@@ -66,7 +66,6 @@ struct page_core {
 	gboolean event_filter(ClutterEvent const * event);
 
 	void bind_wl_compositor(struct wl_client *client, uint32_t version, uint32_t id);
-	void bind_wl_seat(struct wl_client *client, uint32_t version, uint32_t id);
 	void bind_wl_data_device_manager(struct wl_client *client, uint32_t version, uint32_t id);
 	void bind_wl_shell(struct wl_client *client, uint32_t version, uint32_t id);
 

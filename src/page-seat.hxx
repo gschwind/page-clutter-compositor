@@ -34,6 +34,7 @@ namespace page {
 using namespace std;
 
 struct page_seat {
+	page_core * core;
 
 	uint32_t capabilities;
 
@@ -76,9 +77,10 @@ struct page_seat {
 	string seat_name;
 
 
-	page_seat(uint32_t capabilities);
+	page_seat(page_core * core, uint32_t capabilities);
 	~page_seat();
 
+	void bind_wl_seat(struct wl_client *client, uint32_t version, uint32_t id);
 
 
 };

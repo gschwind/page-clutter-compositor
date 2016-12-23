@@ -23,6 +23,7 @@
 #include <wayland-server-core.h>
 #include <wayland-server-protocol.h>
 
+#include "page-core.hxx"
 #include "page-pointer.hxx"
 #include "page-keyboard.hxx"
 #include "page-touch.hxx"
@@ -31,7 +32,13 @@
 
 namespace page {
 
-page_seat::page_seat(uint32_t capabilities) :
+
+static void wrapper_bind_wl_seat(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
+	reinterpret_cast<page_seat*>(data)->bind_wl_seat(client, version, id);
+}
+
+page_seat::page_seat(page_core * core, uint32_t capabilities) :
+		core{core},
 		capabilities{capabilities},
 		seat_name{"default"},
 		pointer{nullptr},
@@ -52,11 +59,17 @@ page_seat::page_seat(uint32_t capabilities) :
 		touch = new page_touch();
 	}
 
+	wl_global_create(core->dpy, &wl_seat_interface, wcxx::wl_seat_vtable::INTERFACE_VERSION, this, &wrapper_bind_wl_seat);
 
 }
 
 page_seat::~page_seat() {
 	// TODO Auto-generated destructor stub
+}
+
+void page_seat::bind_wl_seat(struct wl_client *client, uint32_t version, uint32_t id)
+{
+	new wl::wl_seat(this, client, version, id);
 }
 
 } /* namespace page */
