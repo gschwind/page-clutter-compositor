@@ -36,7 +36,7 @@ struct wl_output : public wl_output_vtable {
 	virtual ~wl_output();
 
 	/* wl_output_vtable */
-	virtual void recv_release(struct wl_client * client, struct wl_resource * resource) override;
+	virtual void recv_release(struct wl_client * client, struct wl_resource * resource);
 	virtual void delete_resource(struct wl_resource * resource) override;
 
 };

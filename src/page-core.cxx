@@ -267,7 +267,7 @@ void page_core::bind_wl_data_device_manager(struct wl_client *client, uint32_t v
 
 void page_core::bind_wl_shell(struct wl_client *client, uint32_t version, uint32_t id)
 {
-	new wl::wl_shell{client, version, id};
+	new wl::wl_shell{client, version, id, this};
 }
 
 void page_core::main_stage_destroy(ClutterActor *actor)

@@ -21,6 +21,8 @@
 #ifndef SRC_BUFFER_HXX_
 #define SRC_BUFFER_HXX_
 
+#include <cogl/cogl.h>
+
 #include "utils.hxx"
 #include "wayland-interface.hxx"
 #include "wl-listener.hxx"
@@ -35,6 +37,8 @@ using namespace wcxx;
  */
 struct wl_buffer {
 	struct wl_resource * _self_resource;
+
+	CoglTexture *texture;
 
 	signal<wl_buffer*> destroy_signal;
 

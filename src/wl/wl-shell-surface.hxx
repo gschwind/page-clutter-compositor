@@ -22,6 +22,7 @@
 #define WL_WL_SHELL_SURFACE_HXX_
 
 #include "wl-types.hxx"
+#include "page-types.hxx"
 #include "wayland-interface.hxx"
 
 namespace page {
@@ -30,10 +31,10 @@ namespace wl {
 using namespace wcxx;
 
 struct wl_shell_surface : public wl_shell_surface_vtable {
-
+	page_core * core;
 	wl_surface * surface;
 
-	wl_shell_surface(struct wl_client *client, uint32_t version, uint32_t id, wl_surface * surface);
+	wl_shell_surface(struct wl_client *client, uint32_t version, uint32_t id, page_core * core, wl_surface * surface);
 	virtual ~wl_shell_surface();
 
 	/* wl_shell_surface_vtable */

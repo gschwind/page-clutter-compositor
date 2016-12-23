@@ -35,6 +35,20 @@ namespace wl {
 
 using namespace std;
 
+wl_surface_state::wl_surface_state() :
+		newly_attached{0},
+		buffer{nullptr},
+		sx{0},
+		sy{0},
+		damage_surface{nullptr},
+		damage_buffer{nullptr},
+		opaque_region{nullptr},
+		input_region{nullptr},
+		scale{1}
+{
+
+}
+
 void wl_surface_state::on_buffer_destroy(wl_buffer * b) {
 	assert(buffer == b);
 	buffer = nullptr;
@@ -106,7 +120,10 @@ void wl_surface::recv_damage(struct wl_client * client, struct wl_resource * res
 		return;
 
 	cairo_rectangle_int_t rect = {x, y, width, height};
-	cairo_region_union_rectangle(pending.damage_surface, &rect);
+	if(not pending.damage_surface)
+		pending.damage_surface = cairo_region_create_rectangle(&rect);
+	else
+		cairo_region_union_rectangle(pending.damage_surface, &rect);
 
 }
 
@@ -123,28 +140,28 @@ void wl_surface::recv_frame(struct wl_client * client, struct wl_resource * reso
 }
 
 void wl_surface::recv_set_opaque_region(struct wl_client * client, struct wl_resource * resource, struct wl_resource * region_resource) {
-	if(pending.opaque)
-		cairo_region_destroy(pending.opaque);
+	if(pending.opaque_region)
+		cairo_region_destroy(pending.opaque_region);
 	if (region_resource) {
 		auto region = wl_region::get(region_resource);
-		pending.opaque = cairo_region_copy(region->_region);
+		pending.opaque_region = cairo_region_copy(region->_region);
 	} else {
-		pending.opaque = cairo_region_create();
+		pending.opaque_region = cairo_region_create();
 	}
 }
 
 void wl_surface::recv_set_input_region(struct wl_client * client, struct wl_resource * resource, struct wl_resource * region_resource) {
-	if(pending.input)
-		cairo_region_destroy(pending.input);
+	if(pending.input_region)
+		cairo_region_destroy(pending.input_region);
 	if (region_resource) {
 		auto region = wl_region::get(region_resource);
-		pending.input = cairo_region_copy(region->_region);
+		pending.input_region = cairo_region_copy(region->_region);
 	} else {
 		cairo_rectangle_int_t rect = {
 				numeric_limits<int>::min(), numeric_limits<int>::min(),
 				numeric_limits<int>::max(), numeric_limits<int>::max()
 		};
-		pending.input = cairo_region_create_rectangle(&rect);
+		pending.input_region = cairo_region_create_rectangle(&rect);
 	}
 }
 
@@ -184,13 +201,20 @@ void wl_surface::recv_commit(struct wl_client * client, struct wl_resource * res
 //			weston_subsurface_parent_commit(sub, 0);
 //	}
 
-	clutter_wayland_surface_attach_buffer(CLUTTER_WAYLAND_SURFACE(actor), pending.buffer->_self_resource, NULL);
+	return;
+
+	if(!pending.buffer)
+		return;
+
+
+	auto buffer_resource = pending.buffer->_self_resource;
+	clutter_wayland_surface_attach_buffer(CLUTTER_WAYLAND_SURFACE(actor), buffer_resource, NULL);
 
 	if(pending.damage_surface) {
 		for(int k = 0; k < cairo_region_num_rectangles(pending.damage_surface); ++k) {
 			cairo_rectangle_int_t rect;
 			cairo_region_get_rectangle(pending.damage_surface, k, &rect);
-			clutter_wayland_surface_damage_buffer(CLUTTER_WAYLAND_SURFACE(actor), pending.buffer->_self_resource, rect.x, rect.y, rect.width, rect.height);
+			clutter_wayland_surface_damage_buffer(CLUTTER_WAYLAND_SURFACE(actor), buffer_resource, rect.x, rect.y, rect.width, rect.height);
 		}
 		cairo_region_destroy(pending.damage_surface);
 		pending.damage_surface = nullptr;

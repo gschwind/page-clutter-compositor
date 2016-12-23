@@ -75,10 +75,10 @@ struct wl_surface_state {
 	cairo_region_t * damage_buffer;
 
 	/* wl_surface.set_opaque_region */
-	cairo_region_t * opaque;
+	cairo_region_t * opaque_region;
 
 	/* wl_surface.set_input_region */
-	cairo_region_t * input;
+	cairo_region_t * input_region;
 
 	/* wl_surface.frame */
 	list<wl_callback*> frame_callback_list;
@@ -92,6 +92,9 @@ struct wl_surface_state {
 //	/* wp_viewport.set_destination */
 	wl_buffer_viewport buffer_viewport;
 
+	double scale;
+
+	wl_surface_state();
 	void on_buffer_destroy(wl_buffer * buffer);
 
 };

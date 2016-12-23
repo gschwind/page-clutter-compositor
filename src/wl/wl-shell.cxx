@@ -22,11 +22,14 @@
 #include "wl-surface.hxx"
 #include "wl-shell-surface.hxx"
 
+#include "page-core.hxx"
+
 namespace page {
 namespace wl {
 
-wl_shell::wl_shell(struct wl_client *client, uint32_t version, uint32_t id) :
-	wl_shell_vtable{client, version, id}
+wl_shell::wl_shell(struct wl_client *client, uint32_t version, uint32_t id, page_core * core) :
+	wl_shell_vtable{client, version, id},
+	core{core}
 {
 	// TODO Auto-generated constructor stub
 
@@ -37,7 +40,7 @@ wl_shell::~wl_shell() {
 }
 
 void wl_shell::recv_get_shell_surface(struct wl_client * client, struct wl_resource * resource, uint32_t id, struct wl_resource * surface) {
-	new wl_shell_surface(client, wl_resource_get_version(resource), id, wl_surface::get(surface));
+	new wl_shell_surface(client, wl_resource_get_version(resource), id, core, wl_surface::get(surface));
 }
 
 void wl_shell::delete_resource(struct wl_resource * resource) {

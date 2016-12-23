@@ -1,10 +1,33 @@
 bin_PROGRAMS = page-compositor 
 
 AM_CXXFLAGS =  \
+	-DCLUTTER_ENABLE_COMPOSITOR_API \
+	-DCLUTTER_ENABLE_EXPERIMENTAL_API \
+	-DCOGL_ENABLE_EXPERIMENTAL_API \
+	-DCOGL_ENABLE_EXPERIMENTAL_2_0_API \
+	-DCLUTTER_DISABLE_DEPRECATION_WARNINGS \
+	-DCOGL_DISABLE_DEPRECATION_WARNINGS \
 	-DDATADIR='"$(datadir)"' \
 	-std=c++11 \
 	-rdynamic \
-	@LTO@ \
+	@CLUTTER_CFLAGS@ \
+	@WAYLAND_CFLAGS@ \
+	@PIXMAN_CFLAGS@ \
+	@CAIRO_CFLAGS@ \
+	@PANGO_CFLAGS@ \
+	@GLIB_CFLAGS@ \
+	-fno-strict-aliasing
+	
+AM_CFLAGS =  \
+	-DCLUTTER_ENABLE_COMPOSITOR_API \
+	-DCLUTTER_ENABLE_EXPERIMENTAL_API \
+	-DCOGL_ENABLE_EXPERIMENTAL_API \
+	-DCOGL_ENABLE_EXPERIMENTAL_2_0_API \
+	-DCLUTTER_DISABLE_DEPRECATION_WARNINGS \
+	-DCOGL_DISABLE_DEPRECATION_WARNINGS \
+	-DDATADIR='"$(datadir)"' \
+	-std=c11 \
+	-rdynamic \
 	@CLUTTER_CFLAGS@ \
 	@WAYLAND_CFLAGS@ \
 	@PIXMAN_CFLAGS@ \
@@ -26,6 +49,24 @@ BUILT_SOURCES = \
 	wayland-interface.hxx
 
 page_compositor_SOURCES = \
+	meta/meta-surface-actor-wayland.cxx \
+	meta/meta-surface-actor-wayland.hxx \
+	meta/clutter-utils.c \
+	meta/clutter-utils.h \
+	meta/region-utils.c \
+	meta/region-utils.h \
+	meta/meta-cullable.c \
+	meta/meta-cullable.h \
+	meta/meta-shaped-texture.c \
+	meta/meta-shaped-texture.h \
+	meta/meta-shaped-texture-private.h \
+	meta/meta-surface-actor.c \
+	meta/meta-surface-actor.h \
+	meta/meta-texture-rectangle.c \
+	meta/meta-texture-rectangle.h \
+	meta/meta-texture-tower.c \
+	meta/meta-texture-tower.h \
+	meta/window.h \
 	wl/wl-data-device-manager.cxx \
 	wl/wl-data-device-manager.hxx \
 	wl/wl-data-device.cxx \

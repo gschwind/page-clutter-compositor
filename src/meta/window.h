@@ -1,7 +1,7 @@
 /*
  * Copyright (2016) Benoit Gschwind
  *
- * wl-type.hxx is part of page-compositor.
+ * window.h is part of page-compositor.
  *
  * page-compositor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,29 +18,11 @@
  *
  */
 
-#ifndef SRC_WL_WL_TYPES_HXX_
-#define SRC_WL_WL_TYPES_HXX_
+#ifndef META_WINDOW_H_
+#define META_WINDOW_H_
 
-#include "config.hxx"
 
-namespace page {
-namespace wl {
+typedef void MetaWindow;
 
-struct wl_buffer;
-struct wl_compositor;
-struct wl_data_device;
-struct wl_data_device_manager;
-struct wl_keyboard;
-struct wl_pointer;
-struct wl_seat;
-struct wl_shell;
-struct wl_surface;
-struct wl_touch;
-struct wl_callback;
-struct wl_shell_surface;
-struct wl_output;
 
-}
-}
-
-#endif /* SRC_WL_WL_TYPES_HXX_ */
+#endif /* META_WINDOW_H_ */

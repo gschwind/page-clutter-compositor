@@ -16,12 +16,14 @@ AC_PROG_LIBTOOL
 AX_CXX_COMPILE_STDCXX_11
 
 PKG_CHECK_MODULES(CLUTTER, [
-	clutter-1.0 >= 1.26.1
+	egl
+	cogl-1.0 >= 1.22.1
+	clutter-1.0 >= 1.26.0
 	clutter-wayland-compositor-1.0 >= 1.26.0
-	clutter-wayland-1.0 >= 1.26.1
-	clutter-x11-1.0 >= 1.26.1
-	clutter-egl-1.0 >= 1.26.1
-	clutter-cogl-1.0 >= 1.26.1
+	clutter-wayland-1.0 >= 1.26.0
+	clutter-x11-1.0 >= 1.26.0
+	clutter-egl-1.0 >= 1.26.0
+	clutter-cogl-1.0 >= 1.26.0
 ])
 	
 AC_SUBST(CLUTTER_CFLAGS)

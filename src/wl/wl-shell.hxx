@@ -22,6 +22,7 @@
 #define SRC_SHELL_HXX_
 
 #include "wayland-interface.hxx"
+#include "page-types.hxx"
 
 namespace page {
 namespace wl {
@@ -29,7 +30,9 @@ namespace wl {
 using namespace wcxx;
 
 struct wl_shell : private wl_shell_vtable {
-	wl_shell(struct wl_client *client, uint32_t version, uint32_t id);
+	page_core * core;
+
+	wl_shell(struct wl_client *client, uint32_t version, uint32_t id, page_core * core);
 	virtual ~wl_shell();
 
 	/* wl_shell_vtable */
