@@ -34,8 +34,12 @@ wl_output::wl_output(page_output * output, struct wl_client *client, uint32_t ve
 			WL_OUTPUT_TRANSFORM_NORMAL);
 	auto mode = output->current_mode;
 	send_mode(mode->flags, mode->width, mode->height, mode->refresh);
-	send_scale(1); /* TODO */
-	send_done();
+
+	if(wl_resource_get_version(_self_resource) >= 2) {
+		send_scale(1); /* TODO */
+		send_done();
+	}
+
 }
 
 wl_output::~wl_output()
