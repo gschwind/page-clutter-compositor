@@ -1,7 +1,7 @@
 /*
  * Copyright (2016) Benoit Gschwind
  *
- * wl-data-device-manager.hxx is part of page-compositor.
+ * datadevicemanager.hxx is part of page-compositor.
  *
  * page-compositor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef WL_WL_DATA_DEVICE_MANAGER_HXX_
-#define WL_WL_DATA_DEVICE_MANAGER_HXX_
+#ifndef SRC_DATA_DEVICE_HXX_
+#define SRC_DATA_DEVICE_HXX_
 
 #include "wayland-interface.hxx"
 
@@ -28,19 +28,19 @@ namespace wl {
 
 using namespace wcxx;
 
-struct wl_data_device_manager : public wl_data_device_manager_vtable {
+struct wl_data_device : private wl_data_device_vtable {
 
-	wl_data_device_manager(struct wl_client *client, uint32_t version, uint32_t id);
-	virtual ~wl_data_device_manager();
+	wl_data_device(struct wl_client *client, uint32_t version, uint32_t id);
+	virtual ~wl_data_device();
 
-	/* wl_data_device_manager_vtable */
-	virtual void recv_create_data_source(struct wl_client * client, struct wl_resource * resource, uint32_t id) override;
-	virtual void recv_get_data_device(struct wl_client * client, struct wl_resource * resource, uint32_t id, struct wl_resource * seat) override;
+	/* wl_data_device_vtable */
+	virtual void recv_start_drag(struct wl_client * client, struct wl_resource * resource, struct wl_resource * source, struct wl_resource * origin, struct wl_resource * icon, uint32_t serial) override;
+	virtual void recv_set_selection(struct wl_client * client, struct wl_resource * resource, struct wl_resource * source, uint32_t serial) override;
+	virtual void recv_release(struct wl_client * client, struct wl_resource * resource) override;
 	virtual void delete_resource(struct wl_resource * resource) override;
-
 };
 
 }
 } /* namespace page */
 
-#endif /* WL_WL_DATA_DEVICE_MANAGER_HXX_ */
+#endif /* SRC_DATA_DEVICE_HXX_ */

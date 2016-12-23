@@ -28,6 +28,7 @@ namespace wl {
 
 struct wl_buffer;
 struct wl_compositor;
+struct wl_data_device;
 struct wl_data_device_manager;
 struct wl_keyboard;
 struct wl_pointer;

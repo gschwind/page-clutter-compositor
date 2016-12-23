@@ -1,7 +1,7 @@
 /*
  * Copyright (2016) Benoit Gschwind
  *
- * wl-data-device-manager.cxx is part of page-compositor.
+ * datadevicemanager.cxx is part of page-compositor.
  *
  * page-compositor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,37 +18,36 @@
  *
  */
 
-#include <wl/wl-data-device-manager.hxx>
+#include <wl/wl-data-device.hxx>
 
 namespace page {
 namespace wl {
 
-wl_data_device_manager::wl_data_device_manager(struct wl_client *client, uint32_t version, uint32_t id):
-		wl_data_device_manager_vtable{client, version, id}
-
+wl_data_device::wl_data_device(struct wl_client *client, uint32_t version, uint32_t id) :
+	wl_data_device_vtable{client, version, id}
 {
 	// TODO Auto-generated constructor stub
 
 }
 
-wl_data_device_manager::~wl_data_device_manager()
-{
+wl_data_device::~wl_data_device() {
 	// TODO Auto-generated destructor stub
 }
 
-void wl_data_device_manager::recv_create_data_source(struct wl_client * client, struct wl_resource * resource, uint32_t id)
-{
+void wl_data_device::recv_start_drag(struct wl_client * client, struct wl_resource * resource, struct wl_resource * source, struct wl_resource * origin, struct wl_resource * icon, uint32_t serial) {
 
 }
 
-void wl_data_device_manager::recv_get_data_device(struct wl_client * client, struct wl_resource * resource, uint32_t id, struct wl_resource * seat)
-{
+void wl_data_device::recv_set_selection(struct wl_client * client, struct wl_resource * resource, struct wl_resource * source, uint32_t serial) {
 
 }
 
-void wl_data_device_manager::delete_resource(struct wl_resource * resource)
-{
+void wl_data_device::recv_release(struct wl_client * client, struct wl_resource * resource) {
 
+}
+
+void wl_data_device::delete_resource(struct wl_resource * resource) {
+	delete this;
 }
 
 }

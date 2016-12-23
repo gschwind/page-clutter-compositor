@@ -33,6 +33,7 @@
 #include "wayland-interface.hxx"
 
 #include "wl/wl-seat.hxx"
+#include "wl/wl-data-device-manager.hxx"
 
 namespace page {
 
@@ -260,7 +261,7 @@ void page_core::bind_wl_compositor(struct wl_client *client, uint32_t version, u
 
 void page_core::bind_wl_data_device_manager(struct wl_client *client, uint32_t version, uint32_t id)
 {
-
+	new wl::wl_data_device_manager{client, version, id};
 }
 
 void page_core::bind_wl_shell(struct wl_client *client, uint32_t version, uint32_t id)
