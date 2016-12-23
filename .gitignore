@@ -74,5 +74,7 @@ src/stamp-h1
 .settings/
 src/wl/.deps/
 src/wl/.dirstamp
+src/meta/.deps/
+src/meta/.dirstamp
 
 
