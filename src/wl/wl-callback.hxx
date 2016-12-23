@@ -1,7 +1,7 @@
 /*
  * Copyright (2016) Benoit Gschwind
  *
- * shell.cxx is part of page-compositor.
+ * wl-callback.hxx is part of page-compositor.
  *
  * page-compositor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,32 +18,26 @@
  *
  */
 
-#include "wl-shell.hxx"
-#include "wl-surface.hxx"
-#include "wl-shell-surface.hxx"
+#ifndef WL_WL_CALLBACK_HXX_
+#define WL_WL_CALLBACK_HXX_
+
+#include "wayland-interface.hxx"
 
 namespace page {
 namespace wl {
 
-wl_shell::wl_shell(struct wl_client *client, uint32_t version, uint32_t id) :
-	wl_shell_vtable{client, version, id}
-{
-	// TODO Auto-generated constructor stub
+using namespace wcxx;
 
-}
+struct wl_callback : public wl_callback_vtable {
 
-wl_shell::~wl_shell() {
-	// TODO Auto-generated destructor stub
-}
+	wl_callback(struct wl_client *client, uint32_t version, uint32_t id);
+	virtual ~wl_callback();
 
-void wl_shell::recv_get_shell_surface(struct wl_client * client, struct wl_resource * resource, uint32_t id, struct wl_resource * surface) {
-	new wl_shell_surface(client, wl_resource_get_version(resource), id, wl_surface::get(surface));
-}
-
-void wl_shell::delete_resource(struct wl_resource * resource) {
-
-}
-
+	/* wl_callback_vtable */
+	virtual void delete_resource(struct wl_resource * resource) override;
+};
 
 }
 } /* namespace page */
+
+#endif /* WL_WL_CALLBACK_HXX_ */

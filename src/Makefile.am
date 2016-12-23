@@ -34,6 +34,8 @@ page_compositor_SOURCES = \
 	wl/wl-surface.hxx \
 	wl/wl-shell.cxx \
 	wl/wl-shell.hxx \
+	wl/wl-shell-surface.cxx \
+	wl/wl-shell-surface.hxx \
 	wl/wl-seat.cxx \
 	wl/wl-seat.hxx \
 	wl/wl-pointer.cxx \

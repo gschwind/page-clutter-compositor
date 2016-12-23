@@ -24,6 +24,7 @@
 #include <cassert>
 #include <wayland-server-protocol.h>
 
+#include "utils.hxx"
 #include "wl-compositor.hxx"
 #include "wl-buffer.hxx"
 #include "wl-region.hxx"
@@ -44,12 +45,20 @@ wl_surface::wl_surface(wl_compositor * compositor, struct wl_client *client, uin
 	wl_surface_vtable{client, version, id},
 	compositor{compositor}
 {
-	// TODO Auto-generated constructor stub
+	/* NOTE: following the source of clutter surface is not used by clutter,
+	 * this is just user data that can be retrieved by 	clutter_wayland_stage_get_wl_surface() */
+	actor = clutter_wayland_surface_new(reinterpret_cast<::wl_surface*>(this));
+	pending.damage_surface = nullptr;
+	pending.buffer = nullptr;
 
 }
 
 wl_surface::~wl_surface() {
 	// TODO Auto-generated destructor stub
+}
+
+wl_surface * wl_surface::get(struct wl_resource *r) {
+	return dynamic_cast<wl_surface*>(resource_get<wl_surface_vtable>(r));
 }
 
 void wl_surface::state_set_buffer(wl_surface_state * state, wl_buffer * buffer) {
@@ -174,6 +183,19 @@ void wl_surface::recv_commit(struct wl_client * client, struct wl_resource * res
 //		if (sub->surface != surface)
 //			weston_subsurface_parent_commit(sub, 0);
 //	}
+
+	clutter_wayland_surface_attach_buffer(CLUTTER_WAYLAND_SURFACE(actor), pending.buffer->_self_resource, NULL);
+
+	if(pending.damage_surface) {
+		for(int k = 0; k < cairo_region_num_rectangles(pending.damage_surface); ++k) {
+			cairo_rectangle_int_t rect;
+			cairo_region_get_rectangle(pending.damage_surface, k, &rect);
+			clutter_wayland_surface_damage_buffer(CLUTTER_WAYLAND_SURFACE(actor), pending.buffer->_self_resource, rect.x, rect.y, rect.width, rect.height);
+		}
+		cairo_region_destroy(pending.damage_surface);
+		pending.damage_surface = nullptr;
+	}
+
 }
 
 void wl_surface::recv_set_buffer_transform(struct wl_client * client, struct wl_resource * resource, int32_t transform) {

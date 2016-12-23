@@ -1,7 +1,7 @@
 /*
  * Copyright (2016) Benoit Gschwind
  *
- * shell.cxx is part of page-compositor.
+ * wl-callback.cxx is part of page-compositor.
  *
  * page-compositor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,32 +18,25 @@
  *
  */
 
-#include "wl-shell.hxx"
-#include "wl-surface.hxx"
-#include "wl-shell-surface.hxx"
+#include "wl-callback.hxx"
 
 namespace page {
 namespace wl {
 
-wl_shell::wl_shell(struct wl_client *client, uint32_t version, uint32_t id) :
-	wl_shell_vtable{client, version, id}
+wl_callback::wl_callback(struct wl_client *client, uint32_t version, uint32_t id) :
+		wl_callback_vtable{client, version, id}
 {
 	// TODO Auto-generated constructor stub
 
 }
 
-wl_shell::~wl_shell() {
+wl_callback::~wl_callback() {
 	// TODO Auto-generated destructor stub
 }
 
-void wl_shell::recv_get_shell_surface(struct wl_client * client, struct wl_resource * resource, uint32_t id, struct wl_resource * surface) {
-	new wl_shell_surface(client, wl_resource_get_version(resource), id, wl_surface::get(surface));
+void wl_callback::delete_resource(struct wl_resource * resource) {
+	delete this;
 }
-
-void wl_shell::delete_resource(struct wl_resource * resource) {
-
-}
-
 
 }
 } /* namespace page */

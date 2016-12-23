@@ -23,6 +23,7 @@
 
 #include <cairo/cairo.h>
 #include <list>
+#include <clutter/wayland/clutter-wayland-surface.h>
 
 #include "utils.hxx"
 #include "wayland-interface.hxx"
@@ -97,6 +98,7 @@ struct wl_surface_state {
 
 struct wl_surface : public wl_surface_vtable {
 	wl_compositor * compositor;
+	ClutterActor * actor;
 
 //	struct wl_resource *resource;
 //	struct wl_signal destroy_signal; /* callback argument: this surface */
@@ -191,6 +193,7 @@ struct wl_surface : public wl_surface_vtable {
 	wl_surface(wl_compositor * compositor, struct wl_client *client, uint32_t version, uint32_t id);
 	virtual ~wl_surface();
 
+	static wl_surface * get(struct wl_resource *r);
 	void state_set_buffer(wl_surface_state * state, wl_buffer * buffer);
 
 	/* wl_surface_vtable */

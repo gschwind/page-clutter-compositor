@@ -10,7 +10,7 @@
 
 #include <clutter/clutter.h>
 #include <clutter/wayland/clutter-wayland-compositor.h>
-#include <wl/wl-compositor.hxx>
+#include <gdk/gdk.h>
 
 #include "exception.hxx"
 #include "config_handler.hxx"
@@ -216,6 +216,17 @@ int main(int argc, char** argv) {
 
 	auto display = wl_display_create();
 
+	auto wayland_event_source = wayland_event_source_new(display);
+
+	  /* XXX: Here we are setting the wayland event source to have a
+	   * slightly lower priority than the X event source, because we are
+	   * much more likely to get confused being told about surface changes
+	   * relating to X clients when we don't know what's happened to them
+	   * according to the X protocol.
+	   */
+	  g_source_set_priority (wayland_event_source, GDK_PRIORITY_EVENTS + 1);
+	  g_source_attach (wayland_event_source, NULL);
+
 	/* before clutter_init, give the wayland server display */
 	clutter_wayland_set_compositor_display(display);
 
@@ -248,7 +259,9 @@ int main(int argc, char** argv) {
 	wl_global_create(display, &wl_seat_interface, 6, nullptr, &bind_seat);
 	/* TODO: wl_global_bind data_device_manager */
 
-
+	auto display_name = wl_display_add_socket_auto(display);
+	if (display_name == NULL)
+		g_error ("Failed to create socket");
 
 	clutter_main();
 
