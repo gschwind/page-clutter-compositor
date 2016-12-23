@@ -27,6 +27,7 @@
 
 #include "config_handler.hxx"
 #include "page-types.hxx"
+#include "wl/wl-types.hxx"
 
 namespace page {
 
@@ -50,6 +51,8 @@ struct page_core {
 
 	list<page_output*> output_list;
 
+	list<wl::wl_callback *> frame_callback_queue;
+
 	page_core();
 	~page_core();
 
@@ -69,6 +72,7 @@ struct page_core {
 	void bind_wl_data_device_manager(struct wl_client *client, uint32_t version, uint32_t id);
 	void bind_wl_shell(struct wl_client *client, uint32_t version, uint32_t id);
 
+	void after_stage_paint(ClutterStage * stage);
 	void main_stage_destroy(ClutterActor *actor);
 
 	void init(int * argc, char *** argv);

@@ -22,6 +22,7 @@
 #define SRC_BUFFER_HXX_
 
 #include <cogl/cogl.h>
+#include <cairo/cairo.h>
 
 #include "utils.hxx"
 #include "wayland-interface.hxx"
@@ -47,6 +48,9 @@ struct wl_buffer {
 
 	wl_buffer(struct wl_resource * resource);
 	~wl_buffer();
+
+	CoglTexture * ensure_texture();
+	void process_damage(cairo_region_t * region);
 
 };
 

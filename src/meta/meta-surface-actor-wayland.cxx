@@ -36,10 +36,12 @@
 
 #include "region-utils.h"
 
+#include "wl/wl-compositor.hxx"
 #include "wl/wl-output.hxx"
 #include "wl/wl-surface.hxx"
 #include "wl/wl-buffer.hxx"
 
+#include "page-core.hxx"
 #include "page-output.hxx"
 
 using namespace page;
@@ -360,15 +362,11 @@ meta_surface_actor_wayland_paint (ClutterActor *actor)
   MetaSurfaceActorWaylandPrivate *priv =
     reinterpret_cast<MetaSurfaceActorWaylandPrivate *>(meta_surface_actor_wayland_get_instance_private (self));
 
-  if (priv->surface)
-    {
-
-	  /* TODO */
-//      MetaWaylandCompositor *compositor = priv->surface->compositor;
-//
-//      wl_list_insert_list (&compositor->frame_callbacks, &priv->frame_callback_list);
-//      wl_list_init (&priv->frame_callback_list);
-    }
+  if (priv->surface) {
+      auto core = priv->surface->compositor->core;
+      auto &callback = priv->surface->pending.frame_callback_list;
+      core->frame_callback_queue.splice(core->frame_callback_queue.end(), callback);
+  }
 
   g_signal_emit (actor, signals[PAINTING], 0);
 

@@ -25,6 +25,8 @@
 #include <list>
 #include <clutter/wayland/clutter-wayland-surface.h>
 
+#include "meta/meta-surface-actor-wayland.hxx"
+
 #include "utils.hxx"
 #include "wayland-interface.hxx"
 #include "wl-types.hxx"
@@ -101,7 +103,7 @@ struct wl_surface_state {
 
 struct wl_surface : public wl_surface_vtable {
 	wl_compositor * compositor;
-	ClutterActor * actor;
+	MetaSurfaceActor * actor;
 
 //	struct wl_resource *resource;
 //	struct wl_signal destroy_signal; /* callback argument: this surface */

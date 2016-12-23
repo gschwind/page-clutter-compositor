@@ -25,6 +25,7 @@
 
 #include "wayland-interface.hxx"
 #include "wl-types.hxx"
+#include "page-types.hxx"
 
 
 namespace page {
@@ -34,10 +35,11 @@ using namespace std;
 using namespace wcxx;
 
 struct wl_compositor : private wl_compositor_vtable {
+	page_core * core;
 
 	map<struct wl_resource *, wl_buffer *> buffer_register;
 
-	wl_compositor(struct wl_client *client, uint32_t version, uint32_t id);
+	wl_compositor(struct wl_client *client, uint32_t version, uint32_t id, page_core * core);
 	virtual ~wl_compositor();
 
 	void on_buffer_destroy(struct wl_resource * r);

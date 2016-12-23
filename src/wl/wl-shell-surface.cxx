@@ -53,13 +53,9 @@ void wl_shell_surface::recv_resize(struct wl_client * client, struct wl_resource
 }
 
 void wl_shell_surface::recv_set_toplevel(struct wl_client * client, struct wl_resource * resource) {
-	//auto stage = clutter_stage_get_default();
-	//clutter_actor_add_child(stage, surface->actor);
-
-	auto text_actor = clutter_text_new();
-	clutter_text_set_text(CLUTTER_TEXT(text_actor), "ZZZ");
-	clutter_actor_add_child(CLUTTER_ACTOR(core->_main_stage), text_actor);
-	clutter_actor_show(text_actor);
+	printf("call %s (%p)\n", __PRETTY_FUNCTION__, this);
+	clutter_actor_add_child(CLUTTER_ACTOR(core->_main_stage), CLUTTER_ACTOR(surface->actor));
+	clutter_actor_show(CLUTTER_ACTOR(surface->actor));
 }
 
 void wl_shell_surface::recv_set_transient(struct wl_client * client, struct wl_resource * resource, struct wl_resource * parent, int32_t x, int32_t y, uint32_t flags) {

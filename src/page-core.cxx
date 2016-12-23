@@ -65,6 +65,11 @@ static void wrapper_main_stage_destroy(ClutterActor *actor, gpointer user_data)
 	reinterpret_cast<page_core*>(user_data)->main_stage_destroy(actor);
 }
 
+static void wrapper_after_stage_paint(ClutterStage *stage, gpointer data)
+{
+	return reinterpret_cast<page_core*>(data)->after_stage_paint(stage);
+}
+
 page_core::page_core() :
 		dpy{nullptr},
 		_wayland_event_source{nullptr},
@@ -126,6 +131,19 @@ void page_core::clutter_init(int * argc, char *** argv)
 	clutter_text_set_text(CLUTTER_TEXT(text_actor), "Clutter test text");
 
 	clutter_actor_add_child(CLUTTER_ACTOR(_main_stage), text_actor);
+
+	/* We use connect_after() here to accomodate code in GNOME Shell that,
+	 * when benchmarking drawing performance, connects to ::after-paint
+	 * and calls glFinish(). The timing information from that will be
+	 * more accurate if we hold off until that completes before we signal
+	 * apps to begin drawing the next frame. If there are no other
+	 * connections to ::after-paint, connect() vs. connect_after() doesn't
+	 * matter.
+	 */
+	g_signal_connect_after(CLUTTER_STAGE(_main_stage), "after-paint",
+			G_CALLBACK(wrapper_after_stage_paint), this);
+
+	clutter_stage_set_sync_delay(CLUTTER_STAGE (_main_stage), 2 /* value used by mutter */);
 
 	g_signal_connect(_main_stage, "destroy", G_CALLBACK (wrapper_main_stage_destroy), this);
 
@@ -257,7 +275,7 @@ gboolean page_core::event_filter(ClutterEvent const * event)
 
 void page_core::bind_wl_compositor(struct wl_client *client, uint32_t version, uint32_t id)
 {
-	new wl::wl_compositor{client, version, id};
+	new wl::wl_compositor{client, version, id, this};
 }
 
 void page_core::bind_wl_data_device_manager(struct wl_client *client, uint32_t version, uint32_t id)
@@ -268,6 +286,12 @@ void page_core::bind_wl_data_device_manager(struct wl_client *client, uint32_t v
 void page_core::bind_wl_shell(struct wl_client *client, uint32_t version, uint32_t id)
 {
 	new wl::wl_shell{client, version, id, this};
+}
+
+void page_core::after_stage_paint(ClutterStage * stage) {
+	printf("call %s (%p)\n", __PRETTY_FUNCTION__, this);
+	/* TODO frame call back */
+
 }
 
 void page_core::main_stage_destroy(ClutterActor *actor)

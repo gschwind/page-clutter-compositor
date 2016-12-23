@@ -61,7 +61,7 @@ wl_surface::wl_surface(wl_compositor * compositor, struct wl_client *client, uin
 {
 	/* NOTE: following the source of clutter surface is not used by clutter,
 	 * this is just user data that can be retrieved by 	clutter_wayland_stage_get_wl_surface() */
-	actor = clutter_wayland_surface_new(reinterpret_cast<::wl_surface*>(this));
+	actor = meta_surface_actor_wayland_new(this);
 	pending.damage_surface = nullptr;
 	pending.buffer = nullptr;
 
@@ -206,16 +206,11 @@ void wl_surface::recv_commit(struct wl_client * client, struct wl_resource * res
 	if(!pending.buffer)
 		return;
 
-
-	auto buffer_resource = pending.buffer->_self_resource;
-	clutter_wayland_surface_attach_buffer(CLUTTER_WAYLAND_SURFACE(actor), buffer_resource, NULL);
+    auto texture = pending.buffer->ensure_texture();
+    meta_surface_actor_wayland_set_texture(META_SURFACE_ACTOR_WAYLAND(actor), texture);
 
 	if(pending.damage_surface) {
-		for(int k = 0; k < cairo_region_num_rectangles(pending.damage_surface); ++k) {
-			cairo_rectangle_int_t rect;
-			cairo_region_get_rectangle(pending.damage_surface, k, &rect);
-			clutter_wayland_surface_damage_buffer(CLUTTER_WAYLAND_SURFACE(actor), buffer_resource, rect.x, rect.y, rect.width, rect.height);
-		}
+		pending.buffer->process_damage(pending.damage_surface);
 		cairo_region_destroy(pending.damage_surface);
 		pending.damage_surface = nullptr;
 	}
