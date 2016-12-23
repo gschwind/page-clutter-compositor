@@ -161,10 +161,10 @@ meta_surface_actor_wayland_get_subsurface_rect (MetaSurfaceActorWayland *self,
 
   clutter_actor_get_position (CLUTTER_ACTOR (self), &x, &y);
   *rect = cairo_rectangle_int_t {
-    .x = x / monitor_scale,
-    .y = y / monitor_scale,
-    .width = cogl_texture_get_width (texture) / surface->pending.scale,
-    .height = cogl_texture_get_height (texture) / surface->pending.scale,
+    x / monitor_scale,
+    y / monitor_scale,
+    cogl_texture_get_width (texture) / surface->pending.scale,
+    cogl_texture_get_height (texture) / surface->pending.scale,
   };
 }
 
@@ -424,8 +424,6 @@ meta_surface_actor_wayland_new (wl::wl_surface *surface)
 {
   MetaSurfaceActorWayland *self = reinterpret_cast<MetaSurfaceActorWayland *>(g_object_new (META_TYPE_SURFACE_ACTOR_WAYLAND, NULL));
   MetaSurfaceActorWaylandPrivate *priv = reinterpret_cast<MetaSurfaceActorWaylandPrivate *>(meta_surface_actor_wayland_get_instance_private (self));
-
-  //g_assert (meta_is_wayland_compositor ());
 
   wl_list_init (&priv->frame_callback_list);
   priv->surface = surface;

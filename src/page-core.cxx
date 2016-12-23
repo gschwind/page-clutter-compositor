@@ -35,6 +35,7 @@
 #include "wl/wl-compositor.hxx"
 #include "wl/wl-data-device-manager.hxx"
 #include "wl/wl-shell.hxx"
+#include "wl/wl-callback.hxx"
 
 namespace page {
 
@@ -123,9 +124,11 @@ void page_core::clutter_init(int * argc, char *** argv)
 
 
 	_main_stage = clutter_stage_new();
-	clutter_stage_set_minimum_size(CLUTTER_STAGE(_main_stage), 200, 200);
+	clutter_stage_set_minimum_size(CLUTTER_STAGE(_main_stage), 1600, 1600);
 	clutter_stage_set_title(CLUTTER_STAGE(_main_stage), "X11 output");
 	clutter_event_add_filter(CLUTTER_STAGE(_main_stage), &wrapper_page_event_filter, NULL, this);
+	clutter_actor_set_width(_main_stage, 1600);
+	clutter_actor_set_height(_main_stage, 1600);
 
 	auto text_actor = clutter_text_new();
 	clutter_text_set_text(CLUTTER_TEXT(text_actor), "Clutter test text");
@@ -291,6 +294,13 @@ void page_core::bind_wl_shell(struct wl_client *client, uint32_t version, uint32
 void page_core::after_stage_paint(ClutterStage * stage) {
 	printf("call %s (%p)\n", __PRETTY_FUNCTION__, this);
 	/* TODO frame call back */
+
+	for(auto x: frame_callback_queue) {
+		x->send_done(g_get_monotonic_time() / 1000);
+		wl_resource_destroy(x->_self_resource);
+	}
+
+	frame_callback_queue.clear();
 
 }
 

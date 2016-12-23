@@ -166,6 +166,8 @@ void wl_surface::recv_set_input_region(struct wl_client * client, struct wl_reso
 }
 
 void wl_surface::recv_commit(struct wl_client * client, struct wl_resource * resource){
+	printf("call %s (%p)", __PRETTY_FUNCTION__, this);
+
 //	struct weston_surface *surface = wl_resource_get_user_data(resource);
 //	struct weston_subsurface *sub = weston_surface_to_subsurface(surface);
 //
@@ -200,8 +202,6 @@ void wl_surface::recv_commit(struct wl_client * client, struct wl_resource * res
 //		if (sub->surface != surface)
 //			weston_subsurface_parent_commit(sub, 0);
 //	}
-
-	return;
 
 	if(!pending.buffer)
 		return;

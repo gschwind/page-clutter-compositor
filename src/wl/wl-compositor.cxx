@@ -50,9 +50,8 @@ wl_buffer * wl_compositor::ensure_wl_buffer(struct wl_resource * r) {
 	if(i != buffer_register.end())
 		return i->second;
 	auto buffer = new wl_buffer(r);
-
 	buffer->destroy_listener.resource_add_destroy_listener(r, this, &wl_compositor::on_buffer_destroy);
-
+	return buffer;
 }
 
 void wl_compositor::recv_create_surface(struct wl_client * client, struct wl_resource * resource, uint32_t id) {
