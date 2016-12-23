@@ -15,7 +15,6 @@
 #include "wayland-interface.hxx"
 
 #include "page-types.hxx"
-
 #include "wl-types.hxx"
 
 namespace page {

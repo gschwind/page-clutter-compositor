@@ -22,8 +22,10 @@
 #define SRC_PAGE_KEYBOARD_HXX_
 
 #include <list>
+#include <wayland-server-core.h>
 
 #include "page-types.hxx"
+#include "wl/wl-types.hxx"
 
 namespace page {
 
@@ -33,7 +35,7 @@ struct page_keyboard {
 
 	page_seat * seat;
 
-	list<wl::wl_keyboard> resource;
+	list<wl::wl_keyboard *> resource;
 
 	//struct wl_list focus_resource_list;
 	//struct weston_surface *focus;
@@ -41,30 +43,30 @@ struct page_keyboard {
 	uint32_t focus_serial;
 	//struct wl_signal focus_signal;
 
-	struct weston_keyboard_grab *grab;
-	struct weston_keyboard_grab default_grab;
-	uint32_t grab_key;
-	uint32_t grab_serial;
-	uint32_t grab_time;
+//	struct weston_keyboard_grab *grab;
+//	struct weston_keyboard_grab default_grab;
+//	uint32_t grab_key;
+//	uint32_t grab_serial;
+//	uint32_t grab_time;
 
-	struct wl_array keys;
-
-	struct {
-		uint32_t mods_depressed;
-		uint32_t mods_latched;
-		uint32_t mods_locked;
-		uint32_t group;
-	} modifiers;
-
-	struct weston_keyboard_grab input_method_grab;
-	struct wl_resource *input_method_resource;
-
-	struct weston_xkb_info *xkb_info;
-	struct {
-		struct xkb_state *state;
-		enum weston_led leds;
-	} xkb_state;
-	struct xkb_keymap *pending_keymap;
+//	struct wl_array keys;
+//
+//	struct {
+//		uint32_t mods_depressed;
+//		uint32_t mods_latched;
+//		uint32_t mods_locked;
+//		uint32_t group;
+//	} modifiers;
+//
+//	struct weston_keyboard_grab input_method_grab;
+//	struct wl_resource *input_method_resource;
+//
+//	struct weston_xkb_info *xkb_info;
+//	struct {
+//		struct xkb_state *state;
+//		enum weston_led leds;
+//	} xkb_state;
+//	struct xkb_keymap *pending_keymap;
 
 	page_keyboard();
 	~page_keyboard();

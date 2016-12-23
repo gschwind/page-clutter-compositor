@@ -41,6 +41,4 @@ struct wl_shell_surface;
 }
 }
 
-
-
 #endif /* SRC_WL_WL_TYPES_HXX_ */

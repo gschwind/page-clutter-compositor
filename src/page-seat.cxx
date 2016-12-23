@@ -20,6 +20,8 @@
 
 #include "page-seat.hxx"
 
+#include "wl/wl-seat.hxx"
+
 namespace page {
 
 page_seat::page_seat() {

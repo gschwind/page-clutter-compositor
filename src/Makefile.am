@@ -50,6 +50,14 @@ page_compositor_SOURCES = \
 	wl/wl-region.hxx \
 	wl/wl-callback.cxx \
 	wl/wl-callback.hxx \
+	page.cxx \
+	page.hxx \
+	page-seat.cxx \
+	page-seat.hxx \
+	page-keyboard.cxx \
+	page-keyboard.hxx \
+	page-pointer.cxx \
+	page-pointer.hxx \
 	wayland-interface.cxx \
 	wayland-interface.hxx \
 	utils.cxx \

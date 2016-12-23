@@ -24,6 +24,8 @@
 #include <string>
 #include <list>
 
+#include <wayland-server-core.h>
+
 #include "wl/wl-types.hxx"
 
 namespace page {
@@ -35,7 +37,7 @@ struct page_seat {
 //	struct wl_list base_resource_list;
 //
 	struct wl_global *global;
-	list<wl::wl_seat> resources;
+	list<wl::wl_seat *> resources;
 
 	//	struct weston_pointer *pointer_state;
 //	struct weston_keyboard *keyboard_state;

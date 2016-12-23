@@ -22,7 +22,9 @@
 #define SRC_PAGE_POINTER_HXX_
 
 #include <list>
+#include <wayland-server-core.h>
 
+#include "wl/wl-types.hxx"
 #include "page-types.hxx"
 
 namespace page {

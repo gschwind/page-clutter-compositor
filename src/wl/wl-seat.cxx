@@ -18,14 +18,16 @@
  *
  */
 
+#include "wl-seat.hxx"
+
 #include "utils.hxx"
 
-#include "wl-seat.hxx"
 #include "wl-pointer.hxx"
 #include "wl-keyboard.hxx"
 #include "wl-touch.hxx"
 
 #include "page-seat.hxx"
+
 
 namespace page {
 namespace wl {

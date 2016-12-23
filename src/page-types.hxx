@@ -25,8 +25,10 @@
 
 namespace page {
 
+struct page;
 struct page_seat;
 struct page_keyboard;
+struct page_pointer;
 
 }
 
