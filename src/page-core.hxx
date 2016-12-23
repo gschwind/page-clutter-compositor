@@ -18,17 +18,19 @@
  *
  */
 
-#ifndef PAGE_HXX_
-#define PAGE_HXX_
+#ifndef PAGE_CORE_HXX_
+#define PAGE_CORE_HXX_
 
+#include <list>
 #include <wayland-server-core.h>
 #include <clutter/clutter.h>
 
 #include "config_handler.hxx"
+#include "page-types.hxx"
 
 namespace page {
 
-struct page {
+struct page_core {
 	static FILE * logfile;
 
 	config_handler_t configuration;
@@ -44,8 +46,12 @@ struct page {
 
 	ClutterActor * _main_stage;
 
-	page();
-	~page();
+	page_seat * seat;
+
+	list<page_output*> output_list;
+
+	page_core();
+	~page_core();
 
 	static void log_printf(const char * fmt, va_list args);
 
@@ -62,7 +68,6 @@ struct page {
 	void bind_wl_compositor(struct wl_client *client, uint32_t version, uint32_t id);
 	void bind_wl_seat(struct wl_client *client, uint32_t version, uint32_t id);
 	void bind_wl_data_device_manager(struct wl_client *client, uint32_t version, uint32_t id);
-	void bind_wl_output(struct wl_client *client, uint32_t version, uint32_t id);
 	void bind_wl_shell(struct wl_client *client, uint32_t version, uint32_t id);
 
 	void main_stage_destroy(ClutterActor *actor);
@@ -74,4 +79,4 @@ struct page {
 
 } /* namespace page */
 
-#endif /* PAGE_HXX_ */
+#endif /* PAGE_CORE_HXX_ */

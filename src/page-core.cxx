@@ -18,57 +18,60 @@
  *
  */
 
-#include "page.hxx"
+#include "page-core.hxx"
 
 #include <cstdio>
 #include <clutter/wayland/clutter-wayland-compositor.h>
 #include <gdk/gdk.h>
 #include <wayland-server-protocol.h>
 
+#include "page-seat.hxx"
+#include "page-output.hxx"
+
 #include "exception.hxx"
+#include "page-core.hxx"
 #include "wayland-interface.hxx"
+
+#include "wl/wl-seat.hxx"
 
 namespace page {
 
 using namespace wcxx;
 
-FILE * page::logfile = nullptr;
+FILE * page_core::logfile = nullptr;
 
 static gboolean wrapper_page_event_filter(ClutterEvent const * event, gpointer user_data)
 {
-	return reinterpret_cast<page*>(user_data)->event_filter(event);
+	return reinterpret_cast<page_core*>(user_data)->event_filter(event);
 }
 
 static void wrapper_bind_wl_compositor(struct wl_client *client, void *data, uint32_t version, uint32_t id)
 {
-	reinterpret_cast<page*>(data)->bind_wl_compositor(client, version, id);
+	reinterpret_cast<page_core*>(data)->bind_wl_compositor(client, version, id);
 }
 
 static void wrapper_bind_wl_seat(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
-	reinterpret_cast<page*>(data)->bind_wl_seat(client, version, id);
+	reinterpret_cast<page_core*>(data)->bind_wl_seat(client, version, id);
 }
 
 static void wrapper_bind_wl_data_device_manager(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
-	reinterpret_cast<page*>(data)->bind_wl_data_device_manager(client, version, id);
-}
-
-static void wrapper_bind_wl_output(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
-	reinterpret_cast<page*>(data)->bind_wl_output(client, version, id);
+	reinterpret_cast<page_core*>(data)->bind_wl_data_device_manager(client, version, id);
 }
 
 static void wrapper_bind_wl_shell(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
-	reinterpret_cast<page*>(data)->bind_wl_shell(client, version, id);
+	reinterpret_cast<page_core*>(data)->bind_wl_shell(client, version, id);
 }
 
 static void wrapper_main_stage_destroy(ClutterActor *actor, gpointer user_data)
 {
-	reinterpret_cast<page*>(user_data)->main_stage_destroy(actor);
+	reinterpret_cast<page_core*>(user_data)->main_stage_destroy(actor);
 }
 
-page::page() :
+page_core::page_core() :
 		dpy{nullptr},
 		_wayland_event_source{nullptr},
-		_main_stage{nullptr}
+		_main_stage{nullptr},
+		seat{nullptr}
 {
 
 	_wayland_event_source_funcs = {
@@ -80,20 +83,20 @@ page::page() :
 
 }
 
-page::~page()
+page_core::~page_core()
 {
 	// TODO Auto-generated destructor stub
 }
 
 
-void page::log_printf(const char * fmt, va_list args)
+void page_core::log_printf(const char * fmt, va_list args)
 {
-	if(vfprintf(page::logfile, fmt, args) < 0)
+	if(vfprintf(page_core::logfile, fmt, args) < 0)
 		throw std::runtime_error{"could not write the log file"};
 }
 
 
-gboolean page::wayland_event_source_prepare(GSource *base, int *timeout)
+gboolean page_core::wayland_event_source_prepare(GSource *base, int *timeout)
 {
 	auto source = reinterpret_cast<wayland_event_source*>(base);
 	*timeout = -1;
@@ -101,7 +104,7 @@ gboolean page::wayland_event_source_prepare(GSource *base, int *timeout)
 	return FALSE;
 }
 
-gboolean page::wayland_event_source_dispatch(GSource *base, GSourceFunc callback, void *data)
+gboolean page_core::wayland_event_source_dispatch(GSource *base, GSourceFunc callback, void *data)
 {
 	auto source = reinterpret_cast<wayland_event_source*>(base);
 	struct wl_event_loop *loop = wl_display_get_event_loop(source->display);
@@ -109,11 +112,15 @@ gboolean page::wayland_event_source_dispatch(GSource *base, GSourceFunc callback
 	return TRUE;
 }
 
-void page::clutter_init(int * argc, char *** argv)
+void page_core::clutter_init(int * argc, char *** argv)
 {
 	if(::clutter_init(argc, argv) != CLUTTER_INIT_SUCCESS) {
 		throw except("fail to initialize clutter");
 	}
+
+	auto device_manager = clutter_device_manager_get_default();
+	uint32_t capabilities = lookup_device_capabilities(device_manager);
+	seat = new page_seat{capabilities};
 
 	_main_stage = clutter_stage_new();
 	clutter_stage_set_minimum_size(CLUTTER_STAGE(_main_stage), 200, 200);
@@ -131,16 +138,19 @@ void page::clutter_init(int * argc, char *** argv)
 
 }
 
-void page::wayland_init() {
+void page_core::wayland_init() {
 	wl_display_init_shm (dpy);
 	wl_global_create(dpy, &wl_compositor_interface, wl_compositor_vtable::INTERFACE_VERSION, this, &wrapper_bind_wl_compositor);
 	wl_global_create(dpy, &wl_seat_interface, wl_seat_vtable::INTERFACE_VERSION, this, &wrapper_bind_wl_seat);
-	wl_global_create(dpy, &wl_output_interface, wl_output_vtable::INTERFACE_VERSION, this, &wrapper_bind_wl_output);
 	wl_global_create(dpy, &wl_data_device_manager_interface, wl_data_device_manager_vtable::INTERFACE_VERSION, this, &wrapper_bind_wl_data_device_manager);
 	wl_global_create(dpy, &wl_shell_interface, wl_shell_vtable::INTERFACE_VERSION, this, &wrapper_bind_wl_shell);
+
+	auto default_output = new page_output(this);
+	output_list.push_back(default_output);
+
 }
 
-void page::wayland_event_source_init()
+void page_core::wayland_event_source_init()
 {
   struct wl_event_loop *loop = wl_display_get_event_loop(dpy);
 
@@ -161,7 +171,7 @@ void page::wayland_event_source_init()
 
 }
 
-uint32_t page::lookup_device_capabilities(ClutterDeviceManager * device_manager) {
+uint32_t page_core::lookup_device_capabilities(ClutterDeviceManager * device_manager) {
 
 	auto devices = clutter_device_manager_peek_devices(device_manager);
 	uint32_t capabilities = 0;
@@ -195,7 +205,7 @@ uint32_t page::lookup_device_capabilities(ClutterDeviceManager * device_manager)
 
 }
 
-gboolean page::event_filter(ClutterEvent const * event)
+gboolean page_core::event_filter(ClutterEvent const * event)
 {
 	switch(event->type) {
 	case CLUTTER_NOTHING:
@@ -247,37 +257,32 @@ gboolean page::event_filter(ClutterEvent const * event)
 
 }
 
-void page::bind_wl_compositor(struct wl_client *client, uint32_t version, uint32_t id)
+void page_core::bind_wl_compositor(struct wl_client *client, uint32_t version, uint32_t id)
 {
 
 }
 
-void page::bind_wl_seat(struct wl_client *client, uint32_t version, uint32_t id)
+void page_core::bind_wl_seat(struct wl_client *client, uint32_t version, uint32_t id)
+{
+	auto wl_seat = new wl::wl_seat(seat, client, version, id);
+}
+
+void page_core::bind_wl_data_device_manager(struct wl_client *client, uint32_t version, uint32_t id)
 {
 
 }
 
-void page::bind_wl_data_device_manager(struct wl_client *client, uint32_t version, uint32_t id)
+void page_core::bind_wl_shell(struct wl_client *client, uint32_t version, uint32_t id)
 {
 
 }
 
-void page::bind_wl_output(struct wl_client *client, uint32_t version, uint32_t id)
-{
-
-}
-
-void page::bind_wl_shell(struct wl_client *client, uint32_t version, uint32_t id)
-{
-
-}
-
-void page::main_stage_destroy(ClutterActor *actor)
+void page_core::main_stage_destroy(ClutterActor *actor)
 {
 	clutter_main_quit();
 }
 
-void page::init(int * argc, char *** argv)
+void page_core::init(int * argc, char *** argv)
 {
 	// load default configuration from page data directory
 	configuration.merge_from_file_if_exist(std::string{DATADIR "/page/page.conf"});
@@ -295,13 +300,13 @@ void page::init(int * argc, char *** argv)
 
 	{ // setup the log file.
 		auto log_file_name = configuration.get_string("default", "log_file").c_str();
-		if(page::logfile)
-			fclose(page::logfile);
-		page::logfile = fopen(log_file_name, "w");
-		if(not page::logfile)
+		if(page_core::logfile)
+			fclose(page_core::logfile);
+		page_core::logfile = fopen(log_file_name, "w");
+		if(not page_core::logfile)
 			throw except("could not open the log file `%s'", log_file_name);
 		// setup the wayland log handler.
-		wl_log_set_handler_server(&page::log_printf);
+		wl_log_set_handler_server(&page_core::log_printf);
 	}
 
 
@@ -311,9 +316,6 @@ void page::init(int * argc, char *** argv)
 	clutter_wayland_set_compositor_display(dpy);
 
 	clutter_init(argc, argv);
-
-	auto device_manager = clutter_device_manager_get_default();
-	lookup_device_capabilities(device_manager);
 
 	wayland_init();
 
@@ -325,7 +327,7 @@ void page::init(int * argc, char *** argv)
 
 }
 
-void page::run()
+void page_core::run()
 {
 	clutter_main();
 }

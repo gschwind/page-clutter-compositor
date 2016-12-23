@@ -20,12 +20,38 @@
 
 #include "page-seat.hxx"
 
+#include <wayland-server-core.h>
+#include <wayland-server-protocol.h>
+
+#include "page-pointer.hxx"
+#include "page-keyboard.hxx"
+#include "page-touch.hxx"
+
 #include "wl/wl-seat.hxx"
 
 namespace page {
 
-page_seat::page_seat() {
-	// TODO Auto-generated constructor stub
+page_seat::page_seat(uint32_t capabilities) :
+		capabilities{capabilities},
+		seat_name{"default"},
+		pointer{nullptr},
+		keyboard{nullptr},
+		touch{nullptr},
+		global{nullptr}
+{
+
+	if(capabilities&WL_SEAT_CAPABILITY_POINTER) {
+		pointer = new page_pointer();
+	}
+
+	if(capabilities&WL_SEAT_CAPABILITY_KEYBOARD) {
+		keyboard = new page_keyboard();
+	}
+
+	if(capabilities&WL_SEAT_CAPABILITY_TOUCH) {
+		touch = new page_touch();
+	}
+
 
 }
 

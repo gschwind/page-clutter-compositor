@@ -1,7 +1,7 @@
 /*
  * Copyright (2016) Benoit Gschwind
  *
- * page-file.hxx is part of page-compositor.
+ * page-touch.hxx is part of page-compositor.
  *
  * page-compositor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,21 +18,17 @@
  *
  */
 
-#ifndef SRC_PAGE_TYPES_HXX_
-#define SRC_PAGE_TYPES_HXX_
-
-#include "config.hxx"
+#ifndef PAGE_TOUCH_HXX_
+#define PAGE_TOUCH_HXX_
 
 namespace page {
 
-struct page_core;
-struct page_seat;
-struct page_keyboard;
-struct page_pointer;
-struct page_touch;
-struct page_output;
-struct page_output_mode;
+class page_touch {
+public:
+	page_touch();
+	virtual ~page_touch();
+};
 
-}
+} /* namespace page */
 
-#endif /* SRC_PAGE_TYPES_HXX_ */
+#endif /* PAGE_TOUCH_HXX_ */

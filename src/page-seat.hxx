@@ -26,6 +26,7 @@
 
 #include <wayland-server-core.h>
 
+#include "page-types.hxx"
 #include "wl/wl-types.hxx"
 
 namespace page {
@@ -34,10 +35,16 @@ using namespace std;
 
 struct page_seat {
 
+	uint32_t capabilities;
+
 //	struct wl_list base_resource_list;
 //
 	struct wl_global *global;
 	list<wl::wl_seat *> resources;
+
+	page_pointer * pointer;
+	page_keyboard * keyboard;
+	page_touch * touch;
 
 	//	struct weston_pointer *pointer_state;
 //	struct weston_keyboard *keyboard_state;
@@ -69,7 +76,7 @@ struct page_seat {
 	string seat_name;
 
 
-	page_seat();
+	page_seat(uint32_t capabilities);
 	~page_seat();
 
 

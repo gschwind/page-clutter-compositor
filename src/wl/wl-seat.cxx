@@ -37,6 +37,9 @@ wl_seat::wl_seat(page_seat * seat, struct wl_client *client, uint32_t version, u
 		seat{seat}
 {
 
+	send_name(seat->seat_name.c_str());
+	send_capabilities(seat->capabilities);
+
 }
 
 wl_seat::~wl_seat() {
@@ -49,8 +52,10 @@ wl_seat * wl_seat::get(struct wl_resource * r) {
 
 /* wl_seat_vtable */
 void wl_seat::recv_get_pointer(struct wl_client * client, struct wl_resource * resource, uint32_t id) {
-	auto pointer = make_shared<wl_pointer>(client, wl_resource_get_version(resource), id);
-	pointers.push_back(pointer);
+	//auto pointer = make_shared<wl_pointer>(client, wl_resource_get_version(resource), id);
+	//pointers.push_back(pointer);
+
+	new wl_pointer(client, wl_resource_get_version(resource), id);
 
 
 //	/* We use the pointer_state directly, which means we'll
@@ -104,17 +109,23 @@ void wl_seat::recv_get_pointer(struct wl_client * client, struct wl_resource * r
 }
 
 void wl_seat::recv_get_keyboard(struct wl_client * client, struct wl_resource * resource, uint32_t id) {
-	auto keyboard = make_shared<wl_keyboard>(client, wl_resource_get_version(resource), id);
-	keyboards.push_back(keyboard);
+	//auto keyboard = make_shared<wl_keyboard>(client, wl_resource_get_version(resource), id);
+	//keyboards.push_back(keyboard);
+
+	new wl_keyboard(client, wl_resource_get_version(resource), id);
+
 }
 
 void wl_seat::recv_get_touch(struct wl_client * client, struct wl_resource * resource, uint32_t id) {
-	auto touch = make_shared<wl_touch>(client, wl_resource_get_version(resource), id);
-	touchs.push_back(touch);
+	//auto touch = make_shared<wl_touch>(client, wl_resource_get_version(resource), id);
+	//touchs.push_back(touch);
+	new wl_touch(client, wl_resource_get_version(resource), id);
+
 }
 
 void wl_seat::recv_release(struct wl_client * client, struct wl_resource * resource) {
-	/* TODO */
+	/* release is a destructor */
+	wl_resource_destroy(_self_resource);
 }
 
 void wl_seat::delete_resource(struct wl_resource * resource) {

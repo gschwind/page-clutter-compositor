@@ -1,7 +1,7 @@
 /*
  * Copyright (2016) Benoit Gschwind
  *
- * page-file.hxx is part of page-compositor.
+ * wl-output.hxx is part of page-compositor.
  *
  * page-compositor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,21 +18,30 @@
  *
  */
 
-#ifndef SRC_PAGE_TYPES_HXX_
-#define SRC_PAGE_TYPES_HXX_
+#ifndef WL_WL_OUTPUT_HXX_
+#define WL_WL_OUTPUT_HXX_
 
-#include "config.hxx"
+#include "wayland-interface.hxx"
+#include "page-types.hxx"
 
 namespace page {
+namespace wl {
 
-struct page_core;
-struct page_seat;
-struct page_keyboard;
-struct page_pointer;
-struct page_touch;
-struct page_output;
-struct page_output_mode;
+using namespace wcxx;
+
+struct wl_output : public wl_output_vtable {
+	page_output * output;
+
+	wl_output(page_output * output, struct wl_client *client, uint32_t version, uint32_t id);
+	virtual ~wl_output();
+
+	/* wl_output_vtable */
+	virtual void recv_release(struct wl_client * client, struct wl_resource * resource) override;
+	virtual void delete_resource(struct wl_resource * resource) override;
+
+};
 
 }
+} /* namespace page */
 
-#endif /* SRC_PAGE_TYPES_HXX_ */
+#endif /* WL_WL_OUTPUT_HXX_ */
