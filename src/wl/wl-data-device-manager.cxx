@@ -18,7 +18,10 @@
  *
  */
 
-#include <wl/wl-data-device-manager.hxx>
+#include "wl/wl-data-device-manager.hxx"
+
+#include "wl/wl-seat.hxx"
+#include "wl/wl-data-device.hxx"
 
 namespace page {
 namespace wl {
@@ -41,9 +44,10 @@ void wl_data_device_manager::recv_create_data_source(struct wl_client * client, 
 
 }
 
-void wl_data_device_manager::recv_get_data_device(struct wl_client * client, struct wl_resource * resource, uint32_t id, struct wl_resource * seat)
+void wl_data_device_manager::recv_get_data_device(struct wl_client * client, struct wl_resource * resource, uint32_t id, struct wl_resource * seat_resource)
 {
-
+	auto seat = wl_seat::get(seat_resource);
+	new wl_data_device{client, wl_resource_get_version(_self_resource), id, seat};
 }
 
 void wl_data_device_manager::delete_resource(struct wl_resource * resource)

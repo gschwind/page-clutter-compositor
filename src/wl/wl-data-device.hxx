@@ -23,14 +23,17 @@
 
 #include "wayland-interface.hxx"
 
+#include "wl-types.hxx"
+
 namespace page {
 namespace wl {
 
 using namespace wcxx;
 
 struct wl_data_device : private wl_data_device_vtable {
+	wl_seat * seat;
 
-	wl_data_device(struct wl_client *client, uint32_t version, uint32_t id);
+	wl_data_device(struct wl_client *client, uint32_t version, uint32_t id, wl_seat * seat);
 	virtual ~wl_data_device();
 
 	/* wl_data_device_vtable */

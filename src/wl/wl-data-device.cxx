@@ -18,13 +18,16 @@
  *
  */
 
-#include <wl/wl-data-device.hxx>
+#include "wl/wl-data-device.hxx"
+
+#include "wl/wl-seat.hxx"
 
 namespace page {
 namespace wl {
 
-wl_data_device::wl_data_device(struct wl_client *client, uint32_t version, uint32_t id) :
-	wl_data_device_vtable{client, version, id}
+wl_data_device::wl_data_device(struct wl_client *client, uint32_t version, uint32_t id, wl_seat * seat) :
+	wl_data_device_vtable{client, version, id},
+	seat{seat}
 {
 	// TODO Auto-generated constructor stub
 

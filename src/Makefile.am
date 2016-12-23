@@ -28,6 +28,8 @@ BUILT_SOURCES = \
 page_compositor_SOURCES = \
 	wl/wl-data-device-manager.cxx \
 	wl/wl-data-device-manager.hxx \
+	wl/wl-data-device.cxx \
+	wl/wl-data-device.hxx \
 	wl/wl-touch.cxx \
 	wl/wl-touch.hxx \
 	wl/wl-surface.cxx \

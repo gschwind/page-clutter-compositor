@@ -32,8 +32,9 @@
 #include "page-core.hxx"
 #include "wayland-interface.hxx"
 
-#include "wl/wl-seat.hxx"
+#include "wl/wl-compositor.hxx"
 #include "wl/wl-data-device-manager.hxx"
+#include "wl/wl-shell.hxx"
 
 namespace page {
 
@@ -256,7 +257,7 @@ gboolean page_core::event_filter(ClutterEvent const * event)
 
 void page_core::bind_wl_compositor(struct wl_client *client, uint32_t version, uint32_t id)
 {
-
+	new wl::wl_compositor{client, version, id};
 }
 
 void page_core::bind_wl_data_device_manager(struct wl_client *client, uint32_t version, uint32_t id)
@@ -266,7 +267,7 @@ void page_core::bind_wl_data_device_manager(struct wl_client *client, uint32_t v
 
 void page_core::bind_wl_shell(struct wl_client *client, uint32_t version, uint32_t id)
 {
-
+	new wl::wl_shell{client, version, id};
 }
 
 void page_core::main_stage_destroy(ClutterActor *actor)
