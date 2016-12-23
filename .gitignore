@@ -69,4 +69,10 @@ src/config.hxx
 src/config.hxx.in
 src/config.hxx.in~
 src/stamp-h1
+.cproject
+.project
+.settings/
+src/wl/.deps/
+src/wl/.dirstamp
+
 
