@@ -41,6 +41,7 @@ struct wl_shell_surface;
 struct wl_output;
 struct wl_subsurface;
 struct wl_subcompositor;
+struct wl_surface_state;
 
 }
 }

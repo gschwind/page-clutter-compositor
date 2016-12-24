@@ -30,78 +30,13 @@
 #include "signals.hxx"
 #include "wayland-interface.hxx"
 #include "wl-types.hxx"
+#include "wl/wl-surface-state.hxx"
 
 namespace page {
 namespace wl {
 
 using namespace std;
 using namespace wcxx;
-
-struct wl_buffer_viewport {
-	struct {
-		/* wl_surface.set_buffer_transform */
-		uint32_t transform;
-
-		/* wl_surface.set_scaling_factor */
-		int32_t scale;
-
-		/*
-		 * If src_width != wl_fixed_from_int(-1),
-		 * then and only then src_* are used.
-		 */
-		wl_fixed_t src_x, src_y;
-		wl_fixed_t src_width, src_height;
-	} buffer;
-
-	struct {
-		/*
-		 * If width == -1, the size is inferred from the buffer.
-		 */
-		int32_t width, height;
-	} surface;
-
-	int changed;
-};
-
-struct wl_surface_state {
-//	/* wl_surface.attach */
-	bool newly_attached;
-	wl_buffer * buffer;
-	slot buffer_destroy_listener;
-
-	/* This define how the surface is moved regarding the current position */
-	int32_t new_buffer_relative_position_x;
-	int32_t new_buffer_relative_position_y;
-
-	/* wl_surface.damage */
-	cairo_region_t * damage_surface;
-	/* wl_surface.damage_buffer */
-	cairo_region_t * damage_buffer;
-
-	/* wl_surface.set_opaque_region */
-	cairo_region_t * opaque_region;
-
-	/* wl_surface.set_input_region */
-	cairo_region_t * input_region;
-
-	/* wl_surface.frame */
-	list<wl_callback*> frame_callback_list;
-//
-//	/* presentation.feedback */
-//	struct wl_list feedback_list;
-//
-//	/* wl_surface.set_buffer_transform */
-//	/* wl_surface.set_scaling_factor */
-//	/* wp_viewport.set_source */
-//	/* wp_viewport.set_destination */
-	wl_buffer_viewport buffer_viewport;
-
-	double scale;
-
-	wl_surface_state();
-	void on_buffer_destroy(wl_buffer * buffer);
-
-};
 
 struct wl_surface : public wl_surface_vtable {
 	wl_compositor * compositor;
@@ -216,6 +151,9 @@ struct wl_surface : public wl_surface_vtable {
 
 	static wl_surface * get(struct wl_resource *r);
 	void state_set_buffer(wl_surface_state * state, wl_buffer * buffer);
+	void commit_state(wl_surface_state & state);
+	void synchronize_subsurface_stack();
+	void commit_synchronized_state_recursively();
 
 	/* wl_surface_vtable */
 	virtual void recv_destroy(struct wl_client * client, struct wl_resource * resource) override;

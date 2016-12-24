@@ -10,6 +10,7 @@ AM_CXXFLAGS =  \
 	-DDATADIR='"$(datadir)"' \
 	-std=c++11 \
 	-rdynamic \
+	@LTO@ \
 	@CLUTTER_CFLAGS@ \
 	@WAYLAND_CFLAGS@ \
 	@PIXMAN_CFLAGS@ \
@@ -28,6 +29,7 @@ AM_CFLAGS =  \
 	-DDATADIR='"$(datadir)"' \
 	-std=c11 \
 	-rdynamic \
+	@LTO@ \
 	@CLUTTER_CFLAGS@ \
 	@WAYLAND_CFLAGS@ \
 	@PIXMAN_CFLAGS@ \
@@ -75,6 +77,8 @@ page_compositor_SOURCES = \
 	wl/wl-touch.hxx \
 	wl/wl-surface.cxx \
 	wl/wl-surface.hxx \
+	wl/wl-surface-state.cxx \
+	wl/wl-surface-state.hxx \
 	wl/wl-shell.cxx \
 	wl/wl-shell.hxx \
 	wl/wl-shell-surface.cxx \

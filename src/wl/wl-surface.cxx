@@ -35,31 +35,6 @@
 namespace page {
 namespace wl {
 
-using namespace std;
-
-wl_surface_state::wl_surface_state() :
-		newly_attached{0},
-		buffer{nullptr},
-		new_buffer_relative_position_x{0},
-		new_buffer_relative_position_y{0},
-		damage_surface{nullptr},
-		damage_buffer{nullptr},
-		opaque_region{nullptr},
-		input_region{nullptr},
-		scale{1}
-{
-
-	opaque_region = cairo_region_create();
-	input_region = cairo_region_create_infini();
-
-}
-
-void wl_surface_state::on_buffer_destroy(wl_buffer * b) {
-	assert(buffer == b);
-	buffer = nullptr;
-	buffer_destroy_listener.reset();
-}
-
 wl_surface::wl_surface(wl_compositor * compositor, struct wl_client *client, uint32_t version, uint32_t id) :
 	wl_surface_vtable{client, version, id},
 	compositor{compositor},
@@ -87,19 +62,87 @@ wl_surface * wl_surface::get(struct wl_resource *r) {
 	return dynamic_cast<wl_surface*>(resource_get<wl_surface_vtable>(r));
 }
 
-void wl_surface::state_set_buffer(wl_surface_state * state, wl_buffer * buffer) {
-	if(state->buffer == buffer)
-		return;
+void wl_surface::commit_state(wl_surface_state & state) {
 
-	if(not buffer) {
-		state->buffer = nullptr;
-		state->buffer_destroy_listener.reset();
-	} else {
-		state->buffer = buffer;
-		state->buffer_destroy_listener =
-				buffer->destroy_signal.connect(&pending, &wl_surface_state::on_buffer_destroy);
+	if(state.buffer)
+		state.buffer->incr_use_count();
+	if(buffer)
+		buffer->decr_use_count();
+	buffer = state.buffer;
+	state.buffer = nullptr;
+
+	if(buffer) {
+		auto texture = buffer->ensure_texture();
+		meta_surface_actor_wayland_set_texture(META_SURFACE_ACTOR_WAYLAND(actor), texture);
+
+		if(state.damage_surface)
+			buffer->process_damage(state.damage_surface);
+
 	}
 
+	/* clear damages */
+	if(state.damage_surface) {
+		cairo_region_destroy(state.damage_surface);
+		state.damage_surface = nullptr;
+	}
+
+	if(input_region != state.input_region) {
+		cairo_region_destroy(input_region);
+		input_region = state.input_region;
+		cairo_region_reference(input_region);
+	}
+
+	if(opaque_region != state.opaque_region) {
+		cairo_region_destroy(opaque_region);
+		opaque_region = state.opaque_region;
+		cairo_region_reference(opaque_region);
+	}
+
+	frame_callback_list.splice(frame_callback_list.end(), frame_callback_list,
+			state.frame_callback_list.begin(), state.frame_callback_list.end());
+
+	/* this sync the current surface state to the actor */
+	meta_surface_actor_wayland_sync_state (META_SURFACE_ACTOR_WAYLAND(actor));
+
+}
+
+void wl_surface::synchronize_subsurface_stack()
+{ // resync child stack
+	auto iter = subsurface_list.begin();
+	for(auto x: subsurface_pending_list) {
+		auto pos = std::find(iter, subsurface_list.end(), x);
+		if((pos == iter) and (iter != subsurface_list.end())) { /* found at the same position */
+			++iter;
+			continue;
+		} else if(pos == subsurface_list.end()) { // not found
+			clutter_actor_insert_child_below(CLUTTER_ACTOR(actor),
+					CLUTTER_ACTOR(x->surface->actor),
+					CLUTTER_ACTOR((*iter)->surface->actor));
+			subsurface_list.insert(iter, x);
+		} else { /* found at another position */
+			clutter_actor_set_child_below_sibling(CLUTTER_ACTOR(actor),
+					CLUTTER_ACTOR(x->surface->actor),
+					CLUTTER_ACTOR((*iter)->surface->actor));
+			subsurface_list.splice(iter, subsurface_list, pos);
+		}
+	}
+}
+
+void wl_surface::commit_synchronized_state_recursively()
+{
+	/* select the state to commit */
+	if(subsurface) {
+		if(subsurface->is_synchronized() and subsurface->has_pending_state) {
+			commit_state(subsurface->synchronized_pending_state);
+			subsurface->has_pending_state = false;
+		}
+	} else {
+		commit_state(pending);
+	}
+
+	for(auto x: subsurface_list) {
+		subsurface->surface->commit_synchronized_state_recursively();
+	}
 }
 
 void wl_surface::recv_destroy(struct wl_client * client, struct wl_resource * resource) {
@@ -119,7 +162,7 @@ void wl_surface::recv_attach(struct wl_client * client, struct wl_resource * res
 
 	/* Attach, attach, without commit in between does not send
 	 * wl_buffer.release. */
-	state_set_buffer(&pending, buffer);
+	pending.set_buffer(buffer);
 
 	pending.new_buffer_relative_position_x = x;
 	pending.new_buffer_relative_position_y = y;
@@ -176,105 +219,25 @@ void wl_surface::recv_set_input_region(struct wl_client * client, struct wl_reso
 void wl_surface::recv_commit(struct wl_client * client, struct wl_resource * resource){
 	printf("call %s (%p)", __PRETTY_FUNCTION__, this);
 
-//	struct weston_surface *surface = wl_resource_get_user_data(resource);
-//	struct weston_subsurface *sub = weston_surface_to_subsurface(surface);
-//
-//	if (!weston_surface_is_pending_viewport_source_valid(surface)) {
-//		assert(surface->viewport_resource);
-//
-//		wl_resource_post_error(surface->viewport_resource,
-//			WP_VIEWPORT_ERROR_OUT_OF_BUFFER,
-//			"wl_surface@%d has viewport source outside buffer",
-//			wl_resource_get_id(resource));
-//		return;
-//	}
-//
-//	if (!weston_surface_is_pending_viewport_dst_size_int(surface)) {
-//		assert(surface->viewport_resource);
-//
-//		wl_resource_post_error(surface->viewport_resource,
-//			WP_VIEWPORT_ERROR_BAD_SIZE,
-//			"wl_surface@%d viewport dst size not integer",
-//			wl_resource_get_id(resource));
-//		return;
-//	}
-//
-//	if (sub) {
-//		weston_subsurface_commit(sub);
-//		return;
-//	}
-//
-//	weston_surface_commit(surface);
-//
-//	wl_list_for_each(sub, &surface->subsurface_list, parent_link) {
-//		if (sub->surface != surface)
-//			weston_subsurface_parent_commit(sub, 0);
-//	}
-
-	{ // resync child stack
-		auto iter = subsurface_list.begin();
-		for(auto x: subsurface_pending_list) {
-			auto pos = std::find(iter, subsurface_list.end(), x);
-			if((pos == iter) and (iter != subsurface_list.end())) { /* found at the same position */
-				++iter;
-				continue;
-			} else if(pos == subsurface_list.end()) { // not found
-				clutter_actor_insert_child_below(CLUTTER_ACTOR(actor),
-						CLUTTER_ACTOR(x->surface->actor),
-						CLUTTER_ACTOR((*iter)->surface->actor));
-				subsurface_list.insert(iter, x);
-			} else { /* found at another position */
-				clutter_actor_set_child_below_sibling(CLUTTER_ACTOR(actor),
-						CLUTTER_ACTOR(x->surface->actor),
-						CLUTTER_ACTOR((*iter)->surface->actor));
-				subsurface_list.splice(iter, subsurface_list, pos);
-			}
-		}
-	}
+	/* this subsurface properties are always commited on commit */
+	synchronize_subsurface_stack();
 
 	if(subsurface) {
 		subsurface->commit();
+		/*
+		 * if the subsurface is synchronized, we have to wait for the parent
+		 * commit. Else we commit imediatly.
+		 */
+		if(subsurface->is_synchronized()) {
+			subsurface->commit_state(pending);
+		} else {
+			commit_state(pending);
+		}
+	} else {
+
+		/* when commited we may need to propagate commit */
+		commit_synchronized_state_recursively();
 	}
-
-	if(pending.buffer)
-		pending.buffer->incr_use_count();
-	if(buffer)
-		buffer->decr_use_count();
-	buffer = pending.buffer;
-	pending.buffer = nullptr;
-
-	if(buffer) {
-		auto texture = buffer->ensure_texture();
-		meta_surface_actor_wayland_set_texture(META_SURFACE_ACTOR_WAYLAND(actor), texture);
-
-		if(pending.damage_surface)
-			buffer->process_damage(pending.damage_surface);
-
-	}
-
-	/* clear damages */
-	if(pending.damage_surface) {
-		cairo_region_destroy(pending.damage_surface);
-		pending.damage_surface = nullptr;
-	}
-
-	if(input_region != pending.input_region) {
-		cairo_region_destroy(input_region);
-		input_region = pending.input_region;
-		cairo_region_reference(input_region);
-	}
-
-	if(opaque_region != pending.opaque_region) {
-		cairo_region_destroy(opaque_region);
-		opaque_region = pending.opaque_region;
-		cairo_region_reference(opaque_region);
-	}
-
-	frame_callback_list.splice(frame_callback_list.end(), frame_callback_list,
-			pending.frame_callback_list.begin(), pending.frame_callback_list.end());
-
-	/* this sync the current surface state to the actor */
-	meta_surface_actor_wayland_sync_state (META_SURFACE_ACTOR_WAYLAND(actor));
 
 }
 
@@ -289,8 +252,9 @@ void wl_surface::recv_set_buffer_transform(struct wl_client * client, struct wl_
 		return;
 	}
 
-	pending.buffer_viewport.buffer.transform = transform;
-	pending.buffer_viewport.changed = 1;
+	// TODO
+	//pending.buffer_viewport.buffer.transform = transform;
+	//pending.buffer_viewport.changed = 1;
 }
 
 void wl_surface::recv_set_buffer_scale(struct wl_client * client, struct wl_resource * resource, int32_t scale) {
@@ -303,8 +267,9 @@ void wl_surface::recv_set_buffer_scale(struct wl_client * client, struct wl_reso
 		return;
 	}
 
-	pending.buffer_viewport.buffer.scale = scale;
-	pending.buffer_viewport.changed = 1;
+	// TODO
+	//pending.buffer_viewport.buffer.scale = scale;
+	//pending.buffer_viewport.changed = 1;
 
 }
 
