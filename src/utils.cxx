@@ -22,6 +22,16 @@
 
 namespace page {
 
+cairo_region_t * cairo_region_create_infini()
+{
+	cairo_rectangle_int_t rect = {
+			numeric_limits<int>::min(), numeric_limits<int>::min(),
+			numeric_limits<int>::max(), numeric_limits<int>::max()
+	};
+	return cairo_region_create_rectangle(&rect);
+}
+
+
 }
 
 

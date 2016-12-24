@@ -47,6 +47,9 @@ wl_surface_state::wl_surface_state() :
 		scale{1}
 {
 
+	opaque_region = cairo_region_create();
+	input_region = cairo_region_create_infini();
+
 }
 
 void wl_surface_state::on_buffer_destroy(wl_buffer * b) {
@@ -57,13 +60,19 @@ void wl_surface_state::on_buffer_destroy(wl_buffer * b) {
 
 wl_surface::wl_surface(wl_compositor * compositor, struct wl_client *client, uint32_t version, uint32_t id) :
 	wl_surface_vtable{client, version, id},
-	compositor{compositor}
+	compositor{compositor},
+	buffer{nullptr}
 {
 	/* NOTE: following the source of clutter surface is not used by clutter,
 	 * this is just user data that can be retrieved by 	clutter_wayland_stage_get_wl_surface() */
 	actor = meta_surface_actor_wayland_new(this);
-	pending.damage_surface = nullptr;
-	pending.buffer = nullptr;
+
+	buffer = nullptr;
+
+	cairo_region_reference(pending.opaque_region);
+	opaque_region = pending.opaque_region;
+	cairo_region_reference(pending.input_region);
+	input_region = pending.input_region;
 
 }
 
@@ -157,11 +166,7 @@ void wl_surface::recv_set_input_region(struct wl_client * client, struct wl_reso
 		auto region = wl_region::get(region_resource);
 		pending.input_region = cairo_region_copy(region->_region);
 	} else {
-		cairo_rectangle_int_t rect = {
-				numeric_limits<int>::min(), numeric_limits<int>::min(),
-				numeric_limits<int>::max(), numeric_limits<int>::max()
-		};
-		pending.input_region = cairo_region_create_rectangle(&rect);
+		pending.input_region = cairo_region_create_infini();
 	}
 }
 
@@ -203,17 +208,44 @@ void wl_surface::recv_commit(struct wl_client * client, struct wl_resource * res
 //			weston_subsurface_parent_commit(sub, 0);
 //	}
 
-	if(!pending.buffer)
-		return;
+	if(pending.buffer)
+		pending.buffer->incr_use_count();
+	if(buffer)
+		buffer->decr_use_count();
+	buffer = pending.buffer;
+	pending.buffer = nullptr;
 
-    auto texture = pending.buffer->ensure_texture();
-    meta_surface_actor_wayland_set_texture(META_SURFACE_ACTOR_WAYLAND(actor), texture);
+	if(buffer) {
+		auto texture = buffer->ensure_texture();
+		meta_surface_actor_wayland_set_texture(META_SURFACE_ACTOR_WAYLAND(actor), texture);
 
+		if(pending.damage_surface)
+			buffer->process_damage(pending.damage_surface);
+
+	}
+
+	/* clear damages */
 	if(pending.damage_surface) {
-		pending.buffer->process_damage(pending.damage_surface);
 		cairo_region_destroy(pending.damage_surface);
 		pending.damage_surface = nullptr;
 	}
+
+	if(input_region != pending.input_region) {
+		cairo_region_destroy(input_region);
+		input_region = pending.input_region;
+		cairo_region_reference(input_region);
+	}
+
+	if(opaque_region != pending.opaque_region) {
+		cairo_region_destroy(opaque_region);
+		opaque_region = pending.opaque_region;
+		cairo_region_reference(opaque_region);
+	}
+
+	frame_callback_list.splice(frame_callback_list.end(), frame_callback_list,
+			pending.frame_callback_list.begin(), pending.frame_callback_list.end());
+
+	  meta_surface_actor_wayland_sync_state (META_SURFACE_ACTOR_WAYLAND(actor));
 
 }
 

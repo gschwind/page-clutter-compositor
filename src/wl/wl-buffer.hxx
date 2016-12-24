@@ -24,7 +24,7 @@
 #include <cogl/cogl.h>
 #include <cairo/cairo.h>
 
-#include "utils.hxx"
+#include "signals.hxx"
 #include "wayland-interface.hxx"
 #include "wl-listener.hxx"
 
@@ -38,19 +38,24 @@ using namespace wcxx;
  */
 struct wl_buffer {
 	struct wl_resource * _self_resource;
-
-	CoglTexture *texture;
-
+	CoglTexture * texture;
 	signal<wl_buffer*> destroy_signal;
-
 	/* a listener used by the compositor to know when this buffer will be destroyed */
 	wl_listener_t<struct wl_resource> destroy_listener;
+	int use_count;
 
 	wl_buffer(struct wl_resource * resource);
 	~wl_buffer();
 
+	/* wl create the CoglTexture */
 	CoglTexture * ensure_texture();
+
+	/* commit damage to the texture */
 	void process_damage(cairo_region_t * region);
+
+	/* increment/decrement use count, when the use count rech 0 a release event is sent */
+	void incr_use_count();
+	void decr_use_count();
 
 };
 

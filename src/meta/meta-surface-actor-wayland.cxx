@@ -364,7 +364,7 @@ meta_surface_actor_wayland_paint (ClutterActor *actor)
 
   if (priv->surface) {
       auto core = priv->surface->compositor->core;
-      auto &callback = priv->surface->pending.frame_callback_list;
+      auto &callback = priv->surface->frame_callback_list;
       core->frame_callback_queue.splice(core->frame_callback_queue.end(), callback);
   }
 

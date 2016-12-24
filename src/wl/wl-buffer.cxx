@@ -23,14 +23,15 @@
 #include <cogl/cogl.h>
 #include <cogl/cogl-wayland-server.h>
 #include <clutter/clutter.h>
-
+#include <cassert>
 
 namespace page {
 namespace wl {
 
 wl_buffer::wl_buffer(struct wl_resource * resource) :
 	_self_resource{resource},
-	texture{nullptr}
+	texture{nullptr},
+	use_count{0}
 {
 	// TODO Auto-generated constructor stub
 
@@ -102,6 +103,18 @@ void wl_buffer::process_damage(cairo_region_t * region)
 		}
 
 		wl_shm_buffer_end_access(shm_buffer);
+	}
+}
+
+void wl_buffer::incr_use_count()
+{
+	++use_count;
+}
+void wl_buffer::decr_use_count()
+{
+	assert(use_count > 0);
+	if(--use_count == 0) {
+		wl_buffer_send_release(_self_resource);
 	}
 }
 

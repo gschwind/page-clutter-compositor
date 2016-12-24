@@ -27,7 +27,7 @@
 
 #include "meta/meta-surface-actor-wayland.hxx"
 
-#include "utils.hxx"
+#include "signals.hxx"
 #include "wayland-interface.hxx"
 #include "wl-types.hxx"
 
@@ -104,6 +104,12 @@ struct wl_surface_state {
 struct wl_surface : public wl_surface_vtable {
 	wl_compositor * compositor;
 	MetaSurfaceActor * actor;
+
+	/* current state of the surface */
+	wl_buffer * buffer;
+	cairo_region_t * input_region;
+	cairo_region_t * opaque_region;
+	list<wl_callback*> frame_callback_list;
 
 //	struct wl_resource *resource;
 //	struct wl_signal destroy_signal; /* callback argument: this surface */
