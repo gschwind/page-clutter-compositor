@@ -68,8 +68,10 @@ struct wl_surface_state {
 	bool newly_attached;
 	wl_buffer * buffer;
 	slot buffer_destroy_listener;
-	int32_t sx;
-	int32_t sy;
+
+	/* This define how the surface is moved regarding the current position */
+	int32_t new_buffer_relative_position_x;
+	int32_t new_buffer_relative_position_y;
 
 	/* wl_surface.damage */
 	cairo_region_t * damage_surface;
@@ -110,6 +112,14 @@ struct wl_surface : public wl_surface_vtable {
 	cairo_region_t * input_region;
 	cairo_region_t * opaque_region;
 	list<wl_callback*> frame_callback_list;
+
+	wl_subsurface * subsurface;
+
+	/* Parent's list of its sub-surfaces, weston_subsurface:parent_link.
+	 * Contains also the parent itself as a dummy weston_subsurface,
+	 * if the list is not empty. */
+	list<wl_subsurface *> subsurface_list;
+	list<wl_subsurface *> subsurface_pending_list;
 
 //	struct wl_resource *resource;
 //	struct wl_signal destroy_signal; /* callback argument: this surface */

@@ -40,6 +40,7 @@
 #include "wl/wl-output.hxx"
 #include "wl/wl-surface.hxx"
 #include "wl/wl-buffer.hxx"
+#include "wl/wl-subsurface.hxx"
 
 #include "page-core.hxx"
 #include "page-output.hxx"
@@ -173,11 +174,10 @@ meta_surface_actor_wayland_sync_subsurface_state (MetaSurfaceActorWayland *self)
 {
   wl::wl_surface *surface = meta_surface_actor_wayland_get_surface (self);
   MetaWindow *window;
-  /* TODO subsurface */
 //  int x = surface->offset_x + surface->sub.x;
 //  int y = surface->offset_y + surface->sub.y;
-  int x = 0;
-  int y = 0;
+  int x = surface->subsurface->offset_x;
+  int y = surface->subsurface->offset_y;
   logical_to_actor_position (self, &x, &y);
   clutter_actor_set_position (CLUTTER_ACTOR (self), x, y);
 }
@@ -237,7 +237,8 @@ meta_surface_actor_wayland_sync_state (MetaSurfaceActorWayland *self)
       meta_surface_actor_set_opaque_region (META_SURFACE_ACTOR (self), NULL);
     }
 
-  meta_surface_actor_wayland_sync_subsurface_state (self);
+  if(surface->subsurface)
+    meta_surface_actor_wayland_sync_subsurface_state (self);
 }
 
 void

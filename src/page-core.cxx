@@ -36,6 +36,7 @@
 #include "wl/wl-data-device-manager.hxx"
 #include "wl/wl-shell.hxx"
 #include "wl/wl-callback.hxx"
+#include "wl/wl-subcompositor.hxx"
 
 namespace page {
 
@@ -59,6 +60,10 @@ static void wrapper_bind_wl_data_device_manager(struct wl_client *client, void *
 
 static void wrapper_bind_wl_shell(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
 	reinterpret_cast<page_core*>(data)->bind_wl_shell(client, version, id);
+}
+
+static void wrapper_bind_wl_subcompositor(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
+	reinterpret_cast<page_core*>(data)->bind_wl_subcompositor(client, version, id);
 }
 
 static void wrapper_main_stage_destroy(ClutterActor *actor, gpointer user_data)
@@ -289,6 +294,11 @@ void page_core::bind_wl_data_device_manager(struct wl_client *client, uint32_t v
 void page_core::bind_wl_shell(struct wl_client *client, uint32_t version, uint32_t id)
 {
 	new wl::wl_shell{client, version, id, this};
+}
+
+void bind_wl_subcompositor(struct wl_client *client, uint32_t version, uint32_t id)
+{
+	new wl::wl_subcompositor{client, version, id};
 }
 
 void page_core::after_stage_paint(ClutterStage * stage) {

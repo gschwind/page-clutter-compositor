@@ -20,6 +20,7 @@
 
 #include "wl-surface.hxx"
 
+#include <algorithm>
 #include <limits>
 #include <cassert>
 #include <wayland-server-protocol.h>
@@ -29,6 +30,7 @@
 #include "wl-buffer.hxx"
 #include "wl-region.hxx"
 #include "wl-callback.hxx"
+#include "wl-subsurface.hxx"
 
 namespace page {
 namespace wl {
@@ -38,8 +40,8 @@ using namespace std;
 wl_surface_state::wl_surface_state() :
 		newly_attached{0},
 		buffer{nullptr},
-		sx{0},
-		sy{0},
+		new_buffer_relative_position_x{0},
+		new_buffer_relative_position_y{0},
 		damage_surface{nullptr},
 		damage_buffer{nullptr},
 		opaque_region{nullptr},
@@ -61,7 +63,8 @@ void wl_surface_state::on_buffer_destroy(wl_buffer * b) {
 wl_surface::wl_surface(wl_compositor * compositor, struct wl_client *client, uint32_t version, uint32_t id) :
 	wl_surface_vtable{client, version, id},
 	compositor{compositor},
-	buffer{nullptr}
+	buffer{nullptr},
+	subsurface{nullptr}
 {
 	/* NOTE: following the source of clutter surface is not used by clutter,
 	 * this is just user data that can be retrieved by 	clutter_wayland_stage_get_wl_surface() */
@@ -118,8 +121,8 @@ void wl_surface::recv_attach(struct wl_client * client, struct wl_resource * res
 	 * wl_buffer.release. */
 	state_set_buffer(&pending, buffer);
 
-	pending.sx = x;
-	pending.sy = y;
+	pending.new_buffer_relative_position_x = x;
+	pending.new_buffer_relative_position_y = y;
 	pending.newly_attached = true;
 }
 
@@ -208,6 +211,31 @@ void wl_surface::recv_commit(struct wl_client * client, struct wl_resource * res
 //			weston_subsurface_parent_commit(sub, 0);
 //	}
 
+	{ // resync child stack
+		auto iter = subsurface_list.begin();
+		for(auto x: subsurface_pending_list) {
+			auto pos = std::find(iter, subsurface_list.end(), x);
+			if((pos == iter) and (iter != subsurface_list.end())) { /* found at the same position */
+				++iter;
+				continue;
+			} else if(pos == subsurface_list.end()) { // not found
+				clutter_actor_insert_child_below(CLUTTER_ACTOR(actor),
+						CLUTTER_ACTOR(x->surface->actor),
+						CLUTTER_ACTOR((*iter)->surface->actor));
+				subsurface_list.insert(iter, x);
+			} else { /* found at another position */
+				clutter_actor_set_child_below_sibling(CLUTTER_ACTOR(actor),
+						CLUTTER_ACTOR(x->surface->actor),
+						CLUTTER_ACTOR((*iter)->surface->actor));
+				subsurface_list.splice(iter, subsurface_list, pos);
+			}
+		}
+	}
+
+	if(subsurface) {
+		subsurface->commit();
+	}
+
 	if(pending.buffer)
 		pending.buffer->incr_use_count();
 	if(buffer)
@@ -245,7 +273,8 @@ void wl_surface::recv_commit(struct wl_client * client, struct wl_resource * res
 	frame_callback_list.splice(frame_callback_list.end(), frame_callback_list,
 			pending.frame_callback_list.begin(), pending.frame_callback_list.end());
 
-	  meta_surface_actor_wayland_sync_state (META_SURFACE_ACTOR_WAYLAND(actor));
+	/* this sync the current surface state to the actor */
+	meta_surface_actor_wayland_sync_state (META_SURFACE_ACTOR_WAYLAND(actor));
 
 }
 

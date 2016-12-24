@@ -95,6 +95,10 @@ page_compositor_SOURCES = \
 	wl/wl-callback.hxx \
 	wl/wl-output.cxx \
 	wl/wl-output.hxx \
+	wl/wl-subcompositor.cxx \
+	wl/wl-subcompositor.hxx \
+	wl/wl-subsurface.cxx \
+	wl/wl-subsurface.hxx \
 	page-core.cxx \
 	page-core.hxx \
 	page-seat.cxx \

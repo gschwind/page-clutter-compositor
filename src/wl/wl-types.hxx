@@ -39,6 +39,8 @@ struct wl_touch;
 struct wl_callback;
 struct wl_shell_surface;
 struct wl_output;
+struct wl_subsurface;
+struct wl_subcompositor;
 
 }
 }
