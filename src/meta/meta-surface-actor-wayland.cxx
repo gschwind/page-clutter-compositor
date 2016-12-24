@@ -198,7 +198,7 @@ meta_surface_actor_wayland_sync_state (MetaSurfaceActorWayland *self)
   clutter_actor_set_scale (CLUTTER_ACTOR (stex), texture_scale, texture_scale);
 
   /* Input region */
-  if (surface->pending.input_region)
+  if (surface->input_region)
     {
       cairo_region_t *scaled_input_region;
       int region_scale;
@@ -207,7 +207,7 @@ meta_surface_actor_wayland_sync_state (MetaSurfaceActorWayland *self)
        * coordinate space, while the surface actor input region is in the
        * physical pixel coordinate space. */
       region_scale = (int)(surface->pending.scale * texture_scale);
-      scaled_input_region = meta_region_scale (surface->pending.input_region,
+      scaled_input_region = meta_region_scale (surface->input_region,
                                                region_scale);
       meta_surface_actor_set_input_region (META_SURFACE_ACTOR (self),
                                            scaled_input_region);
@@ -219,14 +219,14 @@ meta_surface_actor_wayland_sync_state (MetaSurfaceActorWayland *self)
     }
 
   /* Opaque region */
-  if (surface->pending.opaque_region)
+  if (surface->opaque_region)
     {
       cairo_region_t *scaled_opaque_region;
 
       /* The opaque region from the Wayland surface is in Wayland surface
        * coordinate space, while the surface actor opaque region is in the
        * same coordinate space as the unscaled buffer texture. */
-      scaled_opaque_region = meta_region_scale (surface->pending.opaque_region,
+      scaled_opaque_region = meta_region_scale (surface->opaque_region,
                                                 surface->pending.scale);
       meta_surface_actor_set_opaque_region (META_SURFACE_ACTOR (self),
                                             scaled_opaque_region);
