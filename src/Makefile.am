@@ -173,6 +173,10 @@ clean-local:
 	rm -f xdg-shell-unstable-v5-server-protocol.h
 	rm -f xdg-shell-unstable-v5-interface.cxx
 	rm -f xdg-shell-unstable-v5-interface.hxx
+	rm -f xdg-shell-unstable-v6-protocol.c
+	rm -f xdg-shell-unstable-v6-server-protocol.h
+	rm -f xdg-shell-unstable-v6-interface.cxx
+	rm -f xdg-shell-unstable-v6-interface.hxx
 	rm -f wayland-interface.cxx
 	rm -f wayland-interface.hxx
 
