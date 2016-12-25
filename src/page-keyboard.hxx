@@ -41,6 +41,10 @@ struct page_keyboard {
 
 	wl::wl_surface * focus_surface;
 	uint32_t focus_serial;
+	uint32_t key_serial;
+
+	page_keyboard_grab * grab;
+	page_keyboard_grab * default_grab;
 
 //	struct weston_keyboard_grab *grab;
 //	struct weston_keyboard_grab default_grab;
@@ -70,7 +74,10 @@ struct page_keyboard {
 	page_keyboard(page_seat * seat);
 	~page_keyboard();
 
-	void handle_keyboard_event(ClutterEvent const & event);
+	bool handle_keyboard_event(ClutterKeyEvent const & event);
+	bool broadcast_key(uint32_t time, uint32_t key, uint32_t state);
+	void broadcast_modifiers();
+
 	void register_keyboard(wl::wl_keyboard * keyboard);
 	void unregister_keyboard(wl::wl_keyboard * keyboard);
 

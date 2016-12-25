@@ -306,7 +306,7 @@ gboolean page_core::event_filter(ClutterEvent const * event)
 		break;
 	case CLUTTER_KEY_PRESS:
 	case CLUTTER_KEY_RELEASE:
-		seat->keyboard->handle_keyboard_event(*event);
+		seat->keyboard->handle_keyboard_event(*reinterpret_cast<ClutterKeyEvent const *>(event));
 		break;
 	case CLUTTER_NOTHING:
 		break;

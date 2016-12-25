@@ -33,6 +33,7 @@ struct page_touch;
 struct page_output;
 struct page_output_mode;
 struct page_pointer_grab;
+struct page_keyboard_grab;
 
 }
 

@@ -24,16 +24,21 @@
 
 #include <algorithm>
 
+#include "page-default-keyboard-grab.hxx"
 #include "wl/wl-keyboard.hxx"
+#include "wl/wl-surface.hxx"
 
 namespace page {
 
 page_keyboard::page_keyboard(page_seat * seat) :
 		focus_surface{nullptr},
 		focus_serial{0},
+		key_serial{0},
 		seat{seat}
 {
-	// TODO Auto-generated constructor stub
+
+	default_grab = new page_default_keyboard_grab{this};
+	grab = default_grab;
 
 }
 
@@ -41,8 +46,69 @@ page_keyboard::~page_keyboard() {
 	// TODO Auto-generated destructor stub
 }
 
-void page_keyboard::handle_keyboard_event(ClutterEvent const & event)
+bool page_keyboard::handle_keyboard_event(ClutterKeyEvent const & event)
 {
+	bool is_press = event.type == CLUTTER_KEY_PRESS;
+	bool handled;
+
+	/* Synthetic key events are for autorepeat. Ignore those, as
+	 * autorepeat in Wayland is done on the client side. */
+	if (event.flags & CLUTTER_EVENT_FLAG_SYNTHETIC)
+		return false;
+
+	//meta_verbose("Handling key %s event code %d\n",
+	//		is_press ? "press" : "release", event->hardware_keycode);
+
+//	handled = notify_key(keyboard, (const ClutterEvent *) event);
+
+//	if (handled)
+//		meta_verbose("Sent event to wayland client\n");
+//	else
+//		meta_verbose(
+//				"No wayland surface is focused, continuing normal operation\n");
+
+//	if (keyboard->mods_changed != 0) {
+//		notify_modifiers (keyboard);
+//		keyboard->mods_changed = 0;
+//	}
+
+	return handled;
+}
+
+/* This fonction eat the key events if we have a focused surface. */
+bool page_keyboard::broadcast_key(uint32_t time, uint32_t key, uint32_t state)
+{
+	auto client = wl_resource_get_client(focus_surface->_self_resource);
+	auto range = client_keyboards.equal_range(client);
+
+	if (range.first == range.second)
+		return focus_surface != nullptr;
+
+	auto display = wl_client_get_display(client);
+
+	key_serial = wl_display_next_serial(display);
+	for (auto i = range.first; i != range.second; ++i) {
+		i->second->send_key(key_serial, time, key, state);
+	}
+
+	return focus_surface != nullptr;
+}
+
+void page_keyboard::broadcast_modifiers()
+{
+	auto client = wl_resource_get_client(focus_surface->_self_resource);
+	auto range = client_keyboards.equal_range(client);
+
+	if (range.first == range.second)
+		return;
+
+	auto display = wl_client_get_display(client);
+	uint32_t serial = wl_display_next_serial(display);
+
+	for (auto i = range.first; i != range.second; ++i) {
+		/* TODO */
+		//i->second->send_modifiers(serial, time, key, state);
+	}
 
 }
 
