@@ -41,18 +41,20 @@ wl_surface::wl_surface(wl_compositor * compositor, struct wl_client *client, uin
 	wl_surface_vtable{client, version, id},
 	compositor{compositor},
 	buffer{nullptr},
-	subsurface{nullptr}
+	subsurface{nullptr},
+	width{-1},
+	height{-1}
 {
 	/* NOTE: following the source of clutter surface is not used by clutter,
 	 * this is just user data that can be retrieved by 	clutter_wayland_stage_get_wl_surface() */
 	actor = meta_surface_actor_wayland_new(this);
 
-	buffer = nullptr;
+	/* If the surface isn't reactive, not event are generated for that surface
+	 * and pointer go trough them  */
+	clutter_actor_set_reactive(CLUTTER_ACTOR(actor), TRUE);
 
-	cairo_region_reference(pending.opaque_region);
-	opaque_region = pending.opaque_region;
-	cairo_region_reference(pending.input_region);
-	input_region = pending.input_region;
+	input_region = cairo_region_create();
+	opaque_region = cairo_region_create();
 
 }
 
@@ -81,10 +83,7 @@ void wl_surface::process_damage(cairo_region_t *region)
 	/* Intersect the damage region with the surface region before scaling in
 	 * order to avoid integer overflow when scaling a damage region is too large
 	 * (for example INT32_MAX which mesa passes). */
-	buffer_width = cogl_texture_get_width(buffer->texture);
-	buffer_height = cogl_texture_get_height(buffer->texture);
-	cairo_rectangle_int_t surface_rect = { 0, 0, buffer_width
-			/ 1 /*surface->scale*/, buffer_height / 1 /*surface->scale*/, };
+	cairo_rectangle_int_t surface_rect = { 0, 0, buffer->width(), buffer->height()};
 	cairo_region_intersect_rectangle(region, &surface_rect);
 
 	/* The damage region must be in the same coordinate space as the buffer,
@@ -112,39 +111,48 @@ void wl_surface::process_damage(cairo_region_t *region)
 
 
 void wl_surface::commit_state(wl_surface_state & state) {
+	bool has_new_buffer = false;
 
-	if(state.buffer)
-		state.buffer->incr_use_count();
-	if(buffer)
-		buffer->decr_use_count();
-	buffer = state.buffer;
-	state.buffer = nullptr;
+	/* if the buffer has changed: commit the buffer */
+	if(buffer != state.buffer) {
+		has_new_buffer = true;
+		if(state.buffer)
+			state.buffer->incr_use_count();
+		if(buffer)
+			buffer->decr_use_count();
+		buffer = state.buffer;
 
-	if(buffer) {
-		auto texture = buffer->ensure_texture();
-		if(texture) {
-			meta_surface_actor_wayland_set_texture(META_SURFACE_ACTOR_WAYLAND(actor), texture);
-			if(state.damage_surface)
-				process_damage(state.damage_surface);
+		if(buffer) {
+			auto texture = buffer->ensure_texture();
+			if(texture) {
+				meta_surface_actor_wayland_set_texture(META_SURFACE_ACTOR_WAYLAND(actor), texture);
+				if(state.damage_surface) {
+					process_damage(state.damage_surface);
+					cairo_region_destroy(state.damage_surface);
+					state.damage_surface = cairo_region_create();
+				}
+			}
 		}
 	}
 
-	/* clear damages */
-	if(state.damage_surface) {
-		cairo_region_destroy(state.damage_surface);
-		state.damage_surface = nullptr;
-	}
-
-	if(input_region != state.input_region) {
+	if (state.input_region_set or has_new_buffer) {
+		state.input_region_set = false;
 		cairo_region_destroy(input_region);
-		input_region = state.input_region;
-		cairo_region_reference(input_region);
+		input_region = cairo_region_copy(state.input_region);
+		if(buffer) { // clip to texture
+			cairo_rectangle_int_t rect{0, 0, buffer->width(), buffer->height()};
+			cairo_region_intersect_rectangle(input_region, &rect);
+		}
 	}
 
-	if(opaque_region != state.opaque_region) {
+	if (state.opaque_region_set or has_new_buffer) {
+		state.opaque_region_set = false;
 		cairo_region_destroy(opaque_region);
-		opaque_region = state.opaque_region;
-		cairo_region_reference(opaque_region);
+		opaque_region = cairo_region_copy(state.opaque_region);
+		if(buffer) { // clip to texture
+			cairo_rectangle_int_t rect{0, 0, buffer->width(), buffer->height()};
+			cairo_region_intersect_rectangle(opaque_region, &rect);
+		}
 	}
 
 	frame_callback_list.splice(frame_callback_list.end(), frame_callback_list,
@@ -256,6 +264,7 @@ void wl_surface::recv_frame(struct wl_client * client, struct wl_resource * reso
 void wl_surface::recv_set_opaque_region(struct wl_client * client, struct wl_resource * resource, struct wl_resource * region_resource) {
 	if(pending.opaque_region)
 		cairo_region_destroy(pending.opaque_region);
+	pending.opaque_region_set = true;
 	if (region_resource) {
 		auto region = wl_region::get(region_resource);
 		pending.opaque_region = cairo_region_copy(region->_region);
@@ -267,6 +276,7 @@ void wl_surface::recv_set_opaque_region(struct wl_client * client, struct wl_res
 void wl_surface::recv_set_input_region(struct wl_client * client, struct wl_resource * resource, struct wl_resource * region_resource) {
 	if(pending.input_region)
 		cairo_region_destroy(pending.input_region);
+	pending.input_region_set = true;
 	if (region_resource) {
 		auto region = wl_region::get(region_resource);
 		pending.input_region = cairo_region_copy(region->_region);

@@ -72,9 +72,11 @@ struct wl_surface_state {
 	cairo_region_t * damage_buffer;
 
 	/* wl_surface.set_opaque_region */
+	bool opaque_region_set;
 	cairo_region_t * opaque_region;
 
 	/* wl_surface.set_input_region */
+	bool input_region_set;
 	cairo_region_t * input_region;
 
 	/* wl_surface.frame */

@@ -35,11 +35,14 @@ wl_surface_state::wl_surface_state() :
 		new_buffer_relative_position_y{0},
 		damage_surface{nullptr},
 		damage_buffer{nullptr},
+		opaque_region_set{false},
 		opaque_region{nullptr},
+		input_region_set{false},
 		input_region{nullptr},
 		scale{1}
 {
-
+	damage_buffer = cairo_region_create();
+	damage_surface = cairo_region_create();
 	opaque_region = cairo_region_create();
 	input_region = cairo_region_create_infini();
 
@@ -67,35 +70,35 @@ void wl_surface_state::commit_from_state(wl_surface_state & state) {
 
 	set_buffer(state.buffer);
 
-	if(damage_buffer != state.damage_buffer) {
-		cairo_region_destroy(damage_buffer);
-		damage_buffer = state.damage_buffer;
-		state.damage_buffer = nullptr;
-	}
+	cairo_region_union(damage_buffer, state.damage_buffer);
+	cairo_region_destroy(state.damage_buffer);
+	state.damage_buffer = cairo_region_create();
 
-	if(damage_surface != state.damage_surface) {
-		cairo_region_destroy(damage_surface);
-		damage_surface = state.damage_surface;
-		state.damage_surface = nullptr;
-	}
+	cairo_region_union(damage_surface, state.damage_surface);
+	cairo_region_destroy(state.damage_surface);
+	state.damage_surface = cairo_region_create();
 
 	/* taking in account how input region is set, we can just reference the source */
-	if(input_region != state.input_region) {
+	if(state.input_region_set) {
+		input_region_set = true;
 		cairo_region_destroy(input_region);
 		input_region = state.input_region;
 		cairo_region_reference(input_region);
+		state.input_region_set = false;
 	}
 
 	/* taking in account how opaque region is set, we can just reference the source */
-	if(opaque_region != state.opaque_region) {
+	if(state.opaque_region_set) {
+		opaque_region_set = true;
 		cairo_region_destroy(opaque_region);
 		opaque_region = state.opaque_region;
 		cairo_region_reference(opaque_region);
+		state.opaque_region_set = false;
 	}
 
 	new_buffer_relative_position_x = state.new_buffer_relative_position_x;
 	new_buffer_relative_position_y = state.new_buffer_relative_position_y;
-	frame_callback_list = state.frame_callback_list;
+	frame_callback_list.splice(frame_callback_list.begin(), state.frame_callback_list);
 	scale = state.scale;
 
 }

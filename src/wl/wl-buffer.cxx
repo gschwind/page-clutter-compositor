@@ -117,5 +117,19 @@ void wl_buffer::decr_use_count()
 	}
 }
 
+int32_t wl_buffer::width() {
+	if(texture)
+		return cogl_texture_get_width(texture);
+	else
+		return -1;
+}
+
+int32_t wl_buffer::height() {
+	if(texture)
+		return cogl_texture_get_height(texture);
+	else
+		return -1;
+}
+
 }
 } /* namespace page */

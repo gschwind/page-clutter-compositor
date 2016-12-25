@@ -50,6 +50,9 @@ struct wl_surface : public wl_surface_vtable {
 
 	wl_subsurface * subsurface;
 
+	int32_t width;
+	int32_t height;
+
 	/* Parent's list of its sub-surfaces, weston_subsurface:parent_link.
 	 * Contains also the parent itself as a dummy weston_subsurface,
 	 * if the list is not empty. */

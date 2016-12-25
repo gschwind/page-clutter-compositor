@@ -57,6 +57,9 @@ struct wl_buffer {
 	void incr_use_count();
 	void decr_use_count();
 
+	int32_t width();
+	int32_t height();
+
 };
 
 }

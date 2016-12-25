@@ -44,7 +44,6 @@ void page_default_pointer_grab::focus(ClutterEvent const & event)
 	wl_fixed_t sx, sy;
 	auto surface = pointer->pick_actor(&event, sx, sy);
 	pointer->set_focus(surface, sx, sy);
-
 }
 
 void page_default_pointer_grab::motion(ClutterEvent * event)

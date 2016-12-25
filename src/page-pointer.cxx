@@ -70,8 +70,12 @@ wl::wl_surface * page_pointer::pick_actor(ClutterEvent const * event, wl_fixed_t
 	else
 		actor = clutter_input_device_get_pointer_actor(device);
 
-	if(not META_IS_SURFACE_ACTOR_WAYLAND(actor))
+	printf("actor = %p\n", actor);
+	printf("actor type = %s\n", g_type_name(G_TYPE_FROM_INSTANCE(actor)));
+
+	if(not META_IS_SURFACE_ACTOR_WAYLAND(actor)) {
 		return nullptr;
+	}
 
 	auto surface = meta_surface_actor_wayland_get_surface(META_SURFACE_ACTOR_WAYLAND(actor));
 	get_relative_coordinates(*surface, sx, sx);

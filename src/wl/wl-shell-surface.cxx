@@ -54,6 +54,10 @@ void wl_shell_surface::recv_resize(struct wl_client * client, struct wl_resource
 
 void wl_shell_surface::recv_set_toplevel(struct wl_client * client, struct wl_resource * resource) {
 	printf("call %s (%p)\n", __PRETTY_FUNCTION__, this);
+
+	if(clutter_actor_get_parent(CLUTTER_ACTOR(surface->actor)))
+		return;
+
 	clutter_actor_add_child(CLUTTER_ACTOR(core->_main_stage), CLUTTER_ACTOR(surface->actor));
 	clutter_actor_show(CLUTTER_ACTOR(surface->actor));
 }
