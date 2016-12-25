@@ -25,6 +25,8 @@
 #include <cassert>
 #include <wayland-server-protocol.h>
 
+#include "meta/region-utils.h"
+
 #include "utils.hxx"
 #include "wl-compositor.hxx"
 #include "wl-buffer.hxx"
@@ -62,6 +64,53 @@ wl_surface * wl_surface::get(struct wl_resource *r) {
 	return dynamic_cast<wl_surface*>(resource_get<wl_surface_vtable>(r));
 }
 
+void wl_surface::process_damage(cairo_region_t *region)
+{
+	unsigned int buffer_width;
+	unsigned int buffer_height;
+	cairo_region_t *scaled_region;
+	int i, n_rectangles;
+
+	/* If the client destroyed the buffer it attached before committing, but
+	 * still posted damage, or posted damage without any buffer, don't try to
+	 * process it on the non-existing buffer.
+	 */
+	if (!buffer)
+		return;
+
+	/* Intersect the damage region with the surface region before scaling in
+	 * order to avoid integer overflow when scaling a damage region is too large
+	 * (for example INT32_MAX which mesa passes). */
+	buffer_width = cogl_texture_get_width(buffer->texture);
+	buffer_height = cogl_texture_get_height(buffer->texture);
+	cairo_rectangle_int_t surface_rect = { 0, 0, buffer_width
+			/ 1 /*surface->scale*/, buffer_height / 1 /*surface->scale*/, };
+	cairo_region_intersect_rectangle(region, &surface_rect);
+
+	/* The damage region must be in the same coordinate space as the buffer,
+	 * i.e. scaled with surface->scale. */
+	scaled_region = meta_region_scale(region, 1 /*surface->scale*/);
+
+	/* First update the buffer. */
+	buffer->process_damage(scaled_region);
+
+	/* Now damage the actor. The actor expects damage in the unscaled texture
+	 * coordinate space, i.e. same as the buffer. */
+	/* XXX: Should this be a signal / callback on MetaWaylandBuffer instead? */
+	n_rectangles = cairo_region_num_rectangles(scaled_region);
+	for (i = 0; i < n_rectangles; i++) {
+		cairo_rectangle_int_t rect;
+		cairo_region_get_rectangle(scaled_region, i, &rect);
+
+		meta_surface_actor_process_damage(actor, rect.x,
+				rect.y, rect.width, rect.height);
+	}
+
+	cairo_region_destroy(scaled_region);
+
+}
+
+
 void wl_surface::commit_state(wl_surface_state & state) {
 
 	if(state.buffer)
@@ -73,11 +122,11 @@ void wl_surface::commit_state(wl_surface_state & state) {
 
 	if(buffer) {
 		auto texture = buffer->ensure_texture();
-		meta_surface_actor_wayland_set_texture(META_SURFACE_ACTOR_WAYLAND(actor), texture);
-
-		if(state.damage_surface)
-			buffer->process_damage(state.damage_surface);
-
+		if(texture) {
+			meta_surface_actor_wayland_set_texture(META_SURFACE_ACTOR_WAYLAND(actor), texture);
+			if(state.damage_surface)
+				process_damage(state.damage_surface);
+		}
 	}
 
 	/* clear damages */
@@ -102,7 +151,7 @@ void wl_surface::commit_state(wl_surface_state & state) {
 			state.frame_callback_list.begin(), state.frame_callback_list.end());
 
 	/* this sync the current surface state to the actor */
-	meta_surface_actor_wayland_sync_state (META_SURFACE_ACTOR_WAYLAND(actor));
+	meta_surface_actor_wayland_sync_state(META_SURFACE_ACTOR_WAYLAND(actor));
 
 }
 

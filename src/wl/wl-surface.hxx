@@ -150,6 +150,7 @@ struct wl_surface : public wl_surface_vtable {
 	virtual ~wl_surface();
 
 	static wl_surface * get(struct wl_resource *r);
+	void process_damage(cairo_region_t *region);
 	void state_set_buffer(wl_surface_state * state, wl_buffer * buffer);
 	void commit_state(wl_surface_state & state);
 	void synchronize_subsurface_stack();

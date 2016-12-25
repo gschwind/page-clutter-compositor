@@ -68,7 +68,7 @@ static void wrapper_bind_wl_shell(struct wl_client *client, void *data, uint32_t
 }
 
 static void wrapper_bind_xdg_v5_shell(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
-	reinterpret_cast<page_core*>(data)->bind_wl_shell(client, version, id);
+	reinterpret_cast<page_core*>(data)->bind_xdg_v5_shell(client, version, id);
 }
 
 static void wrapper_bind_wl_subcompositor(struct wl_client *client, void *data, uint32_t version, uint32_t id) {

@@ -46,7 +46,6 @@ CoglTexture * wl_buffer::ensure_texture()
 {
 	  CoglContext *ctx = clutter_backend_get_cogl_context(clutter_get_default_backend ());
 	  CoglError *catch_error = NULL;
-	  CoglTexture *texture;
 	  struct wl_shm_buffer *shm_buffer;
 
 	  g_return_val_if_fail (_self_resource, NULL);
@@ -91,7 +90,7 @@ void wl_buffer::process_damage(cairo_region_t * region)
 			CoglError *error = NULL;
 			cairo_rectangle_int_t rect;
 			cairo_region_get_rectangle(region, i, &rect);
-			cogl_wayland_texture_set_region_from_shm_buffer(_self_resource,
+			cogl_wayland_texture_set_region_from_shm_buffer(texture,
 					rect.x, rect.y, rect.width, rect.height, shm_buffer, rect.x,
 					rect.y, 0, &error);
 
