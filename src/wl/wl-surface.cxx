@@ -145,6 +145,16 @@ void wl_surface::commit_synchronized_state_recursively()
 	}
 }
 
+void wl_surface::get_relative_coordinates(float abs_x, float abs_y, float & sx, float & sy) const
+{
+	ClutterActor *actor = CLUTTER_ACTOR(
+			meta_surface_actor_get_texture(this->actor));
+
+	clutter_actor_transform_stage_point(actor, abs_x, abs_y, &sx, &sy);
+	sx /= 1; //surface->scale;
+	sy /= 1; //surface->scale;
+}
+
 void wl_surface::recv_destroy(struct wl_client * client, struct wl_resource * resource) {
 	wl_resource_destroy(_self_resource);
 }
@@ -217,7 +227,7 @@ void wl_surface::recv_set_input_region(struct wl_client * client, struct wl_reso
 }
 
 void wl_surface::recv_commit(struct wl_client * client, struct wl_resource * resource){
-	printf("call %s (%p)", __PRETTY_FUNCTION__, this);
+	//printf("call %s (%p)", __PRETTY_FUNCTION__, this);
 
 	/* this subsurface properties are always commited on commit */
 	synchronize_subsurface_stack();

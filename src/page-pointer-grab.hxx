@@ -1,7 +1,7 @@
 /*
  * Copyright (2016) Benoit Gschwind
  *
- * page-file.hxx is part of page-compositor.
+ * page-pointer-grab.hxx is part of page-compositor.
  *
  * page-compositor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,22 +18,30 @@
  *
  */
 
-#ifndef SRC_PAGE_TYPES_HXX_
-#define SRC_PAGE_TYPES_HXX_
+#ifndef PAGE_POINTER_GRAB_HXX_
+#define PAGE_POINTER_GRAB_HXX_
 
-#include "config.hxx"
+#include <clutter/clutter.h>
+
+#include "page-types.hxx"
 
 namespace page {
 
-struct page_core;
-struct page_seat;
-struct page_keyboard;
-struct page_pointer;
-struct page_touch;
-struct page_output;
-struct page_output_mode;
-struct page_pointer_grab;
+struct page_pointer_grab {
 
-}
+	page_pointer_grab();
+	virtual ~page_pointer_grab();
 
-#endif /* SRC_PAGE_TYPES_HXX_ */
+	virtual void focus(ClutterEvent const & event) = 0;
+	virtual void motion(ClutterEvent * event) = 0;
+	virtual void button(ClutterEvent * event) = 0;
+	virtual void axis(ClutterEvent * event) = 0;
+	virtual void axis_source(uint32_t source) = 0;
+	virtual void frame() = 0;
+	virtual void cancel() = 0;
+
+};
+
+} /* namespace page */
+
+#endif /* PAGE_POINTER_GRAB_HXX_ */

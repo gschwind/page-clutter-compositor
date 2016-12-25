@@ -1,7 +1,7 @@
 /*
  * Copyright (2016) Benoit Gschwind
  *
- * pointer.hxx is part of page-compositor.
+ * xdg-v5-popup.hxx is part of page-compositor.
  *
  * page-compositor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,30 +18,31 @@
  *
  */
 
-#ifndef SRC_POINTER_HXX_
-#define SRC_POINTER_HXX_
+#ifndef SH_XDG_V5_POPUP_HXX_
+#define SH_XDG_V5_POPUP_HXX_
 
-#include "wayland-interface.hxx"
-#include "page-types.hxx"
+#include "xdg-shell-unstable-v5-interface.hxx"
+
+#include "sh-types.hxx"
 
 namespace page {
-namespace wl {
+namespace sh {
 
 using namespace wcxx;
 
-struct wl_pointer : public wl_pointer_vtable {
-	page_pointer * core_pointer;
+struct xdg_v5_popup : public xdg_popup_vtable {
+	xdg_v5_shell * shell;
 
-	wl_pointer(struct wl_client *client, uint32_t version, uint32_t id, page_pointer * core_pointer);
-	virtual ~wl_pointer();
+	xdg_v5_popup(struct wl_client *client, uint32_t version, uint32_t id, xdg_v5_shell * shell);
+	virtual ~xdg_v5_popup();
 
-	/* wl_pointer_vtable */
-	virtual void recv_set_cursor(struct wl_client * client, struct wl_resource * resource, uint32_t serial, struct wl_resource * surface, int32_t hotspot_x, int32_t hotspot_y) override;
-	virtual void recv_release(struct wl_client * client, struct wl_resource * resource) override;
+	/* xdg_popup_vtable */
+	virtual void recv_destroy(struct wl_client * client, struct wl_resource * resource) override;
 	virtual void delete_resource(struct wl_resource * resource) override;
+
 };
 
 }
-}
+} /* namespace page */
 
-#endif /* SRC_POINTER_HXX_ */
+#endif /* SH_XDG_V5_POPUP_HXX_ */

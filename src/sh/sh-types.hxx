@@ -1,7 +1,7 @@
 /*
  * Copyright (2016) Benoit Gschwind
  *
- * page-file.hxx is part of page-compositor.
+ * sh-types.hxx is part of page-compositor.
  *
  * page-compositor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,22 +18,19 @@
  *
  */
 
-#ifndef SRC_PAGE_TYPES_HXX_
-#define SRC_PAGE_TYPES_HXX_
-
-#include "config.hxx"
+#ifndef SH_SH_TYPES_HXX_
+#define SH_SH_TYPES_HXX_
 
 namespace page {
+namespace sh {
 
-struct page_core;
-struct page_seat;
-struct page_keyboard;
-struct page_pointer;
-struct page_touch;
-struct page_output;
-struct page_output_mode;
-struct page_pointer_grab;
+struct xdg_v5_shell;
+struct xdg_v5_surface;
+struct xdg_v5_popup;
 
 }
+}
 
-#endif /* SRC_PAGE_TYPES_HXX_ */
+
+
+#endif /* SH_SH_TYPES_HXX_ */

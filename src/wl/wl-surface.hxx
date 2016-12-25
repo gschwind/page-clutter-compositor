@@ -154,6 +154,7 @@ struct wl_surface : public wl_surface_vtable {
 	void commit_state(wl_surface_state & state);
 	void synchronize_subsurface_stack();
 	void commit_synchronized_state_recursively();
+	void get_relative_coordinates(float abs_x, float abs_y, float & sx, float & sy) const;
 
 	/* wl_surface_vtable */
 	virtual void recv_destroy(struct wl_client * client, struct wl_resource * resource) override;

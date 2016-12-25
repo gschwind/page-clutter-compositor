@@ -48,7 +48,7 @@ page_seat::page_seat(page_core * core, uint32_t capabilities) :
 {
 
 	if(capabilities&WL_SEAT_CAPABILITY_POINTER) {
-		pointer = new page_pointer();
+		pointer = new page_pointer{this};
 	}
 
 	if(capabilities&WL_SEAT_CAPABILITY_KEYBOARD) {

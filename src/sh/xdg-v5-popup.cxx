@@ -1,7 +1,7 @@
 /*
  * Copyright (2016) Benoit Gschwind
  *
- * page-file.hxx is part of page-compositor.
+ * xdg-v5-popup.cxx is part of page-compositor.
  *
  * page-compositor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,22 +18,35 @@
  *
  */
 
-#ifndef SRC_PAGE_TYPES_HXX_
-#define SRC_PAGE_TYPES_HXX_
-
-#include "config.hxx"
+#include "xdg-v5-popup.hxx"
+#include "xdg-v5-shell.hxx"
 
 namespace page {
+namespace sh {
 
-struct page_core;
-struct page_seat;
-struct page_keyboard;
-struct page_pointer;
-struct page_touch;
-struct page_output;
-struct page_output_mode;
-struct page_pointer_grab;
+xdg_v5_popup::xdg_v5_popup(struct wl_client *client, uint32_t version, uint32_t id, xdg_v5_shell * shell) :
+		xdg_popup_vtable{client, version, id},
+		shell{shell}
+{
+	// TODO Auto-generated constructor stub
 
 }
 
-#endif /* SRC_PAGE_TYPES_HXX_ */
+xdg_v5_popup::~xdg_v5_popup()
+{
+	// TODO Auto-generated destructor stub
+}
+
+/* xdg_popup_vtable */
+void xdg_v5_popup::recv_destroy(struct wl_client * client, struct wl_resource * resource)
+{
+	wl_resource_destroy(_self_resource);
+}
+
+void xdg_v5_popup::delete_resource(struct wl_resource * resource)
+{
+	delete this;
+}
+
+}
+} /* namespace page */

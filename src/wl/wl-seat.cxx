@@ -55,57 +55,8 @@ void wl_seat::recv_get_pointer(struct wl_client * client, struct wl_resource * r
 	//auto pointer = make_shared<wl_pointer>(client, wl_resource_get_version(resource), id);
 	//pointers.push_back(pointer);
 
-	new wl_pointer(client, wl_resource_get_version(resource), id);
+	new wl_pointer(client, wl_resource_get_version(resource), id, seat->pointer);
 
-
-//	/* We use the pointer_state directly, which means we'll
-//	 * give a wl_pointer if the seat has ever had one - even though
-//	 * the spec explicitly states that this request only takes effect
-//	 * if the seat has the pointer capability.
-//	 *
-//	 * This prevents a race between the compositor sending new
-//	 * capabilities and the client trying to use the old ones.
-//	 */
-//	struct weston_pointer *pointer = seat->pointer_state;
-//	struct wl_resource *cr;
-//	struct weston_pointer_client *pointer_client;
-//
-//	if (!pointer)
-//		return;
-//
-//        cr = wl_resource_create(client, &wl_pointer_interface,
-//				wl_resource_get_version(resource), id);
-//	if (cr == NULL) {
-//		wl_client_post_no_memory(client);
-//		return;
-//	}
-//
-//	pointer_client = weston_pointer_ensure_pointer_client(pointer, client);
-//	if (!pointer_client) {
-//		wl_client_post_no_memory(client);
-//		return;
-//	}
-//
-//	wl_list_insert(&pointer_client->pointer_resources,
-//		       wl_resource_get_link(cr));
-//	wl_resource_set_implementation(cr, &pointer_interface, pointer,
-//				       unbind_pointer_client_resource);
-//
-//	if (pointer->focus && pointer->focus->surface->resource &&
-//	    wl_resource_get_client(pointer->focus->surface->resource) == client) {
-//		wl_fixed_t sx, sy;
-//
-//		weston_view_from_global_fixed(pointer->focus,
-//					      pointer->x,
-//					      pointer->y,
-//					      &sx, &sy);
-//
-//		wl_pointer_send_enter(cr,
-//				      pointer->focus_serial,
-//				      pointer->focus->surface->resource,
-//				      sx, sy);
-//		pointer_send_frame(cr);
-//	}
 }
 
 void wl_seat::recv_get_keyboard(struct wl_client * client, struct wl_resource * resource, uint32_t id) {

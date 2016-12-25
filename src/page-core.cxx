@@ -24,19 +24,24 @@
 #include <clutter/wayland/clutter-wayland-compositor.h>
 #include <gdk/gdk.h>
 #include <wayland-server-protocol.h>
+#include "xdg-shell-unstable-v5-server-protocol.h"
 
 #include "page-seat.hxx"
+#include "page-seat.hxx"
+#include "page-pointer.hxx"
 #include "page-output.hxx"
 
 #include "exception.hxx"
-#include "page-core.hxx"
 #include "wayland-interface.hxx"
+#include "xdg-shell-unstable-v5-interface.hxx"
 
 #include "wl/wl-compositor.hxx"
 #include "wl/wl-data-device-manager.hxx"
 #include "wl/wl-shell.hxx"
 #include "wl/wl-callback.hxx"
 #include "wl/wl-subcompositor.hxx"
+
+#include "sh/xdg-v5-shell.hxx"
 
 namespace page {
 
@@ -59,6 +64,10 @@ static void wrapper_bind_wl_data_device_manager(struct wl_client *client, void *
 }
 
 static void wrapper_bind_wl_shell(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
+	reinterpret_cast<page_core*>(data)->bind_wl_shell(client, version, id);
+}
+
+static void wrapper_bind_xdg_v5_shell(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
 	reinterpret_cast<page_core*>(data)->bind_wl_shell(client, version, id);
 }
 
@@ -163,14 +172,18 @@ void page_core::wayland_init() {
 	wl_display_init_shm (dpy);
 	wl_global_create(dpy, &wl_compositor_interface, wl_compositor_vtable::INTERFACE_VERSION, this, &wrapper_bind_wl_compositor);
 	wl_global_create(dpy, &wl_data_device_manager_interface, wl_data_device_manager_vtable::INTERFACE_VERSION, this, &wrapper_bind_wl_data_device_manager);
+	wl_global_create(dpy, &wl_subcompositor_interface, wl_subcompositor_vtable::INTERFACE_VERSION, this, &wrapper_bind_wl_subcompositor);
+
+	/* TODO: should be moved to sh */
 	wl_global_create(dpy, &wl_shell_interface, wl_shell_vtable::INTERFACE_VERSION, this, &wrapper_bind_wl_shell);
+	wl_global_create(dpy, &xdg_shell_interface, xdg_shell_vtable::INTERFACE_VERSION, this, &wrapper_bind_xdg_v5_shell);
 
 	auto default_output = new page_output{this};
 	output_list.push_back(default_output);
 
 	auto device_manager = clutter_device_manager_get_default();
 	uint32_t capabilities = lookup_device_capabilities(device_manager);
-	auto default_seat = new page_seat{this, capabilities};
+	seat = new page_seat{this, capabilities};
 
 }
 
@@ -232,6 +245,12 @@ uint32_t page_core::lookup_device_capabilities(ClutterDeviceManager * device_man
 gboolean page_core::event_filter(ClutterEvent const * event)
 {
 	switch(event->type) {
+	case CLUTTER_BUTTON_PRESS:
+	case CLUTTER_BUTTON_RELEASE:
+	case CLUTTER_MOTION:
+	case CLUTTER_SCROLL:
+		seat->pointer->update_pointer_focus_for_event(*event);
+		break;
 	case CLUTTER_NOTHING:
 		break;
 	case CLUTTER_KEY_PRESS:
@@ -240,18 +259,9 @@ gboolean page_core::event_filter(ClutterEvent const * event)
 	case CLUTTER_KEY_RELEASE:
 		printf("KeyRelease (%d)\n", clutter_event_get_key_code(event));
 		break;
-	case CLUTTER_MOTION:
-		printf("Motion\n");
-		break;
 	case CLUTTER_ENTER:
 		break;
 	case CLUTTER_LEAVE:
-		break;
-	case CLUTTER_BUTTON_PRESS:
-		break;
-	case CLUTTER_BUTTON_RELEASE:
-		break;
-	case CLUTTER_SCROLL:
 		break;
 	case CLUTTER_STAGE_STATE:
 		break;
@@ -296,13 +306,18 @@ void page_core::bind_wl_shell(struct wl_client *client, uint32_t version, uint32
 	new wl::wl_shell{client, version, id, this};
 }
 
-void bind_wl_subcompositor(struct wl_client *client, uint32_t version, uint32_t id)
+void page_core::bind_wl_subcompositor(struct wl_client *client, uint32_t version, uint32_t id)
 {
 	new wl::wl_subcompositor{client, version, id};
 }
 
+void page_core::bind_xdg_v5_shell(struct wl_client *client, uint32_t version, uint32_t id)
+{
+	new sh::xdg_v5_shell{client, version, id, this};
+}
+
 void page_core::after_stage_paint(ClutterStage * stage) {
-	printf("call %s (%p)\n", __PRETTY_FUNCTION__, this);
+	//printf("call %s (%p)\n", __PRETTY_FUNCTION__, this);
 	/* TODO frame call back */
 
 	for(auto x: frame_callback_queue) {

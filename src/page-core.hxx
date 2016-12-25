@@ -72,6 +72,7 @@ struct page_core {
 	void bind_wl_data_device_manager(struct wl_client *client, uint32_t version, uint32_t id);
 	void bind_wl_shell(struct wl_client *client, uint32_t version, uint32_t id);
 	void bind_wl_subcompositor(struct wl_client *client, uint32_t version, uint32_t id);
+	void bind_xdg_v5_shell(struct wl_client *client, uint32_t version, uint32_t id);
 
 	void after_stage_paint(ClutterStage * stage);
 	void main_stage_destroy(ClutterActor *actor);

@@ -103,6 +103,12 @@ page_compositor_SOURCES = \
 	wl/wl-subcompositor.hxx \
 	wl/wl-subsurface.cxx \
 	wl/wl-subsurface.hxx \
+	sh/xdg-v5-shell.cxx \
+	sh/xdg-v5-shell.hxx \
+	sh/xdg-v5-surface.cxx \
+	sh/xdg-v5-surface.hxx \
+	sh/xdg-v5-popup.cxx \
+	sh/xdg-v5-popup.hxx \
 	page-core.cxx \
 	page-core.hxx \
 	page-seat.cxx \
@@ -115,8 +121,16 @@ page_compositor_SOURCES = \
 	page-touch.hxx \
 	page-output.cxx \
 	page-output.hxx \
+	page-default-pointer-grab.cxx \
+	page-default-pointer-grab.hxx \
+	page-pointer-grab.cxx \
+	page-pointer-grab.hxx \
 	wayland-interface.cxx \
 	wayland-interface.hxx \
+	xdg-shell-unstable-v5-interface.cxx \
+	xdg-shell-unstable-v5-interface.hxx \
+	xdg-shell-unstable-v5-protocol.c \
+	xdg-shell-unstable-v5-server-protocol.h \
 	utils.cxx \
 	utils.hxx \
 	config_handler.cxx \

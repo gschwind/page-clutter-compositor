@@ -35,6 +35,9 @@ namespace page {
 
 using namespace std;
 
+template <typename T, std::size_t N>
+constexpr std::size_t countof(T const (&)[N]) noexcept { return N; }
+
 template<typename T>
 T * resource_get(struct wl_resource * r) {
 	return reinterpret_cast<T *>(wl_resource_get_user_data(r));
