@@ -46,17 +46,17 @@ void page_default_pointer_grab::focus(ClutterEvent const & event)
 	pointer->set_focus(surface, sx, sy);
 }
 
-void page_default_pointer_grab::motion(ClutterEvent * event)
+void page_default_pointer_grab::motion(ClutterEvent const & event)
 {
-	pointer->broadcast_motion(*event);
+	pointer->broadcast_motion(event);
 }
 
-void page_default_pointer_grab::button(ClutterEvent * event)
+void page_default_pointer_grab::button(ClutterEvent const & event)
 {
-	pointer->broadcast_button(*event);
+	pointer->broadcast_button(event);
 }
 
-void page_default_pointer_grab::axis(ClutterEvent * event)
+void page_default_pointer_grab::axis(ClutterEvent const & event)
 {
 	/* TODO */
 }

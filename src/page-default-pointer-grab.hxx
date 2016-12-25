@@ -32,9 +32,9 @@ struct page_default_pointer_grab : public page_pointer_grab {
 	virtual ~page_default_pointer_grab() override;
 
 	virtual void focus(ClutterEvent const & event) override;
-	virtual void motion(ClutterEvent * event) override;
-	virtual void button(ClutterEvent * event) override;
-	virtual void axis(ClutterEvent * event) override;
+	virtual void motion(ClutterEvent const & event) override;
+	virtual void button(ClutterEvent const & event) override;
+	virtual void axis(ClutterEvent const & event) override;
 	virtual void axis_source(uint32_t source) override;
 	virtual void frame() override;
 	virtual void cancel() override;

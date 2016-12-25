@@ -76,6 +76,7 @@ struct page_pointer {
 
 	static int count_buttons(ClutterEvent const & event);
 
+	void handle_pointer_event(ClutterEvent const & event);
 	void update_pointer_focus_for_event(ClutterEvent const & event);
 	void set_focus(wl::wl_surface * surface, wl_fixed_t sx, wl_fixed_t sy);
 

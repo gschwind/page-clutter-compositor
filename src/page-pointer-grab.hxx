@@ -33,9 +33,9 @@ struct page_pointer_grab {
 	virtual ~page_pointer_grab();
 
 	virtual void focus(ClutterEvent const & event) = 0;
-	virtual void motion(ClutterEvent * event) = 0;
-	virtual void button(ClutterEvent * event) = 0;
-	virtual void axis(ClutterEvent * event) = 0;
+	virtual void motion(ClutterEvent const & event) = 0;
+	virtual void button(ClutterEvent const & event) = 0;
+	virtual void axis(ClutterEvent const & event) = 0;
 	virtual void axis_source(uint32_t source) = 0;
 	virtual void frame() = 0;
 	virtual void cancel() = 0;

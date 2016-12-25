@@ -301,7 +301,7 @@ gboolean page_core::event_filter(ClutterEvent const * event)
 	case CLUTTER_BUTTON_RELEASE:
 	case CLUTTER_MOTION:
 	case CLUTTER_SCROLL:
-		seat->pointer->update_pointer_focus_for_event(*event);
+		seat->pointer->handle_pointer_event(*event);
 		break;
 	case CLUTTER_NOTHING:
 		break;

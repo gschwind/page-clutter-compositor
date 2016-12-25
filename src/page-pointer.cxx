@@ -106,6 +106,24 @@ int page_pointer::count_buttons(ClutterEvent const & event)
 	return count;
 }
 
+void page_pointer::handle_pointer_event(ClutterEvent const & event) {
+	update_pointer_focus_for_event(event);
+
+	switch(event.type) {
+	case CLUTTER_BUTTON_PRESS:
+	case CLUTTER_BUTTON_RELEASE:
+		grab->button(event);
+		break;
+	case CLUTTER_MOTION:
+		grab->motion(event);
+		break;
+	case CLUTTER_SCROLL:
+		grab->axis(event);
+		break;
+	default:
+		break;
+	}
+}
 
 /**
  * This function must be call on every clutter events related to pointer :
@@ -125,7 +143,7 @@ void page_pointer::set_focus(wl::wl_surface * surface, wl_fixed_t sx, wl_fixed_t
 //	if (display == NULL)
 //		return;
 
-	if (focus_surface == surface and focus_sx == sx and focus_sy == sy)
+	if (focus_surface == surface)
 		return;
 
 	if (focus_surface != nullptr) {
