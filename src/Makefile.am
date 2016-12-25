@@ -125,6 +125,10 @@ page_compositor_SOURCES = \
 	page-default-pointer-grab.hxx \
 	page-pointer-grab.cxx \
 	page-pointer-grab.hxx \
+	page-default-keyboard-grab.cxx \
+	page-default-keyboard-grab.hxx \
+	page-keyboard-grab.cxx \
+	page-keyboard-grab.hxx \
 	wayland-interface.cxx \
 	wayland-interface.hxx \
 	xdg-shell-unstable-v5-interface.cxx \

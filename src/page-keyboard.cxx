@@ -20,15 +20,46 @@
 
 #include "page-keyboard.hxx"
 
+#include "page-seat.hxx"
+
+#include <algorithm>
+
+#include "wl/wl-keyboard.hxx"
+
 namespace page {
 
-page_keyboard::page_keyboard() {
+page_keyboard::page_keyboard(page_seat * seat) :
+		focus_surface{nullptr},
+		focus_serial{0},
+		seat{seat}
+{
 	// TODO Auto-generated constructor stub
 
 }
 
 page_keyboard::~page_keyboard() {
 	// TODO Auto-generated destructor stub
+}
+
+void page_keyboard::handle_keyboard_event(ClutterEvent const & event)
+{
+
+}
+
+void page_keyboard::register_keyboard(wl::wl_keyboard * k)
+{
+	auto client = wl_resource_get_client(k->_self_resource);
+	client_keyboards.insert(make_pair(client, k));
+}
+
+void page_keyboard::unregister_keyboard(wl::wl_keyboard * k)
+{
+	auto client = wl_resource_get_client(k->_self_resource);
+	auto range = client_keyboards.equal_range(client);
+	auto x = find_if(range.first, range.second,
+			[k](pair<struct wl_client *, wl::wl_keyboard *> x) -> bool { return k == x.second; });
+	if(x != client_keyboards.end())
+		client_keyboards.erase(x);
 }
 
 } /* namespace page */

@@ -1,7 +1,7 @@
 /*
  * Copyright (2016) Benoit Gschwind
  *
- * keyboard.cxx is part of page-compositor.
+ * page-default-keyboard-grab.cxx is part of page-compositor.
  *
  * page-compositor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,33 +18,37 @@
  *
  */
 
-#include "wl-keyboard.hxx"
+#include "page-default-keyboard-grab.hxx"
 
 #include "page-keyboard.hxx"
 
 namespace page {
-namespace wl {
 
-wl_keyboard::wl_keyboard(struct wl_client *client, uint32_t version, uint32_t id, page_keyboard * keyboard) :
-		wl_keyboard_vtable{client, version, id},
+page_default_keyboard_grab::page_default_keyboard_grab(page_keyboard * keyboard) :
 		keyboard{keyboard}
 {
-	keyboard->register_keyboard(this);
+	// TODO Auto-generated constructor stub
 
 }
 
-wl_keyboard::~wl_keyboard() {
-	keyboard->unregister_keyboard(this);
+page_default_keyboard_grab::~page_default_keyboard_grab()
+{
+	// TODO Auto-generated destructor stub
 }
 
-/* wl_keyboard_vtable */
-void wl_keyboard::recv_release(struct wl_client * client, struct wl_resource * resource) {
-	wl_resource_destroy(_self_resource);
-}
-
-void wl_keyboard::delete_resource(struct wl_resource * resource) {
-	delete this;
-}
+void page_default_keyboard_grab::key(ClutterEvent const & event)
+{
 
 }
+
+void page_default_keyboard_grab::modifiers(ClutterEvent const & event)
+{
+
+}
+
+void page_default_keyboard_grab::cancel()
+{
+
+}
+
 } /* namespace page */

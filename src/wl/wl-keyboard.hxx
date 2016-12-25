@@ -23,15 +23,18 @@
 
 #include "wayland-interface.hxx"
 
+#include "page-types.hxx"
+
 namespace page {
 namespace wl {
 
 using namespace wcxx;
 
 
-struct wl_keyboard : private wl_keyboard_vtable {
+struct wl_keyboard : public wl_keyboard_vtable {
+	page_keyboard * keyboard;
 
-	wl_keyboard(struct wl_client *client, uint32_t version, uint32_t id);
+	wl_keyboard(struct wl_client *client, uint32_t version, uint32_t id, page_keyboard * keyboard);
 	virtual ~wl_keyboard();
 
 	/* wl_keyboard_vtable */

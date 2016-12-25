@@ -22,7 +22,9 @@
 #define SRC_PAGE_KEYBOARD_HXX_
 
 #include <list>
+#include <unordered_map>
 #include <wayland-server-core.h>
+#include <clutter/clutter.h>
 
 #include "page-types.hxx"
 #include "wl/wl-types.hxx"
@@ -32,16 +34,13 @@ namespace page {
 using namespace std;
 
 struct page_keyboard {
-
 	page_seat * seat;
 
-	list<wl::wl_keyboard *> resource;
+	/* store the map between clients and their pointers */
+	unordered_multimap<struct wl_client *, wl::wl_keyboard *> client_keyboards;
 
-	//struct wl_list focus_resource_list;
-	//struct weston_surface *focus;
-	//struct wl_listener focus_resource_listener;
+	wl::wl_surface * focus_surface;
 	uint32_t focus_serial;
-	//struct wl_signal focus_signal;
 
 //	struct weston_keyboard_grab *grab;
 //	struct weston_keyboard_grab default_grab;
@@ -68,8 +67,13 @@ struct page_keyboard {
 //	} xkb_state;
 //	struct xkb_keymap *pending_keymap;
 
-	page_keyboard();
+	page_keyboard(page_seat * seat);
 	~page_keyboard();
+
+	void handle_keyboard_event(ClutterEvent const & event);
+	void register_keyboard(wl::wl_keyboard * keyboard);
+	void unregister_keyboard(wl::wl_keyboard * keyboard);
+
 
 };
 

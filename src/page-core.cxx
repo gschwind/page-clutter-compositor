@@ -30,6 +30,7 @@
 #include "page-seat.hxx"
 #include "page-pointer.hxx"
 #include "page-output.hxx"
+#include "page-keyboard.hxx"
 
 #include "exception.hxx"
 #include "wayland-interface.hxx"
@@ -303,13 +304,11 @@ gboolean page_core::event_filter(ClutterEvent const * event)
 	case CLUTTER_SCROLL:
 		seat->pointer->handle_pointer_event(*event);
 		break;
-	case CLUTTER_NOTHING:
-		break;
 	case CLUTTER_KEY_PRESS:
-		printf("KeyPress (%d)\n", clutter_event_get_key_code(event));
-		break;
 	case CLUTTER_KEY_RELEASE:
-		printf("KeyRelease (%d)\n", clutter_event_get_key_code(event));
+		seat->keyboard->handle_keyboard_event(*event);
+		break;
+	case CLUTTER_NOTHING:
 		break;
 	case CLUTTER_ENTER:
 		break;

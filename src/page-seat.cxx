@@ -52,7 +52,7 @@ page_seat::page_seat(page_core * core, uint32_t capabilities) :
 	}
 
 	if(capabilities&WL_SEAT_CAPABILITY_KEYBOARD) {
-		keyboard = new page_keyboard();
+		keyboard = new page_keyboard{this};
 	}
 
 	if(capabilities&WL_SEAT_CAPABILITY_TOUCH) {

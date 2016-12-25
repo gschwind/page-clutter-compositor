@@ -63,7 +63,7 @@ void wl_seat::recv_get_keyboard(struct wl_client * client, struct wl_resource * 
 	//auto keyboard = make_shared<wl_keyboard>(client, wl_resource_get_version(resource), id);
 	//keyboards.push_back(keyboard);
 
-	new wl_keyboard(client, wl_resource_get_version(resource), id);
+	new wl_keyboard(client, wl_resource_get_version(resource), id, seat->keyboard);
 
 }
 
