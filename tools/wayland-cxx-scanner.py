@@ -127,7 +127,7 @@ namespace wcxx {{
    fo.write('\n\t/* events */\n')
    for event in events:
     args = event.findall('arg')
-    fo.write('\tvoid send_{1}({2});\n'.format(interface_name, event.attrib['name'], gen_event_args_with_type(args)))
+    fo.write('\tvoid send_{1}({2}) const;\n'.format(interface_name, event.attrib['name'], gen_event_args_with_type(args)))
   if len(requests) > 0:
    fo.write('\t\n\t/* requests */\n')
    for request in interface.findall('request'):
@@ -211,7 +211,7 @@ namespace hidden {{
     args = event.findall('arg')
     args_with_type = gen_event_args_with_type(args)
     args_no_type = gen_args(args, ['_self_resource'])
-    fo.write('void {0}_vtable::send_{1}({2}) {{\n'.format(interface_name, event.attrib['name'], args_with_type))
+    fo.write('void {0}_vtable::send_{1}({2}) const {{\n'.format(interface_name, event.attrib['name'], args_with_type))
     fo.write('\t{0}_send_{1}({2});\n'.format(interface_name, event.attrib['name'], args_no_type))
     fo.write('}\n\n')
   fo.write('\n')
