@@ -27,7 +27,7 @@
 namespace page {
 namespace wl {
 
-using namespace wcxx;
+using namespace wayland_cxx_wrapper;
 
 struct wl_pointer : public wl_pointer_vtable {
 	page_pointer * core_pointer;

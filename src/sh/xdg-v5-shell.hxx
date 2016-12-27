@@ -27,7 +27,7 @@
 namespace page {
 namespace sh {
 
-using namespace wcxx;
+using namespace wayland_cxx_wrapper;
 
 struct xdg_v5_shell : public xdg_shell_vtable {
 	page_core * core;

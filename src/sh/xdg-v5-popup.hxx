@@ -28,7 +28,7 @@
 namespace page {
 namespace sh {
 
-using namespace wcxx;
+using namespace wayland_cxx_wrapper;
 
 struct xdg_v5_popup : public xdg_popup_vtable {
 	xdg_v5_shell * shell;

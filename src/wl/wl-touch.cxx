@@ -23,7 +23,7 @@
 namespace page {
 namespace wl {
 
-using namespace wcxx;
+using namespace wayland_cxx_wrapper;
 
 wl_touch::wl_touch(struct wl_client *client, uint32_t version, uint32_t id) :
 		wl_touch_vtable{client, version, id}

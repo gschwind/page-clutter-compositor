@@ -26,7 +26,7 @@
 namespace page {
 namespace wl {
 
-using namespace wcxx;
+using namespace wayland_cxx_wrapper;
 
 struct wl_touch : public wl_touch_vtable {
 

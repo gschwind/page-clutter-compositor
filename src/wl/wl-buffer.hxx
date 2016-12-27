@@ -31,7 +31,7 @@
 namespace page {
 namespace wl {
 
-using namespace wcxx;
+using namespace wayland_cxx_wrapper;
 
 /* wl_buffer never get attached to a resource, they are managed by libwayland internaly.
  * Nevertheless they are mapped to the compositor to map resource to wl_buffer.

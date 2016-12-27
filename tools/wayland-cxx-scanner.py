@@ -108,7 +108,7 @@ def gen_header(fi_name, fo):
 
 #include <wayland-server-core.h>
 
-namespace wcxx {{
+namespace wayland_cxx_wrapper {{
 """.format(UNAME = fi_uname))
  
  for interface in root.findall('interface'):
@@ -168,7 +168,7 @@ def gen_impl(fi_name, fo):
 #include "{XNAME}-interface.hxx"
 #include "{XNAME}-server-protocol.h"
 
-namespace wcxx {{
+namespace wayland_cxx_wrapper {{
 
 namespace hidden {{
 """.format(XNAME=fi_xname))

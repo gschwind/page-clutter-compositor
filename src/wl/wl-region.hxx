@@ -27,7 +27,7 @@
 namespace page {
 namespace wl {
 
-using namespace wcxx;
+using namespace wayland_cxx_wrapper;
 
 struct wl_region : public wl_region_vtable {
 	cairo_region_t * _region;

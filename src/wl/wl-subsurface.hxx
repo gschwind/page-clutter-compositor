@@ -31,7 +31,7 @@ namespace page {
 namespace wl {
 
 using namespace std;
-using namespace wcxx;
+using namespace wayland_cxx_wrapper;
 
 struct  wl_subsurface : public wl_subsurface_vtable {
 	wl_surface * surface;

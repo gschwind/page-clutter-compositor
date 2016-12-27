@@ -27,7 +27,7 @@
 namespace page {
 namespace wl {
 
-using namespace wcxx;
+using namespace wayland_cxx_wrapper;
 
 struct wl_output : public wl_output_vtable {
 	page_output * output;

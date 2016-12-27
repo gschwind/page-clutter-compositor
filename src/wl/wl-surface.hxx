@@ -36,7 +36,7 @@ namespace page {
 namespace wl {
 
 using namespace std;
-using namespace wcxx;
+using namespace wayland_cxx_wrapper;
 
 struct wl_surface : public wl_surface_vtable {
 	wl_compositor * compositor;

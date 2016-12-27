@@ -26,7 +26,7 @@
 namespace page {
 namespace wl {
 
-using namespace wcxx;
+using namespace wayland_cxx_wrapper;
 
 struct wl_callback : public wl_callback_vtable {
 

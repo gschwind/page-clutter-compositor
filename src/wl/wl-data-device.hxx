@@ -28,7 +28,7 @@
 namespace page {
 namespace wl {
 
-using namespace wcxx;
+using namespace wayland_cxx_wrapper;
 
 struct wl_data_device : private wl_data_device_vtable {
 	wl_seat * seat;

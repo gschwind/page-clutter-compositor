@@ -59,7 +59,7 @@ page_seat::page_seat(page_core * core, uint32_t capabilities) :
 		touch = new page_touch();
 	}
 
-	wl_global_create(core->dpy, &wl_seat_interface, wcxx::wl_seat_vtable::INTERFACE_VERSION, this, &wrapper_bind_wl_seat);
+	wl_global_create(core->dpy, &wl_seat_interface, wayland_cxx_wrapper::wl_seat_vtable::INTERFACE_VERSION, this, &wrapper_bind_wl_seat);
 
 }
 

@@ -29,7 +29,7 @@
 namespace page {
 namespace sh {
 
-using namespace wcxx;
+using namespace wayland_cxx_wrapper;
 
 struct xdg_v5_surface : public xdg_surface_vtable {
 	xdg_v5_shell * shell;

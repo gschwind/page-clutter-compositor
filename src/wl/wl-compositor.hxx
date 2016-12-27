@@ -32,7 +32,7 @@ namespace page {
 namespace wl {
 
 using namespace std;
-using namespace wcxx;
+using namespace wayland_cxx_wrapper;
 
 struct wl_compositor : private wl_compositor_vtable {
 	page_core * core;

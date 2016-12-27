@@ -28,7 +28,7 @@
 namespace page {
 namespace wl {
 
-using namespace wcxx;
+using namespace wayland_cxx_wrapper;
 
 struct wl_shell_surface : public wl_shell_surface_vtable {
 	page_core * core;

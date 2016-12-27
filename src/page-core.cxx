@@ -46,7 +46,7 @@
 
 namespace page {
 
-using namespace wcxx;
+using namespace wayland_cxx_wrapper;
 
 FILE * page_core::logfile = nullptr;
 

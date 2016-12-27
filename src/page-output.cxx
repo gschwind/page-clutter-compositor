@@ -34,7 +34,7 @@ static void wrapper_bind_wl_output(struct wl_client *client, void *data, uint32_
 page_output::page_output(page_core * core) :
 		core{core}
 {
-	global = wl_global_create(core->dpy, &wl_output_interface, wcxx::wl_output_vtable::INTERFACE_VERSION, this, &wrapper_bind_wl_output);
+	global = wl_global_create(core->dpy, &wl_output_interface, wayland_cxx_wrapper::wl_output_vtable::INTERFACE_VERSION, this, &wrapper_bind_wl_output);
 
 
 	/* TODO: create a real mode */
