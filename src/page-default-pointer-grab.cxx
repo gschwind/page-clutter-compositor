@@ -20,6 +20,8 @@
 
 #include "page-default-pointer-grab.hxx"
 #include "page-pointer.hxx"
+#include "page-keyboard.hxx"
+#include "page-seat.hxx"
 
 namespace page {
 
@@ -44,6 +46,7 @@ void page_default_pointer_grab::focus(ClutterEvent const & event)
 	wl_fixed_t sx, sy;
 	auto surface = pointer->pick_actor(&event, sx, sy);
 	pointer->set_focus(surface, sx, sy);
+
 }
 
 void page_default_pointer_grab::motion(ClutterEvent const & event)
@@ -54,6 +57,12 @@ void page_default_pointer_grab::motion(ClutterEvent const & event)
 void page_default_pointer_grab::button(ClutterEvent const & event)
 {
 	pointer->broadcast_button(event);
+
+	/* TODO: remove following because it must be set by the wm */
+	wl_fixed_t sx, sy;
+	auto surface = pointer->pick_actor(&event, sx, sy);
+	if(surface)
+		pointer->seat->keyboard->set_focus(surface);
 }
 
 void page_default_pointer_grab::axis(ClutterEvent const & event)

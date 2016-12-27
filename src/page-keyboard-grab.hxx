@@ -30,8 +30,8 @@ struct page_keyboard_grab {
 	page_keyboard_grab();
 	virtual ~page_keyboard_grab();
 
-	virtual void key(ClutterEvent const & event) = 0;
-	virtual void modifiers(ClutterEvent const & event) = 0;
+	virtual bool key(ClutterEvent const & event) = 0;
+	virtual void modifiers() = 0;
 	virtual void cancel() = 0;
 
 };

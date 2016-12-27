@@ -306,7 +306,7 @@ gboolean page_core::event_filter(ClutterEvent const * event)
 		break;
 	case CLUTTER_KEY_PRESS:
 	case CLUTTER_KEY_RELEASE:
-		seat->keyboard->handle_keyboard_event(*reinterpret_cast<ClutterKeyEvent const *>(event));
+		seat->keyboard->handle_keyboard_event(*event);
 		break;
 	case CLUTTER_NOTHING:
 		break;
@@ -418,6 +418,7 @@ void page_core::init(int * argc, char *** argv)
 	/* before clutter_init, give the wayland server display */
 	clutter_wayland_set_compositor_display(dpy);
 
+	clutter_set_windowing_backend("x11,*");
 	clutter_init(argc, argv);
 
 	wayland_init();

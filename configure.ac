@@ -16,7 +16,10 @@ AC_PROG_LIBTOOL
 AX_CXX_COMPILE_STDCXX_11
 
 PKG_CHECK_MODULES(CLUTTER, [
-	egl
+	xkbcommon
+	xkbcommon-x11
+	x11-xcb
+	xcb
 	cogl-1.0 >= 1.22.1
 	clutter-1.0 >= 1.26.0
 	clutter-wayland-compositor-1.0 >= 1.26.0

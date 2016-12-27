@@ -20,6 +20,8 @@
 
 #include "wl-keyboard.hxx"
 
+#include <wayland-server-protocol.h>
+
 #include "page-keyboard.hxx"
 
 namespace page {
@@ -30,7 +32,11 @@ wl_keyboard::wl_keyboard(struct wl_client *client, uint32_t version, uint32_t id
 		keyboard{keyboard}
 {
 	keyboard->register_keyboard(this);
-
+	if (keyboard->keyboard_info.keymap_fd != -1)
+		send_keymap(WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,
+				keyboard->keyboard_info.keymap_fd,
+				keyboard->keyboard_info.keymap_size);
+	send_repeat_info(400, 400);
 }
 
 wl_keyboard::~wl_keyboard() {

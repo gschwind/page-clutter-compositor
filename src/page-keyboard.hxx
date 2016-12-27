@@ -25,6 +25,7 @@
 #include <unordered_map>
 #include <wayland-server-core.h>
 #include <clutter/clutter.h>
+#include <xkbcommon/xkbcommon.h>
 
 #include "page-types.hxx"
 #include "wl/wl-types.hxx"
@@ -43,8 +44,28 @@ struct page_keyboard {
 	uint32_t focus_serial;
 	uint32_t key_serial;
 
+	enum xkb_state_component mods_changed;
+
 	page_keyboard_grab * grab;
 	page_keyboard_grab * default_grab;
+
+	struct {
+		struct xkb_keymap *keymap;
+		struct xkb_state *state;
+		int keymap_fd;
+		size_t keymap_size;
+		char *keymap_area;
+
+		xkb_mod_index_t shift_mod;
+		xkb_mod_index_t caps_mod;
+		xkb_mod_index_t ctrl_mod;
+		xkb_mod_index_t alt_mod;
+		xkb_mod_index_t mod2_mod;
+		xkb_mod_index_t mod3_mod;
+		xkb_mod_index_t super_mod;
+		xkb_mod_index_t mod5_mod;
+
+	} keyboard_info;
 
 //	struct weston_keyboard_grab *grab;
 //	struct weston_keyboard_grab default_grab;
@@ -74,9 +95,17 @@ struct page_keyboard {
 	page_keyboard(page_seat * seat);
 	~page_keyboard();
 
-	bool handle_keyboard_event(ClutterKeyEvent const & event);
+	void inform_clients_of_new_keymap();
+	void update_xkb_state();
+	struct xkb_keymap * x11_get_keymap();
+	void take_keymap(struct xkb_keymap   *keymap);
+
+	bool handle_keyboard_event(ClutterEvent const & event);
 	bool broadcast_key(uint32_t time, uint32_t key, uint32_t state);
 	void broadcast_modifiers();
+
+	void broadcast_focus();
+	void set_focus (wl::wl_surface * surface);
 
 	void register_keyboard(wl::wl_keyboard * keyboard);
 	void unregister_keyboard(wl::wl_keyboard * keyboard);

@@ -23,6 +23,7 @@
 
 #include "wayland-server-core.h"
 #include <cairo/cairo.h>
+#include <glib.h>
 
 #include <memory>
 #include <map>
@@ -61,6 +62,7 @@ vector<shared_ptr<T0>> lock(list<weak_ptr<T0>> & x) {
 }
 
 cairo_region_t * cairo_region_create_infini();
+int create_anonymous_file(off_t size, GError **error);
 
 }
 

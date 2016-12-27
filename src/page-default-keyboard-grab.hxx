@@ -33,8 +33,8 @@ struct page_default_keyboard_grab : public page_keyboard_grab {
 	page_default_keyboard_grab(page_keyboard * keyboard);
 	virtual ~page_default_keyboard_grab();
 
-	virtual void key(ClutterEvent const & event) override;
-	virtual void modifiers(ClutterEvent const & event) override;
+	virtual bool key(ClutterEvent const & event) override;
+	virtual void modifiers() override;
 	virtual void cancel() override;
 
 };

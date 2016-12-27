@@ -36,14 +36,24 @@ page_default_keyboard_grab::~page_default_keyboard_grab()
 	// TODO Auto-generated destructor stub
 }
 
-void page_default_keyboard_grab::key(ClutterEvent const & event)
+bool page_default_keyboard_grab::key(ClutterEvent const & event)
 {
+	  gboolean is_press = event.type == CLUTTER_KEY_PRESS;
+	  guint32 code;
 
+	  /* Synthetic key events are for autorepeat. Ignore those, as
+	   * autorepeat in Wayland is done on the client side. */
+	  if (event.key.flags & CLUTTER_EVENT_FLAG_SYNTHETIC)
+	    return false;
+
+	  /* x11 use keycode + 8 */
+	  code = event.key.hardware_keycode - 8;
+	  return keyboard->broadcast_key(event.key.time, code, is_press);
 }
 
-void page_default_keyboard_grab::modifiers(ClutterEvent const & event)
+void page_default_keyboard_grab::modifiers()
 {
-
+	keyboard->broadcast_modifiers();
 }
 
 void page_default_keyboard_grab::cancel()
