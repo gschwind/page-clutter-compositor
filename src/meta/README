@@ -1,0 +1,26 @@
+
+Folowing files are unmodifed[*] files from libmutter:
+-> clutter-utils.c
+-> clutter-utils.h
+-> meta-cullable.c
+-> meta-cullable.h
+-> meta-shaped-texture.c
+-> meta-shaped-texture.h
+-> meta-shaped-texture-private.h
+-> meta-surface-actor.c
+-> meta-surface-actor.h
+-> meta-texture-rectangle.c
+-> meta-texture-rectangle.h
+-> meta-texture-tower.c
+-> meta-texture-tower.h
+-> region-utils.c
+-> region-utils.h
+
+Folowing files make the interface to unmodifier files:
+-> meta-surface-actor-wayland.cxx
+-> meta-surface-actor-wayland.hxx
+-> window.h
+
+[*] unmodified file have few trivials fix due to bug in original files. Those 
+modofication can be rewriten on updates and are likely to desapear with time,
+because they are ovious bug.
