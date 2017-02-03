@@ -1,7 +1,8 @@
+AC_PREREQ([2.69])
 AC_INIT([page-compositor], [0.0.1])
 AC_CONFIG_MACRO_DIR([m4])
 
-AM_INIT_AUTOMAKE([-Wall subdir-objects])
+AM_INIT_AUTOMAKE([-Wall gnu])
 AC_CONFIG_SRCDIR([src/main.cxx])
 AC_CONFIG_HEADERS([src/config.hxx])
 
@@ -9,6 +10,7 @@ CHECK_GNU_MAKE
 
 dnl Check for required programs
 AC_GNU_SOURCE
+AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_LIBTOOL
 
@@ -20,6 +22,7 @@ PKG_CHECK_MODULES(CLUTTER, [
 	xkbcommon-x11
 	x11-xcb
 	xcb
+	gdk-3.0 >= 3.20.9
 	cogl-1.0 >= 1.22.1
 	clutter-1.0 >= 1.26.0
 	clutter-wayland-compositor-1.0 >= 1.26.0
@@ -27,6 +30,7 @@ PKG_CHECK_MODULES(CLUTTER, [
 	clutter-x11-1.0 >= 1.26.0
 	clutter-egl-1.0 >= 1.26.0
 	clutter-cogl-1.0 >= 1.26.0
+	clutter-gdk-1.0 >= 1.26.0
 ])
 	
 AC_SUBST(CLUTTER_CFLAGS)
