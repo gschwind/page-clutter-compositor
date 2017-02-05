@@ -130,7 +130,7 @@ void page_t::destroy_surface(surface_t * s) {
 }
 
 void page_t::start_move(surface_t * s, struct weston_seat * seat, uint32_t serial) {
-	//weston_log("call %s\n", __PRETTY_FUNCTION__);
+	//printf("call %s\n", __PRETTY_FUNCTION__);
 	if(s->_master_view.expired())
 		return;
 
@@ -170,7 +170,7 @@ static void ack_buffer(struct wl_client *client,
 		   wl_resource * buffer) {
 	auto ths = reinterpret_cast<page_t*>(wl_resource_get_user_data(resource));
 
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 
 	auto x = std::find_if(ths->pixmap_list.begin(), ths->pixmap_list.end(),
 			[serial](pixmap_p p) -> bool{
@@ -183,7 +183,7 @@ static void ack_buffer(struct wl_client *client,
 }
 
 static void xx_buffer_delete(wl_resource * r) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	/* TODO */
 }
 
@@ -222,7 +222,7 @@ void page_t::bind_wl_shell(struct wl_client * client, void * data,
 void page_t::print_tree_binding(struct weston_keyboard *keyboard, uint32_t time,
 		  uint32_t key, void *data) {
 	page_t * ths = reinterpret_cast<page_t *>(data);
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	ths->_root->print_tree(0);
 }
 
@@ -437,7 +437,7 @@ void page_t::run() {
 	_dpy = wl_display_create();
 
 	auto sock_name = wl_display_add_socket_auto(_dpy);
-	weston_log("socket name = %s\n", sock_name);
+	printf("socket name = %s\n", sock_name);
 
 	/* set the environment for children */
 	setenv("WAYLAND_DISPLAY", sock_name, 1);
@@ -466,7 +466,7 @@ void page_t::run() {
 	 *
 	 */
 	ec = weston_compositor_create(_dpy, nullptr);
-	weston_log("weston_compositor = %p\n", ec);
+	printf("weston_compositor = %p\n", ec);
 
 	ec->user_data = this;
 	ec->vt_switching = 1;
@@ -596,7 +596,7 @@ void page_t::handle_quit_page(weston_keyboard * wk, uint32_t time, uint32_t key)
 }
 
 void page_t::handle_toggle_fullscreen(weston_keyboard * wk, uint32_t time, uint32_t key) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	if(_current_focus.expired())
 		return;
 	auto v = _current_focus.lock();
@@ -608,7 +608,7 @@ void page_t::handle_toggle_fullscreen(weston_keyboard * wk, uint32_t time, uint3
 }
 
 void page_t::handle_close_window(weston_keyboard * wk, uint32_t time, uint32_t key) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	if(_current_focus.expired())
 		return;
 	auto v = _current_focus.lock();
@@ -624,7 +624,7 @@ void page_t::handle_goto_desktop_at_left(weston_keyboard * wk, uint32_t time, ui
 }
 
 void page_t::handle_bind_window(weston_keyboard * wk, uint32_t time, uint32_t key) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	if(_current_focus.expired())
 		return;
 	auto v = _current_focus.lock();
@@ -640,7 +640,7 @@ void page_t::handle_bind_window(weston_keyboard * wk, uint32_t time, uint32_t ke
 }
 
 void page_t::handle_set_fullscreen_window(weston_keyboard * wk, uint32_t time, uint32_t key) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	if(_current_focus.expired())
 		return;
 	auto v = _current_focus.lock();
@@ -650,7 +650,7 @@ void page_t::handle_set_fullscreen_window(weston_keyboard * wk, uint32_t time, u
 }
 
 void page_t::handle_set_floating_window(weston_keyboard * wk, uint32_t time, uint32_t key) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	if(_current_focus.expired())
 		return;
 	auto v = _current_focus.lock();
@@ -707,52 +707,52 @@ void page_t::handle_alt_right_button(struct weston_pointer *pointer, uint32_t ti
 }
 
 void page_t::handle_bind_cmd_0(weston_keyboard * wk, uint32_t time, uint32_t key) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	run_cmd(bind_cmd[0].cmd);
 }
 
 void page_t::handle_bind_cmd_1(weston_keyboard * wk, uint32_t time, uint32_t key) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	run_cmd(bind_cmd[1].cmd);
 }
 
 void page_t::handle_bind_cmd_2(weston_keyboard * wk, uint32_t time, uint32_t key) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	run_cmd(bind_cmd[2].cmd);
 }
 
 void page_t::handle_bind_cmd_3(weston_keyboard * wk, uint32_t time, uint32_t key) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	run_cmd(bind_cmd[3].cmd);
 }
 
 void page_t::handle_bind_cmd_4(weston_keyboard * wk, uint32_t time, uint32_t key) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	run_cmd(bind_cmd[4].cmd);
 }
 
 void page_t::handle_bind_cmd_5(weston_keyboard * wk, uint32_t time, uint32_t key) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	run_cmd(bind_cmd[5].cmd);
 }
 
 void page_t::handle_bind_cmd_6(weston_keyboard * wk, uint32_t time, uint32_t key) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	run_cmd(bind_cmd[6].cmd);
 }
 
 void page_t::handle_bind_cmd_7(weston_keyboard * wk, uint32_t time, uint32_t key) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	run_cmd(bind_cmd[7].cmd);
 }
 
 void page_t::handle_bind_cmd_8(weston_keyboard * wk, uint32_t time, uint32_t key) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	run_cmd(bind_cmd[8].cmd);
 }
 
 void page_t::handle_bind_cmd_9(weston_keyboard * wk, uint32_t time, uint32_t key) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	run_cmd(bind_cmd[9].cmd);
 }
 
@@ -1441,7 +1441,7 @@ void page_t::insert_window_in_notebook(view_p x, notebook_p n) {
 
 void page_t::set_keyboard_focus(struct weston_seat * seat,
 		shared_ptr<view_t> new_focus) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	assert(new_focus != nullptr);
 	assert(new_focus->get_default_view() != nullptr);
 
@@ -1865,7 +1865,7 @@ void page_t::remove_viewport(workspace_p d, viewport_p v) {
 }
 
 void page_t::manage_client(surface_t * s) {
-	weston_log("call %s %p\n", __PRETTY_FUNCTION__, this);
+	printf("call %s %p\n", __PRETTY_FUNCTION__, this);
 
 	auto view = make_shared<view_t>(this, s);
 	s->_master_view = view;
@@ -1942,7 +1942,7 @@ void page_t::manage_client(surface_t * s) {
 }
 
 void page_t::manage_popup(surface_t * s) {
-	weston_log("call %s %p\n", __PRETTY_FUNCTION__, this);
+	printf("call %s %p\n", __PRETTY_FUNCTION__, this);
 	assert(s->_parent != nullptr);
 
 	auto grab = dynamic_cast<grab_popup_t *>(_grab_handler);
@@ -1956,7 +1956,7 @@ void page_t::manage_popup(surface_t * s) {
 	if(parent_view != nullptr) {
 		auto view = make_shared<view_t>(this, s);
 		s->_master_view = view;
-		weston_log("%s x=%d, y=%d\n", __PRETTY_FUNCTION__, s->_x_offset, s->_y_offset);
+		printf("%s x=%d, y=%d\n", __PRETTY_FUNCTION__, s->_x_offset, s->_y_offset);
 		parent_view->add_popup_child(view, s->_x_offset, s->_y_offset);
 		sync_tree_view();
 		if(s->_seat) {
@@ -1974,7 +1974,7 @@ void page_t::manage_popup(surface_t * s) {
 }
 
 void page_t::configure_popup(surface_t * s) {
-	weston_log("call %s %p\n", __PRETTY_FUNCTION__, this);
+	printf("call %s %p\n", __PRETTY_FUNCTION__, this);
 	s->send_configure_popup(s->_x_offset, s->_y_offset, s->width(), s->height());
 }
 
@@ -2152,7 +2152,7 @@ void page_t::bind_key(xkb_keymap * keymap, key_desc_t & key) {
 	if(ks == XKB_KEY_NoSymbol)
 		return;
 	int kc = find_keycode_for_keysim(keymap, ks);
-	weston_log("bind '%s' : %d, %d\n", key.keysym_name.c_str(), kc, ks);
+	printf("bind '%s' : %d, %d\n", key.keysym_name.c_str(), kc, ks);
 
 	if (kc != XKB_KEYCODE_INVALID) {
 		/* HOWTO lose time: there is a fixes offset (8) between keycode from xkbcommon and
@@ -2166,7 +2166,7 @@ void page_t::bind_key(xkb_keymap * keymap, key_desc_t & key) {
 }
 
 void page_t::on_seat_created(weston_seat * seat) {
-	weston_log("call %s %p\n", __PRETTY_FUNCTION__, this);
+	printf("call %s %p\n", __PRETTY_FUNCTION__, this);
 
 	auto xkb_ctx = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
 	auto keymap = xkb_keymap_new_from_names(xkb_ctx, &ec->xkb_names, XKB_KEYMAP_COMPILE_NO_FLAGS);
@@ -2976,22 +2976,22 @@ void page_t::connect_all() {
 
 	wl_list_init(&session.link);
 
-	destroy.notify = [](wl_listener *l, void *data) { weston_log("compositor::destroy\n"); };
-    create_surface.notify = [](wl_listener *l, void *data) { weston_log("compositor::create_surface\n"); };
-    activate.notify = [](wl_listener *l, void *data) { weston_log("compositor::activate\n"); };
-    transform.notify = [](wl_listener *l, void *data) { /*weston_log("compositor::transform\n");*/ };
-    kill.notify = [](wl_listener *l, void *data) { weston_log("compositor::kill\n"); };
-    idle.notify = [](wl_listener *l, void *data) { weston_log("compositor::idle\n"); };
-    wake.notify = [](wl_listener *l, void *data) { weston_log("compositor::wake\n"); };
-    show_input_panel.notify = [](wl_listener *l, void *data) { weston_log("compositor::show_input_panel\n"); };
-    hide_input_panel.notify = [](wl_listener *l, void *data) { weston_log("compositor::hide_input_panel\n"); };
-    update_input_panel.notify = [](wl_listener *l, void *data) { weston_log("compositor::update_input_panel\n"); };
+	destroy.notify = [](wl_listener *l, void *data) { printf("compositor::destroy\n"); };
+    create_surface.notify = [](wl_listener *l, void *data) { printf("compositor::create_surface\n"); };
+    activate.notify = [](wl_listener *l, void *data) { printf("compositor::activate\n"); };
+    transform.notify = [](wl_listener *l, void *data) { /*printf("compositor::transform\n");*/ };
+    kill.notify = [](wl_listener *l, void *data) { printf("compositor::kill\n"); };
+    idle.notify = [](wl_listener *l, void *data) { printf("compositor::idle\n"); };
+    wake.notify = [](wl_listener *l, void *data) { printf("compositor::wake\n"); };
+    show_input_panel.notify = [](wl_listener *l, void *data) { printf("compositor::show_input_panel\n"); };
+    hide_input_panel.notify = [](wl_listener *l, void *data) { printf("compositor::hide_input_panel\n"); };
+    update_input_panel.notify = [](wl_listener *l, void *data) { printf("compositor::update_input_panel\n"); };
 
-    output_destroyed.notify = [](wl_listener *l, void *data) { weston_log("compositor::output_destroyed\n"); };
-    output_moved.notify = [](wl_listener *l, void *data) { weston_log("compositor::output_moved\n"); };
-	output_resized.notify =  [](wl_listener *l, void *data) { weston_log("compositor::output_resized\n"); };
+    output_destroyed.notify = [](wl_listener *l, void *data) { printf("compositor::output_destroyed\n"); };
+    output_moved.notify = [](wl_listener *l, void *data) { printf("compositor::output_moved\n"); };
+	output_resized.notify =  [](wl_listener *l, void *data) { printf("compositor::output_resized\n"); };
 
-    session.notify = [](wl_listener *l, void *data) { weston_log("compositor::session\n"); };
+    session.notify = [](wl_listener *l, void *data) { printf("compositor::session\n"); };
 
     wl_signal_add(&ec->destroy_signal, &destroy);
     wl_signal_add(&ec->create_surface_signal, &create_surface);
@@ -3012,13 +3012,13 @@ void page_t::connect_all() {
 }
 
 void page_t::on_output_created(weston_output * output) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	_outputs.push_back(output);
 	update_viewport_layout();
 }
 
 void page_t::on_output_pending(weston_output * output) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 
 	if (use_x11_backend) {
 		weston_output_set_scale(output, 1);
@@ -3035,12 +3035,12 @@ void page_t::on_output_pending(weston_output * output) {
 		const struct weston_drm_output_api *api = weston_drm_output_get_api(output->compositor);
 
 		if (!api) {
-			weston_log("Cannot use weston_drm_output_api.\n");
+			printf("Cannot use weston_drm_output_api.\n");
 			return;
 		}
 
 		if (api->set_mode(output, WESTON_DRM_BACKEND_OUTPUT_CURRENT, NULL) < 0) {
-			weston_log("Cannot configure an output using weston_drm_output_api.\n");
+			printf("Cannot configure an output using weston_drm_output_api.\n");
 			return;
 		}
 
@@ -3064,7 +3064,7 @@ void page_t::sync_tree_view() {
 	/* create the list of weston views */
 	list<weston_view *> views;
 	auto children = _root->get_all_children();
-	weston_log("found %lu children\n", children.size());
+	printf("found %lu children\n", children.size());
 	for(auto x: children) {
 		auto v = x->get_default_view();
 		if(v)
@@ -3073,7 +3073,7 @@ void page_t::sync_tree_view() {
 
 	//_root->print_tree(0);
 
-	weston_log("found %lu views\n", views.size());
+	printf("found %lu views\n", views.size());
 
 	/* remove all existing views */
 	weston_layer_entry * nxt;
@@ -3091,7 +3091,7 @@ void page_t::sync_tree_view() {
 
 	wl_list_for_each_safe(cur, nxt, &default_layer.view_list.link, link) {
 		weston_view * v = wl_container_of(cur, v, layer_link);
-		weston_log("view=%p,output=%p,role='%s',surface=%p,x=%f,y=%f\n", v, v->output, weston_surface_get_role(v->surface), v->surface, v->geometry.x, v->geometry.y);
+		printf("view=%p,output=%p,role='%s',surface=%p,x=%f,y=%f\n", v, v->output, weston_surface_get_role(v->surface), v->surface, v->geometry.x, v->geometry.y);
 	}
 
 	schedule_repaint();

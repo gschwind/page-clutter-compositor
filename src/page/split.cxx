@@ -274,7 +274,7 @@ bool split_t::button(weston_pointer_grab * grab, uint32_t time,
 		return false;
 	}
 
-	weston_log("button = %d\n", button);
+	printf("button = %d\n", button);
 
 	wl_fixed_t vx, vy;
 

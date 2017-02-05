@@ -223,7 +223,7 @@ void viewport_t::create_window() {
 }
 
 void viewport_t::_redraw_back_buffer() {
-	//weston_log("call %s\n", __PRETTY_FUNCTION__);
+	//printf("call %s\n", __PRETTY_FUNCTION__);
 
 	if(_pix->get_cairo_surface() == nullptr)
 		return;
@@ -233,11 +233,11 @@ void viewport_t::_redraw_back_buffer() {
 
 	cairo_t * cr = cairo_create(_pix->get_cairo_surface());
 	if(cairo_status(cr)) {
-		weston_log("XXX %s\n", cairo_status_to_string(cairo_status(cr)));
+		printf("XXX %s\n", cairo_status_to_string(cairo_status(cr)));
 	}
 	cairo_identity_matrix(cr);
 	if(cairo_status(cr)) {
-		weston_log("XXX %s\n", cairo_status_to_string(cairo_status(cr)));
+		printf("XXX %s\n", cairo_status_to_string(cairo_status(cr)));
 	}
 
 	cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
@@ -361,7 +361,7 @@ void viewport_t::get_min_allocation(int & width, int & height) const {
 }
 
 auto viewport_t::get_output() const -> weston_output * {
-	weston_log("xxxx %p\n", _output);
+	printf("xxxx %p\n", _output);
 	return _output;
 }
 

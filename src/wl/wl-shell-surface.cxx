@@ -61,7 +61,7 @@ wl_shell_surface::wl_shell_surface(struct wl_client *client, uint32_t version, u
 
 wl_shell_surface::~wl_shell_surface() {
 	// TODO Auto-generated destructor stub
-	weston_log("call %s %p\n", __PRETTY_FUNCTION__, this);
+	printf("call %s %p\n", __PRETTY_FUNCTION__, this);
 	if(_surface) {
 		on_surface_destroy.disconnect();
 		on_surface_commit.disconnect();

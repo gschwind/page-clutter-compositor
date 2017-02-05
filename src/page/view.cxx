@@ -48,11 +48,11 @@ view_t::view_t(
 	_has_keyboard_focus{false},
 	_has_change{true}
 {
-	weston_log("call %s %p\n", __PRETTY_FUNCTION__, this);
+	printf("call %s %p\n", __PRETTY_FUNCTION__, this);
 
 	rect pos{0, 0, std::max(_page_surface->width(), 1), std::max(_page_surface->height(), 1)};
 
-	weston_log("window default position = %s\n", pos.to_string().c_str());
+	printf("window default position = %s\n", pos.to_string().c_str());
 
 	_managed_type = MANAGED_UNCONFIGURED;
 
@@ -82,7 +82,7 @@ view_t::view_t(
 }
 
 view_t::~view_t() {
-	weston_log("call %s %p\n", __PRETTY_FUNCTION__, this);
+	printf("call %s %p\n", __PRETTY_FUNCTION__, this);
 	if(_default_view) {
 		weston_view_destroy(_default_view);
 		_default_view = nullptr;
@@ -94,7 +94,7 @@ auto view_t::shared_from_this() -> view_p {
 }
 
 void view_t::update_view() {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 
 	if (is(MANAGED_NOTEBOOK) or is(MANAGED_FULLSCREEN)) {
 		_wished_position = _notebook_wished_position;
@@ -211,7 +211,7 @@ void view_t::update_layout(time64_t const time) {
 }
 
 void view_t::set_focus_state(bool is_focused) {
-	weston_log("set_focus_state(%s) %p\n", is_focused?"true":"false", this);
+	printf("set_focus_state(%s) %p\n", is_focused?"true":"false", this);
 	_has_keyboard_focus = is_focused;
 	focus_change.emit(this);
 }

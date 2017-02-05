@@ -81,7 +81,7 @@ void notebook_t::replace(shared_ptr<page_component_t> src, shared_ptr<page_compo
 }
 
 void notebook_t::remove(shared_ptr<tree_t> src) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	auto mw = dynamic_pointer_cast<view_t>(src);
 	if (_has_client(mw)) {
 		_remove_client(mw);
@@ -98,7 +98,7 @@ void notebook_t::_activate_client(view_p x) {
 void notebook_t::_remove_client(view_p x) {
 	auto x_client_context = _find_client_context(x);
 
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 
 	if(x_client_context == _clients_tab_order.end())
 		return;
@@ -358,7 +358,7 @@ string notebook_t::get_node_name() const {
 }
 
 void notebook_t::render_legacy(cairo_t * cr) {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	update_layout();
 	_ctx->theme()->render_notebook(cr, &_theme_notebook);
 
@@ -868,7 +868,7 @@ bool notebook_t::button(weston_pointer_grab * grab, uint32_t time,
 		return false;
 	}
 
-	weston_log("button = %d\n", button);
+	printf("button = %d\n", button);
 
 	wl_fixed_t vx, vy;
 
@@ -1099,7 +1099,7 @@ bool notebook_t::motion(weston_pointer_grab * grab, uint32_t time, weston_pointe
 	double y = wl_fixed_to_double(vy);
 
 
-	//weston_log("event x=%f, y=%f\n", x, y);
+	//printf("event x=%f, y=%f\n", x, y);
 
 	_has_mouse_change = true;
 	_mouse_over.event_x = x;
@@ -1299,7 +1299,7 @@ void notebook_t::get_min_allocation(int & width, int & height) const {
 }
 
 auto notebook_t::get_output() const -> weston_output * {
-	weston_log("????\n");
+	printf("????\n");
 	return dynamic_cast<page_component_t const *>(_parent)->get_output();
 }
 

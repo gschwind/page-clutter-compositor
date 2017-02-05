@@ -58,7 +58,7 @@ xdg_v5_surface::~xdg_v5_surface()
 /* xdg_surface_vtable */
 void xdg_v5_surface::recv_destroy(struct wl_client * client, struct wl_resource * resource)
 {
-	weston_log("call %s %p\n", __PRETTY_FUNCTION__, this);
+	printf("call %s %p\n", __PRETTY_FUNCTION__, this);
 	_ctx->destroy_surface(this);
 	destroy.emit(this);
 	wl_resource_destroy(_self_resource);

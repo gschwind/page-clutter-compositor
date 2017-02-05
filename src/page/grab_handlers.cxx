@@ -69,7 +69,7 @@ void grab_popup_t::frame() {
 
 void grab_popup_t::cancel() {
 	/* TODO */
-	//weston_log("call %s\n", __PRETTY_FUNCTION__);
+	//printf("call %s\n", __PRETTY_FUNCTION__);
 	//_ctx->grab_stop(base.grab.pointer);
 }
 
@@ -408,7 +408,7 @@ void grab_floating_move_t::motion(ClutterEvent const & event)
 //	double x = wl_fixed_to_double(pointer->x);
 //	double y = wl_fixed_to_double(pointer->y);
 //
-//	weston_log("x = %f, y = %f\n", x, y);
+//	printf("x = %f, y = %f\n", x, y);
 //
 //	/* compute new window position */
 //	rect new_position = original_position;

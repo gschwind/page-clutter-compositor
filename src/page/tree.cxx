@@ -249,7 +249,7 @@ void tree_t::print_tree(int level) const {
 	};
 	if(level >= 10)
 		return;
-	weston_log("%s%s\n", space[level], get_node_name().c_str());
+	printf("%s%s\n", space[level], get_node_name().c_str());
 	for (auto i : children()) {
 		i->print_tree(level + 1);
 	}

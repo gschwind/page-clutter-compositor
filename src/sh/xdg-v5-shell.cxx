@@ -71,7 +71,7 @@ void xdg_v5_shell::recv_get_xdg_surface(struct wl_client * client, struct wl_res
 	xdg_surface_toplevel_map[id] = xdg_surface;
 	connect(xdg_surface->destroy, this, &xdg_shell_client_t::destroy_toplevel);
 
-	weston_log("exit %s\n", __PRETTY_FUNCTION__);
+	printf("exit %s\n", __PRETTY_FUNCTION__);
 
 	auto surface = wl::wl_surface::get(surface_resource);
 	new xdg_v5_surface(client, wl_resource_get_version(resource), id, this, surface);
@@ -79,13 +79,13 @@ void xdg_v5_shell::recv_get_xdg_surface(struct wl_client * client, struct wl_res
 
 void xdg_v5_shell::recv_get_xdg_popup(struct wl_client * client, struct wl_resource * resource, uint32_t id, struct wl_resource * surface, struct wl_resource * parent, struct wl_resource * seat, uint32_t serial, int32_t x, int32_t y)
 {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	/* In our case nullptr */
 	auto surface = resource_get<weston_surface>(surface_resource);
 	auto parent = resource_get<weston_surface>(parent_resource);
 	auto seat = resource_get<weston_seat>(seat_resource);
 
-	weston_log("p=%p, x=%d, y=%d\n", surface, x, y);
+	printf("p=%p, x=%d, y=%d\n", surface, x, y);
 
 	/* disable shared_ptr for now, the resource is managed by wl_resource */
 	auto xdg_popup = new xdg_surface_popup_t(_ctx, client, resource,
@@ -99,13 +99,13 @@ void xdg_v5_shell::recv_get_xdg_popup(struct wl_client * client, struct wl_resou
 
 void xdg_v5_shell::recv_pong(struct wl_client * client, struct wl_resource * resource, uint32_t serial)
 {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 
 }
 
 void xdg_v5_shell::delete_resource(struct wl_resource * resource)
 {
-	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	delete this;
 }
 
