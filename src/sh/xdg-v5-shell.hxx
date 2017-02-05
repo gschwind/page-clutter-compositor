@@ -32,6 +32,20 @@ using namespace wayland_cxx_wrapper;
 struct xdg_v5_shell : public xdg_shell_vtable {
 	page_core * core;
 
+	page_context_t * _ctx;
+
+	wl_client * client;
+
+	/* resource created for xdg_shell */
+	wl_resource * xdg_shell_resource;
+
+	signal<xdg_shell_client_t *> destroy;
+
+	map<uint32_t, xdg_surface_toplevel_t *> xdg_surface_toplevel_map;
+	map<uint32_t, xdg_surface_popup_t *> xdg_surface_popup_map;
+
+	map<struct weston_surface *, xdg_surface_base_t *> surfaces_map;
+
 	xdg_v5_shell(struct wl_client *client, uint32_t version, uint32_t id, page_core * core);
 	virtual ~xdg_v5_shell();
 

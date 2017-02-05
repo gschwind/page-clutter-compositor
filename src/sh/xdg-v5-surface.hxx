@@ -31,9 +31,51 @@ namespace sh {
 
 using namespace wayland_cxx_wrapper;
 
-struct xdg_v5_surface : public xdg_surface_vtable {
+struct xdg_v5_surface : public xdg_surface_vtable, public surface_t {
 	xdg_v5_shell * shell;
 	wl::wl_surface * surface;
+
+	page_context_t *       _ctx;
+	wl_client *            _client;
+	weston_surface *       _surface;
+	uint32_t               _id;
+	struct wl_resource *   _resource;
+	wl_listener            _surface_destroy;
+
+	wl_listener_t<struct weston_surface> on_surface_destroy;
+	wl_listener_t<struct weston_surface> on_surface_commit;
+
+	friend class page::page_t;
+
+	struct _state {
+		std::string title;
+		bool fullscreen;
+		bool maximized;
+		bool minimized;
+		surface_t * transient_for;
+		rect geometry;
+
+		_state() {
+			fullscreen = false;
+			maximized = false;
+			minimized = false;
+			title = "";
+			transient_for = nullptr;
+			geometry = rect{0,0,0,0};
+		}
+
+	} _pending, _current;
+
+	/* 0 if ack by client, otherwise the last serial sent */
+	uint32_t _ack_serial;
+
+	signal<xdg_surface_toplevel_t *> destroy;
+
+	static map<uint32_t, edge_e> const _edge_map;
+
+	/* avoid copy */
+	xdg_v5_surface(xdg_v5_surface const &) = delete;
+	xdg_v5_surface & operator=(xdg_v5_surface const &) = delete;
 
 	xdg_v5_surface(struct wl_client *client, uint32_t version, uint32_t id, xdg_v5_shell * shell, wl::wl_surface * surface);
 	virtual ~xdg_v5_surface();
@@ -54,6 +96,17 @@ struct xdg_v5_surface : public xdg_surface_vtable {
 	virtual void recv_unset_fullscreen(struct wl_client * client, struct wl_resource * resource) override;
 	virtual void recv_set_minimized(struct wl_client * client, struct wl_resource * resource) override;
 	virtual void delete_resource(struct wl_resource * resource) override;
+
+	/* page_surface_interface */
+	virtual weston_surface * surface() const override;
+	virtual weston_view * create_weston_view() override;
+	virtual int32_t width() const override;
+	virtual int32_t height() const override;
+	virtual string const & title() const override;
+	virtual void send_configure(int32_t width, int32_t height, set<uint32_t> const & states) override;
+	virtual void send_close() override;
+	virtual void send_configure_popup(int32_t x, int32_t y, int32_t width, int32_t height) override;
+
 
 };
 

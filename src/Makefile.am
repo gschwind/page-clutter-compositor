@@ -49,6 +49,109 @@ BUILT_SOURCES = \
 	wayland-interface.hxx
 
 page_compositor_SOURCES = \
+	page/blur_image_surface.cxx \
+	page/dropdown_menu.cxx \
+	page/grab_handlers.cxx \
+	page/keyboard-grab-handler.cxx \
+	page/leak_checker.cxx \
+	page/notebook.cxx \
+	page/page.cxx \
+	page/page_region_test.cxx \
+	page/page_root.cxx \
+	page/pixmap.cxx \
+	page/pointer-grab-handler.cxx \
+	page/popup_alt_tab.cxx \
+	page/simple2_theme.cxx \
+	page/split.cxx \
+	page/surface.cxx \
+	page/tiny_theme.cxx \
+	page/tree.cxx \
+	page/view.cxx \
+	page/viewport.cxx \
+	page/wl-shell-shell.cxx \
+	page/xwl-shell-surface.cxx \
+	page/workspace.cxx \
+	page/xdg-shell-v5-shell.cxx \
+	page/xdg-shell-v5-surface-base.cxx \
+	page/xdg-shell-v5-surface-popup.cxx \
+	page/xdg-shell-v5-surface-toplevel.cxx \
+	page/xdg-shell-v6-popup.cxx \
+	page/xdg-shell-v6-positioner.cxx \
+	page/xdg-shell-v6-shell.cxx \
+	page/xdg-shell-v6-surface.cxx \
+	page/xdg-shell-v6-toplevel.cxx \
+	page/blur_image_surface.hxx \
+	page/box.hxx \
+	page/cairo_surface_type_name.hxx \
+	page/color.hxx \
+	page/compositor_overlay.hxx \
+	page/config.hxx \
+	page/dropdown_menu.hxx \
+	page/exception.hxx \
+	page/floating_event.hxx \
+	page/grab_handlers.hxx \
+	page/icon_handler.hxx \
+	page/icon.hxx \
+	page/keyboard-grab-handler.hxx \
+	page/key_desc.hxx \
+	page/keymap.hxx \
+	page/leak_checker.hxx \
+	page/listener.hxx \
+	page/mainloop.hxx \
+	page/motif_hints.hxx \
+	page/notebook.hxx \
+	page/page_component.hxx \
+	page/page_context.hxx \
+	page/page_event.hxx \
+	page/page_exception.hxx \
+	page/page.hxx \
+	page/page_root.hxx \
+	page/pixmap.hxx \
+	page/pointer-grab-handler.hxx \
+	page/popup_alt_tab.hxx \
+	page/popup_notebook0.hxx \
+	page/popup_split.hxx \
+	page/region.hxx \
+	page/renderable_empty.hxx \
+	page/renderable_floating_outer_gradien.hxx \
+	page/renderable.hxx \
+	page/renderable_notebook_fading.hxx \
+	page/renderable_pixmap.hxx \
+	page/renderable_solid.hxx \
+	page/renderable_thumbnail.hxx \
+	page/renderable_unmanaged_gaussian_shadow.hxx \
+	page/renderable_unmanaged_outer_gradien.hxx \
+	page/simple2_theme.hxx \
+	page/smart_pointer.hxx \
+	page/split.hxx \
+	page/surface.hxx \
+	page/theme.hxx \
+	page/theme_managed_window.hxx \
+	page/theme_notebook.hxx \
+	page/theme_split.hxx \
+	page/theme_tab.hxx \
+	page/time.hxx \
+	page/tiny_theme.hxx \
+	page/transition.hxx \
+	page/tree.hxx \
+	page/tree-types.hxx \
+	page/view.hxx \
+	page/viewport.hxx \
+	page/window_overlay.hxx \
+	page/wl-shell-shell.hxx \
+	page/xwl-shell-surface.hxx \
+	page/workspace.hxx \
+	page/x11_func_name.hxx \
+	page/xdg-popup-interface.hxx \
+	page/xdg-shell-v5-shell.hxx \
+	page/xdg-shell-v5-surface-base.hxx \
+	page/xdg-shell-v5-surface-popup.hxx \
+	page/xdg-shell-v5-surface-toplevel.hxx \
+	page/xdg-shell-v6-popup.hxx \
+	page/xdg-shell-v6-positioner.hxx \
+	page/xdg-shell-v6-shell.hxx \
+	page/xdg-shell-v6-surface.hxx \
+	page/xdg-shell-v6-toplevel.hxx \
 	meta/meta-surface-actor-wayland.cxx \
 	meta/meta-surface-actor-wayland.hxx \
 	meta/clutter-utils.c \
@@ -107,36 +210,40 @@ page_compositor_SOURCES = \
 	sh/xdg-v5-surface.hxx \
 	sh/xdg-v5-popup.cxx \
 	sh/xdg-v5-popup.hxx \
-	page-core.cxx \
-	page-core.hxx \
-	page-seat.cxx \
-	page-seat.hxx \
-	page-keyboard.cxx \
-	page-keyboard.hxx \
-	page-pointer.cxx \
-	page-pointer.hxx \
-	page-touch.cxx \
-	page-touch.hxx \
-	page-output.cxx \
-	page-output.hxx \
-	page-default-pointer-grab.cxx \
-	page-default-pointer-grab.hxx \
-	page-pointer-grab.cxx \
-	page-pointer-grab.hxx \
-	page-default-keyboard-grab.cxx \
-	page-default-keyboard-grab.hxx \
-	page-keyboard-grab.cxx \
-	page-keyboard-grab.hxx \
+	libpage/page-core.cxx \
+	libpage/page-core.hxx \
+	libpage/page-seat.cxx \
+	libpage/page-seat.hxx \
+	libpage/page-keyboard.cxx \
+	libpage/page-keyboard.hxx \
+	libpage/page-pointer.cxx \
+	libpage/page-pointer.hxx \
+	libpage/page-touch.cxx \
+	libpage/page-touch.hxx \
+	libpage/page-output.cxx \
+	libpage/page-output.hxx \
+	libpage/page-default-pointer-grab.cxx \
+	libpage/page-default-pointer-grab.hxx \
+	libpage/page-pointer-grab.cxx \
+	libpage/page-pointer-grab.hxx \
+	libpage/page-default-keyboard-grab.cxx \
+	libpage/page-default-keyboard-grab.hxx \
+	libpage/page-keyboard-grab.cxx \
+	libpage/page-keyboard-grab.hxx \
+	libpage/utils.cxx \
+	libpage/utils.hxx \
+	libpage/config_handler.cxx \
+	libpage/congig_handler.hxx \
 	wayland-interface.cxx \
 	wayland-interface.hxx \
 	xdg-shell-unstable-v5-interface.cxx \
 	xdg-shell-unstable-v5-interface.hxx \
 	xdg-shell-unstable-v5-protocol.c \
 	xdg-shell-unstable-v5-server-protocol.h \
-	utils.cxx \
-	utils.hxx \
-	config_handler.cxx \
-	congig_handler.hxx \
+	xdg-shell-unstable-v6-interface.cxx \
+	xdg-shell-unstable-v6-interface.hxx \
+	xdg-shell-unstable-v6-protocol.c \
+	xdg-shell-unstable-v6-server-protocol.h \
 	main.cxx 
 
 page_compositor_LDADD = \

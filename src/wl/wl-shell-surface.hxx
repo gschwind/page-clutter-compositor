@@ -34,6 +34,49 @@ struct wl_shell_surface : public wl_shell_surface_vtable {
 	page_core * core;
 	wl_surface * surface;
 
+	friend class page::page_t;
+
+	page_context_t *        _ctx;
+	struct wl_client *      _client;
+	struct weston_surface * _surface;
+	uint32_t                _id;
+	struct wl_resource *    _resource;
+	struct wl_listener      _surface_destroy;
+
+	int32_t _width;
+	int32_t _heigth;
+
+	static map<uint32_t, edge_e> const _edge_map;
+
+	wl_listener_t<struct weston_surface> on_surface_destroy;
+	wl_listener_t<struct weston_surface> on_surface_commit;
+
+	struct _state {
+		std::string title;
+		bool fullscreen;
+		bool maximized;
+		bool minimized;
+		wl_resource * transient_for;
+		rect geometry;
+
+		_state() {
+			fullscreen = false;
+			maximized = false;
+			minimized = false;
+			title = "";
+			transient_for = nullptr;
+			geometry = rect{0,0,0,0};
+		}
+
+	} _current;
+
+	std::string str_class;
+
+	/* 0 if ack by client, otherwise the last serial sent */
+	uint32_t _ack_serial;
+
+	signal<wl_shell_surface_t *> destroy;
+
 	wl_shell_surface(struct wl_client *client, uint32_t version, uint32_t id, page_core * core, wl_surface * surface);
 	virtual ~wl_shell_surface();
 

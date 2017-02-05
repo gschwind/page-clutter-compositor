@@ -48,5 +48,40 @@ void xdg_v5_popup::delete_resource(struct wl_resource * resource)
 	delete this;
 }
 
+
+/* page_surface_interface */
+weston_surface * xdg_v5_popup::surface() const {
+	return _surface;
+}
+
+weston_view * xdg_v5_popup::create_weston_view() {
+	return weston_view_create(_surface);
+}
+
+int32_t xdg_v5_popup::width() const {
+	return _surface->width;
+}
+
+int32_t xdg_v5_popup::height() const {
+	return _surface->height;
+}
+
+string const & xdg_v5_popup::title() const {
+	static string const s{"noname"};
+	return s;
+}
+
+void xdg_v5_popup::send_configure(int32_t width, int32_t height, set<uint32_t> const & states) {
+	/* disabled */
+}
+
+void xdg_v5_popup::send_close() {
+	/* disabled */
+}
+
+void xdg_v5_popup::send_configure_popup(int32_t x, int32_t y, int32_t width, int32_t height) {
+	/* disabled */
+}
+
 }
 } /* namespace page */
