@@ -13,12 +13,10 @@
 #include <map>
 #include <vector>
 
-#include "utils.hxx"
+#include "libpage/utils.hxx"
 #include "page_context.hxx"
 #include "viewport.hxx"
 #include "renderable_pixmap.hxx"
-#include "xdg-shell-v5-surface-popup.hxx"
-#include "xdg-shell-v5-surface-toplevel.hxx"
 
 namespace page {
 

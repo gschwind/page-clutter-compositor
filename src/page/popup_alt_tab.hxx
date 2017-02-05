@@ -17,10 +17,7 @@
 
 #include "renderable.hxx"
 #include "viewport.hxx"
-#include "icon_handler.hxx"
 #include "renderable_thumbnail.hxx"
-
-#include "xdg-shell-v5-surface-toplevel.hxx"
 
 
 namespace page {

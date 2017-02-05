@@ -11,14 +11,13 @@
 #define THEME_HXX_
 
 #include <typeinfo>
+#include <vector>
 
 #include <cairo/cairo.h>
 
 #include "color.hxx"
-#include "pixmap.hxx"
 
 #include "leak_checker.hxx"
-#include "icon_handler.hxx"
 
 #include "theme_split.hxx"
 #include "theme_managed_window.hxx"
@@ -26,6 +25,8 @@
 #include "theme_notebook.hxx"
 
 namespace page {
+
+using namespace std;
 
 struct margin_t {
 	int top;
@@ -101,10 +102,10 @@ public:
 	virtual void render_floating(theme_managed_window_t * nw) const = 0;
 
 	virtual void render_popup_notebook0(cairo_t * cr,
-			icon64 * icon, unsigned int width,
+			void * icon, unsigned int width,
 			unsigned int height, std::string const & title) const = 0;
 	virtual void render_popup_move_frame(cairo_t * cr,
-			icon64 * icon, unsigned int width,
+			void * icon, unsigned int width,
 			unsigned int height, std::string const & title) const = 0;
 
 	virtual void render_popup_split(cairo_t * cr, theme_split_t const * s, double current_split) const = 0;

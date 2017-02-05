@@ -9,8 +9,6 @@
 #define SRC_RENDERABLE_THUMBNAIL_HXX_
 
 #include "tree.hxx"
-#include "pixmap.hxx"
-#include "xdg-shell-v5-surface-toplevel.hxx"
 
 namespace page {
 

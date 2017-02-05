@@ -38,7 +38,6 @@ class viewport_t: public page_component_t {
 	/** rendering tabs is time consuming, thus use back buffer **/
 	cairo_surface_t * _back_surf;
 
-	pixmap_p _pix;
 	slot _pix_on_ack_buffer;
 
 	/** area without considering dock windows **/
@@ -51,9 +50,9 @@ class viewport_t: public page_component_t {
 
 	shared_ptr<page_component_t> _subtree;
 
-	weston_output * _output;
-	weston_surface * _backbround_surface;
-	weston_view * _default_view;
+	//weston_output * _output;
+	cairo_surface_t * _backbround_surface;
+	ClutterActor * _default_view;
 
 	viewport_t(viewport_t const & v) = delete;
 	viewport_t & operator= (viewport_t const &) = delete;
@@ -68,11 +67,9 @@ class viewport_t: public page_component_t {
 	void _redraw_back_buffer();
 	void paint_expose();
 
-	void _on_ack_buffer(pixmap_t * p);
-
 public:
 
-	viewport_t(page_context_t * ctx, rect const & area, weston_output * output);
+	viewport_t(page_context_t * ctx, rect const & area, void * output);
 	virtual ~viewport_t();
 
 	auto raw_area() const -> rect const &;
@@ -111,7 +108,7 @@ public:
 	virtual rect get_window_position() const;
 	virtual void queue_redraw();
 
-	virtual auto get_default_view() const -> weston_view *;
+	virtual auto get_default_view() const -> ClutterActor *;
 
 	/**
 	 * page_component_t virtual API
@@ -121,7 +118,7 @@ public:
 	virtual rect allocation() const;
 	virtual void replace(shared_ptr<page_component_t> src, shared_ptr<page_component_t> by);
 	virtual void get_min_allocation(int & width, int & height) const;
-	virtual auto get_output() const -> weston_output *;
+	//virtual auto get_output() const -> weston_output *;
 
 };
 

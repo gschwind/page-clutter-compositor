@@ -10,7 +10,6 @@
 
 #include "page_context.hxx"
 #include "tree.hxx"
-#include "pixmap.hxx"
 
 namespace page {
 

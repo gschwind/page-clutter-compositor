@@ -11,8 +11,6 @@
 #include <set>
 #include <string>
 
-#include <compositor.h>
-
 #include "tree-types.hxx"
 
 namespace page {

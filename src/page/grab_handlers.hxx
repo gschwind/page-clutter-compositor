@@ -8,6 +8,9 @@
 #ifndef SRC_GRAB_HANDLERS_HXX_
 #define SRC_GRAB_HANDLERS_HXX_
 
+#include "libpage/page-pointer-grab.hxx"
+#include "libpage/page-keyboard-grab.hxx"
+
 #include "xdg-shell-unstable-v5-server-protocol.h"
 
 #include "split.hxx"
@@ -30,25 +33,27 @@ enum notebook_area_e {
 	NOTEBOOK_AREA_CENTER
 };
 
-struct grab_popup_t : public pointer_grab_handler_t {
+struct grab_popup_t : public page_pointer_grab {
 	page_context_t * _ctx;
+	page_pointer * pointer;
 	surface_t * _surface;
 
 	grab_popup_t(page_context_t * ctx, surface_t * s);
-
 	virtual ~grab_popup_t();
-	virtual void focus();
-	virtual void button(uint32_t time, uint32_t button, uint32_t state);
-	virtual void motion(uint32_t time, weston_pointer_motion_event *event);
-	virtual void axis(uint32_t time, weston_pointer_axis_event *event);
-	virtual void axis_source(uint32_t source);
-	virtual void frame();
-	virtual void cancel();
+
+	virtual void focus(ClutterEvent const & event) override;
+	virtual void motion(ClutterEvent const & event) override;
+	virtual void button(ClutterEvent const & event) override;
+	virtual void axis(ClutterEvent const & event) override;
+	virtual void axis_source(uint32_t source) override;
+	virtual void frame() override;
+	virtual void cancel() override;
 
 };
 
-class grab_split_t : public pointer_grab_handler_t {
+class grab_split_t : public page_pointer_grab {
 	page_context_t * _ctx;
+	page_pointer * pointer;
 	weak_ptr<split_t> _split;
 	rect _slider_area;
 	rect _split_root_allocation;
@@ -60,19 +65,19 @@ public:
 
 	virtual ~grab_split_t();
 
-
-	virtual void focus() { }
-	virtual void button(uint32_t time, uint32_t button, uint32_t state);
-	virtual void motion(uint32_t time, weston_pointer_motion_event * event);
-	virtual void axis(uint32_t time, weston_pointer_axis_event * event) { }
-	virtual void axis_source(uint32_t source) { }
-	virtual void frame() { }
-	virtual void cancel() { }
+	virtual void focus(ClutterEvent const & event) override;
+	virtual void motion(ClutterEvent const & event) override;
+	virtual void button(ClutterEvent const & event) override;
+	virtual void axis(ClutterEvent const & event) override;
+	virtual void axis_source(uint32_t source) override;
+	virtual void frame() override;
+	virtual void cancel() override;
 
 };
 
-class grab_bind_client_t : public pointer_grab_handler_t {
+class grab_bind_client_t : public page_pointer_grab {
 	page_context_t * ctx;
+	page_pointer * pointer;
 	view_w c;
 
 	rect start_position;
@@ -92,18 +97,18 @@ public:
 
 	virtual ~grab_bind_client_t();
 
-	virtual void focus() { }
-	virtual void button(uint32_t time, uint32_t button, uint32_t state);
-	virtual void motion(uint32_t time, weston_pointer_motion_event *event);
-	virtual void axis(uint32_t time, weston_pointer_axis_event *event) { }
-	virtual void axis_source(uint32_t source) { }
-	virtual void frame() { }
-	virtual void cancel() { }
-
+	virtual void focus(ClutterEvent const & event) override;
+	virtual void motion(ClutterEvent const & event) override;
+	virtual void button(ClutterEvent const & event) override;
+	virtual void axis(ClutterEvent const & event) override;
+	virtual void axis_source(uint32_t source) override;
+	virtual void frame() override;
+	virtual void cancel() override;
 
 };
 
-struct mode_data_notebook_client_menu_t  : public pointer_grab_handler_t {
+struct mode_data_notebook_client_menu_t  : public page_pointer_grab {
+	page_pointer * pointer;
 	notebook_w from;
 	view_w client;
 	bool active_grab;
@@ -134,7 +139,8 @@ enum resize_mode_e {
 };
 
 
-struct grab_floating_move_t : public pointer_grab_handler_t {
+struct grab_floating_move_t : public page_pointer_grab {
+	page_pointer * pointer;
 	page_context_t * _ctx;
 	int x_root;
 	int y_root;
@@ -151,17 +157,18 @@ struct grab_floating_move_t : public pointer_grab_handler_t {
 
 	virtual ~grab_floating_move_t();
 
-	virtual void focus() { }
-	virtual void button(uint32_t time, uint32_t button, uint32_t state);
-	virtual void motion(uint32_t time, weston_pointer_motion_event *event);
-	virtual void axis(uint32_t time, weston_pointer_axis_event *event) { }
-	virtual void axis_source(uint32_t source) { }
-	virtual void frame() { }
-	virtual void cancel() { }
+	virtual void focus(ClutterEvent const & event) override;
+	virtual void motion(ClutterEvent const & event) override;
+	virtual void button(ClutterEvent const & event) override;
+	virtual void axis(ClutterEvent const & event) override;
+	virtual void axis_source(uint32_t source) override;
+	virtual void frame() override;
+	virtual void cancel() override;
 
 };
 
-struct grab_floating_resize_t : public pointer_grab_handler_t {
+struct grab_floating_resize_t : public page_pointer_grab {
+	page_pointer * pointer;
 	page_context_t * _ctx;
 	view_w f;
 
@@ -181,17 +188,19 @@ public:
 			int y, edge_e mode);
 
 	virtual ~grab_floating_resize_t();
-	virtual void focus() { }
-	virtual void button(uint32_t time, uint32_t button, uint32_t state);
-	virtual void motion(uint32_t time, weston_pointer_motion_event *event);
-	virtual void axis(uint32_t time, weston_pointer_axis_event *event) { }
-	virtual void axis_source(uint32_t source) { }
-	virtual void frame() { }
-	virtual void cancel() { }
+
+	virtual void focus(ClutterEvent const & event) override;
+	virtual void motion(ClutterEvent const & event) override;
+	virtual void button(ClutterEvent const & event) override;
+	virtual void axis(ClutterEvent const & event) override;
+	virtual void axis_source(uint32_t source) override;
+	virtual void frame() override;
+	virtual void cancel() override;
 
 };
 
-struct grab_fullscreen_client_t : public pointer_grab_handler_t {
+struct grab_fullscreen_client_t : public page_pointer_grab {
+	page_pointer * pointer;
 	page_context_t * _ctx;
 	view_w mw;
 	viewport_w v;
@@ -204,13 +213,14 @@ public:
 			view_p mw, uint32_t button, int x, int y);
 
 	virtual ~grab_fullscreen_client_t();
-	virtual void focus() { }
-	virtual void button(uint32_t time, uint32_t button, uint32_t state) = 0;
-	virtual void motion(uint32_t time, weston_pointer_motion_event *event) = 0;
-	virtual void axis(uint32_t time, weston_pointer_axis_event *event) = 0;
-	virtual void axis_source(uint32_t source) { }
-	virtual void frame() { }
-	virtual void cancel() { }
+
+	virtual void focus(ClutterEvent const & event) override;
+	virtual void motion(ClutterEvent const & event) override;
+	virtual void button(ClutterEvent const & event) override;
+	virtual void axis(ClutterEvent const & event) override;
+	virtual void axis_source(uint32_t source) override;
+	virtual void frame() override;
+	virtual void cancel() override;
 
 };
 

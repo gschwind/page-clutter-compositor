@@ -16,7 +16,6 @@
 #include <memory>
 
 #include "theme.hxx"
-#include "pixmap.hxx"
 #include "renderable_notebook_fading.hxx"
 #include "renderable_pixmap.hxx"
 #include "renderable_empty.hxx"
@@ -26,7 +25,6 @@
 #include "renderable_thumbnail.hxx"
 #include "renderable_unmanaged_gaussian_shadow.hxx"
 #include "dropdown_menu.hxx"
-#include "xdg-shell-v5-surface-toplevel.hxx"
 
 namespace page {
 
@@ -223,8 +221,8 @@ public:
 	virtual region get_damaged();
 	virtual void queue_redraw();
 
-	virtual bool button(weston_pointer_grab * grab, uint32_t time, uint32_t button, uint32_t state);
-	virtual bool motion(weston_pointer_grab * grab, uint32_t time, weston_pointer_motion_event * event);
+	virtual bool button(ClutterEvent const & event);
+	virtual bool motion(ClutterEvent const & event);
 
 	/**
 	 * page_component_t interface
@@ -233,7 +231,7 @@ public:
 	virtual rect allocation() const;
 	virtual void replace(shared_ptr<page_component_t> src, shared_ptr<page_component_t> by);
 	virtual void get_min_allocation(int & width, int & height) const;
-	virtual auto get_output() const -> weston_output *;
+	//virtual auto get_output() const -> weston_output *;
 	/**
 	 * notebook_t interface
 	 **/

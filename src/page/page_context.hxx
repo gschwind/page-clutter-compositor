@@ -10,12 +10,12 @@
 
 #include <typeinfo>
 
+#include "libpage/page-pointer.hxx"
+#include "libpage/page-pointer-grab.hxx"
+
 #include "tree-types.hxx"
 #include "theme_split.hxx"
 #include "keymap.hxx"
-#include "pointer-grab-handler.hxx"
-#include "keyboard-grab-handler.hxx"
-#include "pixmap.hxx"
 
 #include "surface.hxx"
 
@@ -54,10 +54,8 @@ struct page_configuration_t {
 class page_context_t {
 
 public:
-	wl_display * _dpy;
-	weston_compositor * ec;
 
-	page_context_t() : _dpy{nullptr}, ec{nullptr} { }
+	page_context_t() { }
 
 	virtual ~page_context_t() { }
 
@@ -74,8 +72,8 @@ public:
 	virtual auto get_workspace(int id) const -> workspace_p const & = 0;
 	virtual int  get_workspace_count() const = 0;
 	virtual int  create_workspace() = 0;
-	virtual void grab_start(weston_pointer * pointer, pointer_grab_handler_t * handler) = 0;
-	virtual void grab_stop(weston_pointer * pointer) = 0;
+	virtual void grab_start(page_pointer * pointer, page_pointer_grab * handler) = 0;
+	virtual void grab_stop(page_pointer * pointer) = 0;
 	virtual void detach(tree_p t) = 0;
 	virtual void insert_window_in_notebook(view_p x, notebook_p n = nullptr) = 0;
 	virtual void fullscreen_client_to_viewport(view_p c, viewport_p v) = 0;
@@ -97,7 +95,6 @@ public:
 //	virtual auto mainloop() -> mainloop_t * = 0;
 	virtual void sync_tree_view() = 0;
 	virtual void manage_client(surface_t * s) = 0;
-	virtual auto create_pixmap(uint32_t width, uint32_t height) -> pixmap_p = 0;
 	virtual void bind_window(view_p mw) = 0;
 	virtual void manage_popup(surface_t * s) = 0;
 	virtual void configure_popup(surface_t * s) = 0;

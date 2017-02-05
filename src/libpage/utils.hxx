@@ -32,6 +32,8 @@
 #include <vector>
 #include <limits>
 
+#include "page/box.hxx"
+
 namespace page {
 
 using namespace std;
@@ -50,6 +52,22 @@ bool is_expired(weak_ptr<T> & x) {
 	return x.expired();
 }
 
+inline void cairo_clip(cairo_t * cr, rect const & clip) {
+	cairo_reset_clip(cr);
+	cairo_rectangle(cr, clip.x, clip.y, clip.w, clip.h);
+	::cairo_clip(cr);
+}
+
+template<typename T>
+struct dimention_t {
+	T width;
+	T height;
+
+	dimention_t(T w, T h) : width{w}, height{h} { }
+	dimention_t(dimention_t const & d) : width{d.width}, height{d.height} { }
+
+};
+
 /**
  * /!\ also remove expired !
  **/
@@ -58,6 +76,28 @@ vector<shared_ptr<T0>> lock(list<weak_ptr<T0>> & x) {
 	x.remove_if(is_expired<T0>);
 	vector<shared_ptr<T0>> ret;
 	for(auto i: x) ret.push_back(i.lock());
+	return ret;
+}
+
+template<typename T0>
+std::list<std::weak_ptr<T0>> weak(std::list<std::shared_ptr<T0>> const & x) {
+	return std::list<std::weak_ptr<T0>>{x.begin(), x.end()};
+}
+
+template<typename T0>
+std::vector<std::weak_ptr<T0>> weak(std::vector<std::shared_ptr<T0>> const & x) {
+	return std::vector<std::weak_ptr<T0>>{x.begin(), x.end()};
+}
+
+static std::string xformat(char const * fmt, ...) {
+	va_list l;
+	va_start(l, fmt);
+	int n = vsnprintf(nullptr, 0, fmt, l);
+	va_end(l);
+	std::string ret(n, '#');
+	va_start(l, fmt);
+	vsnprintf(&ret[0], n+1, fmt, l);
+	va_end(l);
 	return ret;
 }
 

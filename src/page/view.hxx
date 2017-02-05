@@ -43,12 +43,12 @@ class view_t : public tree_t {
 	/** -- **/
 	rect _wished_position;
 
-	weston_view * _default_view;
+	ClutterActor * _default_view;
 
 	shared_ptr<tree_t> _transient_childdren;
 	shared_ptr<tree_t> _popups_childdren;
 
-	weston_transform _transform;
+	//weston_transform _transform;
 
 	/* handle the state of management: notebook, floating, fullscreen */
 	managed_window_type_e _managed_type;
@@ -122,7 +122,7 @@ public:
 
 	virtual void activate();
 	//virtual void activate(shared_ptr<tree_t> t);
-	virtual bool button(weston_pointer_grab * grab, uint32_t time, uint32_t button, uint32_t state);
+	virtual bool button(ClutterEvent const & event);
 	// virtual bool motion(weston_pointer_grab * grab, uint32_t time, weston_pointer_motion_event * event);
 
 	// virtual bool leave(xcb_leave_notify_event_t const * ev);
@@ -135,7 +135,7 @@ public:
 
 	virtual void queue_redraw();
 	virtual void trigger_redraw();
-	virtual auto get_default_view() const -> weston_view *;
+	virtual auto get_default_view() const -> ClutterActor *;
 
 	/**
 	 * client base API

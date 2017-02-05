@@ -13,7 +13,6 @@
 
 #include "theme.hxx"
 #include "renderable.hxx"
-#include "icon_handler.hxx"
 
 namespace page {
 //

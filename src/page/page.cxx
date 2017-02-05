@@ -35,22 +35,8 @@
 
 #include <wayland-util.h>
 #include <linux/input.h>
-#include <compositor.h>
-#include <compositor-x11.h>
-#include <compositor-drm.h>
-#include <windowed-output-api.h>
-#include <wayland-client-protocol.h>
-#include <xdg-shell-v5-shell.hxx>
-#include <xdg-shell-v5-surface-base.hxx>
-#include <xdg-shell-v5-surface-popup.hxx>
-#include <xdg-shell-v5-surface-toplevel.hxx>
 
-#include "xdg-shell-unstable-v5-server-protocol.h"
-#include "xdg-shell-unstable-v6-server-protocol.h"
-
-#include "buffer-manager-server-protocol.h"
-
-#include "utils.hxx"
+#include "libpage/utils.hxx"
 
 #include "renderable.hxx"
 #include "key_desc.hxx"
@@ -240,20 +226,25 @@ void page_t::print_tree_binding(struct weston_keyboard *keyboard, uint32_t time,
 	ths->_root->print_tree(0);
 }
 
-page_t::page_t(int argc, char ** argv) :
+page_t::page_t() :
 		repaint_scheduled{false}
 {
-
-	char const * conf_file_name = 0;
-
 	use_x11_backend = false;
 	use_pixman = false;
 	_global_wl_shell = nullptr;
 	_global_xdg_shell_v5 = nullptr;
 	_global_xdg_shell_v6 = nullptr;
-	_global_buffer_manager = nullptr;
 	configuration._replace_wm = false;
 	configuration._menu_drop_down_shadow = false;
+	_theme = nullptr;
+	_grab_handler = nullptr;
+}
+
+void page_t::init(int * argc, char *** argv)
+{
+	page_core::init(argc, argv);
+
+	char const * conf_file_name = 0;
 
 	/** parse command line **/
 
@@ -300,11 +291,6 @@ page_t::page_t(int argc, char ** argv) :
 //	_left_most_border = std::numeric_limits<int>::max();
 //	_top_most_border = std::numeric_limits<int>::max();
 
-	_theme = nullptr;
-
-	_buffer_manager_resource = nullptr;
-
-	_grab_handler = nullptr;
 
 	bind_page_quit           = _conf.get_string("default", "bind_page_quit");
 	bind_close               = _conf.get_string("default", "bind_close");

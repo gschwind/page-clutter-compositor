@@ -19,6 +19,7 @@
 #include <thread>
 
 #include "config.hxx"
+#include "libpage/page-core.hxx"
 
 #include "time.hxx"
 
@@ -101,7 +102,7 @@ struct key_bind_cmd_t {
 	string cmd;
 };
 
-struct page_t : public page_context_t, public connectable {
+struct page_t : public page_core, public page_context_t, public connectable {
 	shared_ptr<page_root_t> _root;
 	weston_layer default_layer;
 	theme_t * _theme;
@@ -203,10 +204,11 @@ struct page_t : public page_context_t, public connectable {
 	page_t(page_t const &) = delete;
 	page_t &operator=(page_t const &) = delete;
 
-	page_t(int argc, char ** argv);
+	page_t();
 
 	virtual ~page_t();
 
+	void init(int * argc, char *** argv);
 	/* run page main loop */
 	void run();
 

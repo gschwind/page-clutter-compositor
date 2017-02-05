@@ -13,9 +13,8 @@
 #include <memory>
 
 #include "tree.hxx"
-#include "utils.hxx"
+#include "libpage/utils.hxx"
 #include "renderable.hxx"
-#include "pixmap.hxx"
 #include "mainloop.hxx"
 
 namespace page {

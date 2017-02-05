@@ -14,9 +14,7 @@
 #include <iostream>
 #include <map>
 
-#include <compositor.h>
-
-#include "utils.hxx"
+#include "libpage/utils.hxx"
 #include "renderable.hxx"
 #include "time.hxx"
 #include "transition.hxx"
@@ -121,12 +119,10 @@ public:
 
 	void broadcast_trigger_redraw();
 
-	bool broadcast_button(weston_pointer_grab * grab, uint32_t time, uint32_t button, uint32_t state);
-	bool broadcast_motion(weston_pointer_grab * grab, uint32_t time, weston_pointer_motion_event * event);
+	bool broadcast_button(ClutterEvent const & event);
+	bool broadcast_motion(ClutterEvent const & event);
 	void broadcast_update_layout(time64_t const time);
 	void broadcast_render_finished();
-
-	auto find_view_bellow() const -> weston_view *;
 
 	void add_transition(shared_ptr<transition_t> t);
 
@@ -159,15 +155,15 @@ public:
 	virtual void activate();
 	virtual void activate(shared_ptr<tree_t> t);
 
-	virtual bool button(weston_pointer_grab * grab, uint32_t time, uint32_t button, uint32_t state);
-	virtual bool motion(weston_pointer_grab * grab, uint32_t time, weston_pointer_motion_event * event);
+	virtual bool button(ClutterEvent const & event);
+	virtual bool motion(ClutterEvent const & event);
 
 	virtual auto get_xid() const -> uint32_t;
-	virtual auto get_parent_default_view() const -> weston_view *;
+	virtual auto get_parent_default_view() const -> ClutterActor *;
 	virtual rect get_window_position() const;
 	virtual void queue_redraw();
 
-	virtual auto get_default_view() const -> weston_view *;
+	virtual auto get_default_view() const -> ClutterActor *;
 
 };
 

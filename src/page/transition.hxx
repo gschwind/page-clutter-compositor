@@ -9,7 +9,8 @@
 #define SRC_TRANSITION_HXX_
 
 #include "time.hxx"
-#include "utils.hxx"
+#include "libpage/utils.hxx"
+#include "libpage/signals.hxx"
 
 namespace page {
 

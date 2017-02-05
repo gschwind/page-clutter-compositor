@@ -52,14 +52,11 @@ page_compositor_SOURCES = \
 	page/blur_image_surface.cxx \
 	page/dropdown_menu.cxx \
 	page/grab_handlers.cxx \
-	page/keyboard-grab-handler.cxx \
 	page/leak_checker.cxx \
 	page/notebook.cxx \
 	page/page.cxx \
 	page/page_region_test.cxx \
 	page/page_root.cxx \
-	page/pixmap.cxx \
-	page/pointer-grab-handler.cxx \
 	page/popup_alt_tab.cxx \
 	page/simple2_theme.cxx \
 	page/split.cxx \
@@ -90,9 +87,6 @@ page_compositor_SOURCES = \
 	page/exception.hxx \
 	page/floating_event.hxx \
 	page/grab_handlers.hxx \
-	page/icon_handler.hxx \
-	page/icon.hxx \
-	page/keyboard-grab-handler.hxx \
 	page/key_desc.hxx \
 	page/keymap.hxx \
 	page/leak_checker.hxx \
@@ -106,8 +100,6 @@ page_compositor_SOURCES = \
 	page/page_exception.hxx \
 	page/page.hxx \
 	page/page_root.hxx \
-	page/pixmap.hxx \
-	page/pointer-grab-handler.hxx \
 	page/popup_alt_tab.hxx \
 	page/popup_notebook0.hxx \
 	page/popup_split.hxx \
