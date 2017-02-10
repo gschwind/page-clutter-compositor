@@ -7,7 +7,6 @@
  *
  */
 
-#include <xdg-shell-v5-surface-toplevel.hxx>
 #include "popup_alt_tab.hxx"
 
 #include "workspace.hxx"

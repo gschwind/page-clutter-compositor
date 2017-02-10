@@ -42,8 +42,8 @@
 #include "wl/wl-buffer.hxx"
 #include "wl/wl-subsurface.hxx"
 
-#include "page-core.hxx"
-#include "page-output.hxx"
+#include "libpage/page-core.hxx"
+#include "libpage/page-output.hxx"
 
 using namespace page;
 

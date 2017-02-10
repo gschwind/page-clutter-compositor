@@ -36,6 +36,9 @@
 #include <wayland-util.h>
 #include <linux/input.h>
 
+#include "xdg-shell-unstable-v5-server-protocol.h"
+#include "xdg-shell-unstable-v6-server-protocol.h"
+
 #include "libpage/utils.hxx"
 
 #include "renderable.hxx"
@@ -58,6 +61,10 @@
 #include "sh/xdg-v5-shell.hxx"
 #include "sh/xdg-v6-shell.hxx"
 
+#include "libpage/page-core.hxx"
+#include "libpage/page-keyboard.hxx"
+#include "libpage/page-pointer.hxx"
+#include "libpage/page-seat.hxx"
 
 /* ICCCM definition */
 #define _NET_WM_STATE_REMOVE 0
@@ -80,7 +87,7 @@ void page_t::destroy_surface(surface_t * s) {
 //	sync_tree_view();
 }
 
-void page_t::start_move(surface_t * s, page_seat * seat, uint32_t serial) {
+//void page_t::start_move(surface_t * s, page_seat * seat, uint32_t serial) {
 //	//printf("call %s\n", __PRETTY_FUNCTION__);
 //	if(s->_master_view.expired())
 //		return;
@@ -97,7 +104,7 @@ void page_t::start_move(surface_t * s, page_seat * seat, uint32_t serial) {
 //		grab_start(pointer, new grab_floating_move_t(this, master_view,
 //			BTN_LEFT, x, y));
 //	}
-}
+//}
 
 void page_t::start_resize(surface_t * s, struct weston_seat * seat, uint32_t serial, edge_e edges) {
 //	if(s->_master_view.expired())
@@ -167,15 +174,15 @@ void page_t::init(int * argc, char *** argv)
 	/** parse command line **/
 
 	int k = 1;
-	while(k < argc) {
-		string x = argv[k];
+	while(k < *argc) {
+		string x = *argv[k];
 		if(x == "--replace") {
 			configuration._replace_wm = true;
 		} else {
-			conf_file_name = argv[k];
+			conf_file_name = *argv[k];
 		}
 
-		if(strcmp("--use-pixman", argv[k]) == 0) {
+		if(strcmp("--use-pixman", *argv[k]) == 0) {
 			use_pixman = true;
 		}
 
@@ -270,15 +277,6 @@ void page_t::init(int * argc, char *** argv)
 	configuration._fade_in_time = _conf.get_long("compositor", "fade_in_time");
 
 
-	default_grab_pod.grab_interface.focus = &_default_grab_focus;
-	default_grab_pod.grab_interface.motion = &_default_grab_motion;
-	default_grab_pod.grab_interface.button = &_default_grab_button;
-	default_grab_pod.grab_interface.axis = &_default_grab_axis;
-	default_grab_pod.grab_interface.axis_source = &_default_grab_axis_source;
-	default_grab_pod.grab_interface.frame = &_default_grab_frame;
-	default_grab_pod.grab_interface.cancel = &_default_grab_cancel;
-	default_grab_pod.ths = this;
-
 }
 
 page_t::~page_t() {
@@ -321,14 +319,14 @@ void page_t::run() {
 		_theme = new simple2_theme_t{_conf};
 	}
 
-	_global_wl_shell = wl_global_create(_dpy, &wl_shell_interface, 1, this,
+	_global_wl_shell = wl_global_create(dpy, &wl_shell_interface, 1, this,
 			&page_t::bind_wl_shell);
-	_global_xdg_shell_v5 = wl_global_create(_dpy, &xdg_shell_interface, 1, this,
+	_global_xdg_shell_v5 = wl_global_create(dpy, &xdg_shell_interface, 1, this,
 			&page_t::bind_xdg_v5_shell);
-	_global_xdg_shell_v6 = wl_global_create(_dpy, &zxdg_shell_v6_interface, 1, this,
+	_global_xdg_shell_v6 = wl_global_create(dpy, &zxdg_shell_v6_interface, 1, this,
 			&page_t::bind_xdg_v6_shell);
 
-	page_code::run();
+	page_core::run();
 
 	cout << "Page END" << endl;
 
@@ -481,25 +479,25 @@ void page_t::handle_set_floating_window(page_keyboard * wk, ClutterEvent const &
 }
 
 void page_t::handle_alt_left_button(page_pointer *pointer, ClutterEvent const & event) {
-	wl_fixed_t sx, sy;
-
-	auto v = weston_compositor_pick_view(ec, pointer->x, pointer->y, &sx, &sy);
-	if(not v)
-		return;
-	auto view = lookup_for_view(v);
-	if(not view)
-		return;
-
-	double x = wl_fixed_to_double(pointer->x);
-	double y = wl_fixed_to_double(pointer->y);
-
-	if(view->is(MANAGED_NOTEBOOK)) {
-		grab_start(pointer, new grab_bind_client_t{this, view,
-			BTN_LEFT, rect(x, y, 1, 1)});
-	} else if(view->is(MANAGED_FLOATING)) {
-		grab_start(pointer, new grab_floating_move_t(this, view,
-			BTN_LEFT, x, y));
-	}
+//	wl_fixed_t sx, sy;
+//
+//	auto v = weston_compositor_pick_view(ec, pointer->x, pointer->y, &sx, &sy);
+//	if(not v)
+//		return;
+//	auto view = lookup_for_view(v);
+//	if(not view)
+//		return;
+//
+//	double x = wl_fixed_to_double(pointer->x);
+//	double y = wl_fixed_to_double(pointer->y);
+//
+//	if(view->is(MANAGED_NOTEBOOK)) {
+//		grab_start(pointer, new grab_bind_client_t{this, view,
+//			BTN_LEFT, rect(x, y, 1, 1)});
+//	} else if(view->is(MANAGED_FLOATING)) {
+//		grab_start(pointer, new grab_floating_move_t(this, view,
+//			BTN_LEFT, x, y));
+//	}
 
 }
 
@@ -1040,93 +1038,93 @@ void page_t::update_windows_stack() {
  **/
 void page_t::update_viewport_layout() {
 
-	/* compute the extends of all outputs */
-	rect outputs_extends{numeric_limits<int>::max(), numeric_limits<int>::max(),
-		numeric_limits<int>::min(), numeric_limits<int>::min()};
-
-	for(auto o: _outputs) {
-		outputs_extends.x = std::min(outputs_extends.x, o->x);
-		outputs_extends.y = std::min(outputs_extends.y, o->y);
-		outputs_extends.w = std::max(outputs_extends.w, o->x+o->width);
-		outputs_extends.h = std::max(outputs_extends.h, o->y+o->height);
-	}
-
-	outputs_extends.w -= outputs_extends.x;
-	outputs_extends.h -= outputs_extends.y;
-
-	_root->_root_position = outputs_extends;
-
-	/* compute all viewport  that does not overlap and cover the full area of
-	 * outputs */
-
-	/* list of future viewport locations */
-	vector<pair<weston_output *, rect>> viewport_allocation;
-
-	/* start with not allocated area */
-	region already_allocated;
-	for(auto o: _outputs) {
-		/* the location of outputs */
-		region location{o->x, o->y, o->width, o->height};
-		/* remove overlapped areas */
-		location -= already_allocated;
-		/* for remaining rectangles, allocate a viewport */
-		for(auto & b: location.rects()) {
-			viewport_allocation.push_back(make_pair(o, b));
-		}
-		already_allocated += location;
-	}
-
-	/* for each desktop we update the list of viewports, without destroying
-	 * existing is not nessesary */
-	for(auto d: _root->_desktop_list) {
-		//d->set_allocation(_root->_root_position);
-		/** get old layout to recycle old viewport, and keep unchanged outputs **/
-		vector<shared_ptr<viewport_t>> old_layout = d->get_viewport_map();
-		/** store the newer layout, to be able to cleanup obsolete viewports **/
-		vector<shared_ptr<viewport_t>> new_layout;
-		/** for each not overlaped rectangle **/
-		for(unsigned i = 0; i < viewport_allocation.size(); ++i) {
-			printf("%d: found viewport (%d,%d,%d,%d)\n", d->id(),
-					viewport_allocation[i].second.x, viewport_allocation[i].second.y,
-					viewport_allocation[i].second.w, viewport_allocation[i].second.h);
-			shared_ptr<viewport_t> vp;
-			if(i < old_layout.size()) {
-				vp = old_layout[i];
-				vp->set_raw_area(viewport_allocation[i].second);
-			} else {
-				vp = make_shared<viewport_t>(this, viewport_allocation[i].second, viewport_allocation[i].first);
-			}
-			new_layout.push_back(vp);
-		}
-
-		d->set_layout(new_layout);
-		d->update_default_pop();
-
-		/** clean up obsolete layout **/
-		for (unsigned i = new_layout.size(); i < old_layout.size(); ++i) {
-			/** destroy this viewport **/
-			remove_viewport(d, old_layout[i]);
-			old_layout[i] = nullptr;
-		}
-
-
-		if(new_layout.size() > 0) {
-			// update position of floating managed clients to avoid offscreen
-			// floating window
-			for(auto x: filter_class<view_t>(_root->get_all_children())) {
-				if(x->is(MANAGED_FLOATING)) {
-					auto r = x->get_window_position();
-					r.x = new_layout[0]->allocation().x;
-					r.y = new_layout[0]->allocation().y;
-					x->set_floating_wished_position(r);
-					x->reconfigure();
-				}
-			}
-		}
-	}
-
-	_root->broadcast_update_layout(time64_t::now());
-	sync_tree_view();
+//	/* compute the extends of all outputs */
+//	rect outputs_extends{numeric_limits<int>::max(), numeric_limits<int>::max(),
+//		numeric_limits<int>::min(), numeric_limits<int>::min()};
+//
+//	for(auto o: _outputs) {
+//		outputs_extends.x = std::min(outputs_extends.x, o->x);
+//		outputs_extends.y = std::min(outputs_extends.y, o->y);
+//		outputs_extends.w = std::max(outputs_extends.w, o->x+o->width);
+//		outputs_extends.h = std::max(outputs_extends.h, o->y+o->height);
+//	}
+//
+//	outputs_extends.w -= outputs_extends.x;
+//	outputs_extends.h -= outputs_extends.y;
+//
+//	_root->_root_position = outputs_extends;
+//
+//	/* compute all viewport  that does not overlap and cover the full area of
+//	 * outputs */
+//
+//	/* list of future viewport locations */
+//	vector<pair<weston_output *, rect>> viewport_allocation;
+//
+//	/* start with not allocated area */
+//	region already_allocated;
+//	for(auto o: _outputs) {
+//		/* the location of outputs */
+//		region location{o->x, o->y, o->width, o->height};
+//		/* remove overlapped areas */
+//		location -= already_allocated;
+//		/* for remaining rectangles, allocate a viewport */
+//		for(auto & b: location.rects()) {
+//			viewport_allocation.push_back(make_pair(o, b));
+//		}
+//		already_allocated += location;
+//	}
+//
+//	/* for each desktop we update the list of viewports, without destroying
+//	 * existing is not nessesary */
+//	for(auto d: _root->_desktop_list) {
+//		//d->set_allocation(_root->_root_position);
+//		/** get old layout to recycle old viewport, and keep unchanged outputs **/
+//		vector<shared_ptr<viewport_t>> old_layout = d->get_viewport_map();
+//		/** store the newer layout, to be able to cleanup obsolete viewports **/
+//		vector<shared_ptr<viewport_t>> new_layout;
+//		/** for each not overlaped rectangle **/
+//		for(unsigned i = 0; i < viewport_allocation.size(); ++i) {
+//			printf("%d: found viewport (%d,%d,%d,%d)\n", d->id(),
+//					viewport_allocation[i].second.x, viewport_allocation[i].second.y,
+//					viewport_allocation[i].second.w, viewport_allocation[i].second.h);
+//			shared_ptr<viewport_t> vp;
+//			if(i < old_layout.size()) {
+//				vp = old_layout[i];
+//				vp->set_raw_area(viewport_allocation[i].second);
+//			} else {
+//				vp = make_shared<viewport_t>(this, viewport_allocation[i].second, viewport_allocation[i].first);
+//			}
+//			new_layout.push_back(vp);
+//		}
+//
+//		d->set_layout(new_layout);
+//		d->update_default_pop();
+//
+//		/** clean up obsolete layout **/
+//		for (unsigned i = new_layout.size(); i < old_layout.size(); ++i) {
+//			/** destroy this viewport **/
+//			remove_viewport(d, old_layout[i]);
+//			old_layout[i] = nullptr;
+//		}
+//
+//
+//		if(new_layout.size() > 0) {
+//			// update position of floating managed clients to avoid offscreen
+//			// floating window
+//			for(auto x: filter_class<view_t>(_root->get_all_children())) {
+//				if(x->is(MANAGED_FLOATING)) {
+//					auto r = x->get_window_position();
+//					r.x = new_layout[0]->allocation().x;
+//					r.y = new_layout[0]->allocation().y;
+//					x->set_floating_wished_position(r);
+//					x->reconfigure();
+//				}
+//			}
+//		}
+//	}
+//
+//	_root->broadcast_update_layout(time64_t::now());
+//	sync_tree_view();
 
 }
 

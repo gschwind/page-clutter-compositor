@@ -49,34 +49,28 @@ BUILT_SOURCES = \
 	wayland-interface.hxx
 
 page_compositor_SOURCES = \
+	page/tree.cxx \
+	page/tree.hxx \
+	page/view.hxx \
+	page/view.cxx \
+	page/notebook.cxx \
+	page/notebook.hxx \
+	page/split.cxx \
+	page/split.hxx \
+	page/viewport.cxx \
+	page/viewport.hxx \
+	page/workspace.cxx \
+	page/workspace.hxx \
 	page/blur_image_surface.cxx \
 	page/dropdown_menu.cxx \
 	page/grab_handlers.cxx \
 	page/leak_checker.cxx \
-	page/notebook.cxx \
 	page/page.cxx \
-	page/page_region_test.cxx \
 	page/page_root.cxx \
 	page/popup_alt_tab.cxx \
 	page/simple2_theme.cxx \
-	page/split.cxx \
 	page/surface.cxx \
 	page/tiny_theme.cxx \
-	page/tree.cxx \
-	page/view.cxx \
-	page/viewport.cxx \
-	page/wl-shell-shell.cxx \
-	page/xwl-shell-surface.cxx \
-	page/workspace.cxx \
-	page/xdg-shell-v5-shell.cxx \
-	page/xdg-shell-v5-surface-base.cxx \
-	page/xdg-shell-v5-surface-popup.cxx \
-	page/xdg-shell-v5-surface-toplevel.cxx \
-	page/xdg-shell-v6-popup.cxx \
-	page/xdg-shell-v6-positioner.cxx \
-	page/xdg-shell-v6-shell.cxx \
-	page/xdg-shell-v6-surface.cxx \
-	page/xdg-shell-v6-toplevel.cxx \
 	page/blur_image_surface.hxx \
 	page/box.hxx \
 	page/cairo_surface_type_name.hxx \
@@ -93,7 +87,6 @@ page_compositor_SOURCES = \
 	page/listener.hxx \
 	page/mainloop.hxx \
 	page/motif_hints.hxx \
-	page/notebook.hxx \
 	page/page_component.hxx \
 	page/page_context.hxx \
 	page/page_event.hxx \
@@ -115,7 +108,6 @@ page_compositor_SOURCES = \
 	page/renderable_unmanaged_outer_gradien.hxx \
 	page/simple2_theme.hxx \
 	page/smart_pointer.hxx \
-	page/split.hxx \
 	page/surface.hxx \
 	page/theme.hxx \
 	page/theme_managed_window.hxx \
@@ -125,25 +117,9 @@ page_compositor_SOURCES = \
 	page/time.hxx \
 	page/tiny_theme.hxx \
 	page/transition.hxx \
-	page/tree.hxx \
 	page/tree-types.hxx \
-	page/view.hxx \
-	page/viewport.hxx \
 	page/window_overlay.hxx \
-	page/wl-shell-shell.hxx \
-	page/xwl-shell-surface.hxx \
-	page/workspace.hxx \
 	page/x11_func_name.hxx \
-	page/xdg-popup-interface.hxx \
-	page/xdg-shell-v5-shell.hxx \
-	page/xdg-shell-v5-surface-base.hxx \
-	page/xdg-shell-v5-surface-popup.hxx \
-	page/xdg-shell-v5-surface-toplevel.hxx \
-	page/xdg-shell-v6-popup.hxx \
-	page/xdg-shell-v6-positioner.hxx \
-	page/xdg-shell-v6-shell.hxx \
-	page/xdg-shell-v6-surface.hxx \
-	page/xdg-shell-v6-toplevel.hxx \
 	meta/meta-surface-actor-wayland.cxx \
 	meta/meta-surface-actor-wayland.hxx \
 	meta/clutter-utils.c \

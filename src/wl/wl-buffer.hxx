@@ -24,9 +24,9 @@
 #include <cogl/cogl.h>
 #include <cairo/cairo.h>
 
-#include "signals.hxx"
+#include "libpage/signals.hxx"
 #include "wayland-interface.hxx"
-#include "wl-listener.hxx"
+#include "libpage/wl-listener.hxx"
 
 namespace page {
 namespace wl {

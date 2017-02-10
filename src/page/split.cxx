@@ -266,30 +266,29 @@ void split_t::append_children(vector<shared_ptr<tree_t>> & out) const {
 	out.insert(out.end(), _children.begin(), _children.end());
 }
 
-bool split_t::button(weston_pointer_grab * grab, uint32_t time,
-		uint32_t button, uint32_t state) {
-	auto pointer = grab->pointer;
-
-	if (pointer->focus != get_parent_default_view()) {
-		return false;
-	}
-
-	printf("button = %d\n", button);
-
-	wl_fixed_t vx, vy;
-
-	weston_view_from_global_fixed(pointer->focus, pointer->x,
-			pointer->y, &vx, &vy);
-
-	double x = wl_fixed_to_double(vx);
-	double y = wl_fixed_to_double(vy);
-
-	if (button == BTN_LEFT and _split_bar_area.is_inside(x, y)) {
-		_ctx->grab_start(pointer, new grab_split_t { _ctx, shared_from_this() });
-		return true;
-	} else {
-		return false;
-	}
+bool split_t::button(page_pointer_grab * pointer, ClutterEvent const & event) {
+//	auto pointer = grab->pointer;
+//
+//	if (pointer->focus != get_parent_default_view()) {
+//		return false;
+//	}
+//
+//	printf("button = %d\n", button);
+//
+//	wl_fixed_t vx, vy;
+//
+//	weston_view_from_global_fixed(pointer->focus, pointer->x,
+//			pointer->y, &vx, &vy);
+//
+//	double x = wl_fixed_to_double(vx);
+//	double y = wl_fixed_to_double(vy);
+//
+//	if (button == BTN_LEFT and _split_bar_area.is_inside(x, y)) {
+//		_ctx->grab_start(pointer, new grab_split_t { _ctx, shared_from_this() });
+//		return true;
+//	} else {
+//		return false;
+//	}
 }
 
 shared_ptr<split_t> split_t::shared_from_this() {
@@ -356,10 +355,6 @@ void split_t::get_min_allocation(int & width, int & height) const {
 		width = std::max(pack0_width, pack1_width);
 		height = pack0_height + pack1_height + _ctx->theme()->split.width;
 	}
-}
-
-auto split_t::get_output() const -> weston_output * {
-	return dynamic_cast<page_component_t const *>(_parent)->get_output();
 }
 
 double split_t::compute_split_constaint(double split) {

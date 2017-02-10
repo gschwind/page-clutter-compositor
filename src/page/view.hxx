@@ -122,7 +122,7 @@ public:
 
 	virtual void activate();
 	//virtual void activate(shared_ptr<tree_t> t);
-	virtual bool button(ClutterEvent const & event);
+	virtual bool button(page_pointer_grab * pointer, ClutterEvent const & event);
 	// virtual bool motion(weston_pointer_grab * grab, uint32_t time, weston_pointer_motion_event * event);
 
 	// virtual bool leave(xcb_leave_notify_event_t const * ev);

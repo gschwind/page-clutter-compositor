@@ -22,7 +22,7 @@
 #define WL_WL_OUTPUT_HXX_
 
 #include "wayland-interface.hxx"
-#include "page-types.hxx"
+#include "libpage/page-types.hxx"
 
 namespace page {
 namespace wl {

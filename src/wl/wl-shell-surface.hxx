@@ -22,7 +22,8 @@
 #define WL_WL_SHELL_SURFACE_HXX_
 
 #include "wl-types.hxx"
-#include "page-types.hxx"
+#include "page/page_context.hxx"
+#include "libpage/page-types.hxx"
 #include "wayland-interface.hxx"
 
 namespace page {
@@ -47,9 +48,6 @@ struct wl_shell_surface : public wl_shell_surface_vtable {
 	int32_t _heigth;
 
 	static map<uint32_t, edge_e> const _edge_map;
-
-	wl_listener_t<struct weston_surface> on_surface_destroy;
-	wl_listener_t<struct weston_surface> on_surface_commit;
 
 	struct _state {
 		std::string title;

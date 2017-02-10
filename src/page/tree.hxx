@@ -14,6 +14,9 @@
 #include <iostream>
 #include <map>
 
+#include <clutter/clutter.h>
+
+#include "libpage/page-types.hxx"
 #include "libpage/utils.hxx"
 #include "renderable.hxx"
 #include "time.hxx"
@@ -31,32 +34,33 @@ using namespace std;
 class tree_t : public enable_shared_from_this<tree_t>, protected connectable {
 
 protected:
+
 	template<typename ... T>
-	bool _broadcast_root_first(bool (tree_t::* f)(T ... args), T ... args) {
+	bool _broadcast_root_first(bool (tree_t::* f)(T ... args), typename identity<T>::type ... args) {
 		if((this->*f)(args...))
 			return true;
 		for(auto x: weak(get_all_children_root_first())) {
-			if((x->*f)(args...))
+			if((x->*f)(std::forward<T>(args)...))
 				return true;
 		}
 		return false;
 	}
 
 	template<typename ... T>
-	bool _broadcast_root_first(void (tree_t::* f)(T ... args), T ... args) {
+	bool _broadcast_root_first(void (tree_t::* f)(T ... args), typename identity<T>::type ... args) {
 		(this->*f)(args...);
 		for(auto x: weak(get_all_children_root_first())) {
 			if(not x.expired())
-				(x.lock().get()->*f)(args...);
+				(x.lock().get()->*f)(std::forward<T>(args)...);
 		}
 		return true;
 	}
 
 	template<typename ... T>
-	bool _broadcast_deep_first(bool (tree_t::* f)(T ... args), T ... args) {
+	bool _broadcast_deep_first(bool (tree_t::* f)(T ... args), typename identity<T>::type ... args) {
 		for(auto x: weak(get_all_children_deep_first())) {
 			if(not x.expired()) {
-				if((x.lock().get()->*f)(args...))
+				if((x.lock().get()->*f)(std::forward<T>(args)...))
 					return true;
 			}
 		}
@@ -66,10 +70,10 @@ protected:
 	}
 
 	template<typename ... T>
-	void _broadcast_deep_first(void (tree_t::* f)(T ... args), T ... args) {
+	void _broadcast_deep_first(void (tree_t::* f)(T ... args), typename identity<T>::type ... args) {
 		for(auto x: weak(get_all_children_deep_first())) {
 			if(not x.expired())
-				(x.lock().get()->*f)(args...);
+				(x.lock().get()->*f)(std::forward<T>(args)...);
 		}
 		(this->*f)(args...);
 	}
@@ -119,8 +123,10 @@ public:
 
 	void broadcast_trigger_redraw();
 
-	bool broadcast_button(ClutterEvent const & event);
-	bool broadcast_motion(ClutterEvent const & event);
+	bool broadcast_button(page_pointer_grab * grab, ClutterEvent const && event) = delete;
+	bool broadcast_motion(page_pointer_grab * grab, ClutterEvent const && event) = delete;
+	bool broadcast_button(page_pointer_grab * grab, ClutterEvent const & event);
+	bool broadcast_motion(page_pointer_grab * grab, ClutterEvent const & event);
 	void broadcast_update_layout(time64_t const time);
 	void broadcast_render_finished();
 
@@ -155,8 +161,8 @@ public:
 	virtual void activate();
 	virtual void activate(shared_ptr<tree_t> t);
 
-	virtual bool button(ClutterEvent const & event);
-	virtual bool motion(ClutterEvent const & event);
+	virtual bool button(page_pointer_grab * grab, ClutterEvent const & event);
+	virtual bool motion(page_pointer_grab * grab, ClutterEvent const & event);
 
 	virtual auto get_xid() const -> uint32_t;
 	virtual auto get_parent_default_view() const -> ClutterActor *;

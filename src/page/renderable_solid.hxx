@@ -9,7 +9,7 @@
 #define RENDERABLE_SOLID_HXX_
 
 #include "tree.hxx"
-#include "utils.hxx"
+#include "libpage/utils.hxx"
 #include "renderable.hxx"
 #include "color.hxx"
 

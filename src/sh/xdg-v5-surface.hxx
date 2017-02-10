@@ -98,8 +98,7 @@ struct xdg_v5_surface : public xdg_surface_vtable, public surface_t {
 	virtual void delete_resource(struct wl_resource * resource) override;
 
 	/* page_surface_interface */
-	virtual weston_surface * surface() const override;
-	virtual weston_view * create_weston_view() override;
+	virtual wl::wl_surface surface() const override;
 	virtual int32_t width() const override;
 	virtual int32_t height() const override;
 	virtual string const & title() const override;

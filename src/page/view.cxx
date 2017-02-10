@@ -11,11 +11,10 @@
 
 #include <cairo.h>
 #include <linux/input.h>
-#include <xdg-shell-v5-surface-toplevel.hxx>
 
 #include "renderable_floating_outer_gradien.hxx"
 #include "notebook.hxx"
-#include "utils.hxx"
+#include "libpage/utils.hxx"
 #include "grab_handlers.hxx"
 
 namespace page {
@@ -29,11 +28,7 @@ void view_t::add_transient_child(view_p c) {
 void view_t::add_popup_child(view_p c,
 		int x, int y)
 {
-	c->set_managed_type(MANAGED_POPUP);
-	_popups_childdren->push_back(c);
-	weston_view_set_transform_parent(c->get_default_view(), _default_view);
-	weston_view_set_position(c->get_default_view(), x, y);
-	weston_view_schedule_repaint(c->get_default_view());
+	/* TODO */
 }
 
 view_t::view_t(
@@ -64,10 +59,6 @@ view_t::view_t(
 	_transient_childdren = make_shared<tree_t>();
 	push_back(_transient_childdren);
 
-	weston_matrix_init(&_transform.matrix);
-	wl_list_init(&_transform.link);
-
-	_default_view = _page_surface->create_weston_view();
 	update_view();
 
 	_is_visible = true;
@@ -83,10 +74,6 @@ view_t::view_t(
 
 view_t::~view_t() {
 	printf("call %s %p\n", __PRETTY_FUNCTION__, this);
-	if(_default_view) {
-		weston_view_destroy(_default_view);
-		_default_view = nullptr;
-	}
 }
 
 auto view_t::shared_from_this() -> view_p {
@@ -95,47 +82,47 @@ auto view_t::shared_from_this() -> view_p {
 
 void view_t::update_view() {
 	printf("call %s\n", __PRETTY_FUNCTION__);
-
-	if (is(MANAGED_NOTEBOOK) or is(MANAGED_FULLSCREEN)) {
-		_wished_position = _notebook_wished_position;
-
-		double ratio = compute_ratio_to_fit(_page_surface->width(),
-				_page_surface->height(), _wished_position.w,
-				_wished_position.h);
-
-		/* if ratio > 1.0 then do not scale, just center */
-		if(ratio >= 1.0) {
-			ratio = 1.0;
-		}
-
-		if(_transform.link.next)
-			wl_list_remove(&_transform.link);
-
-		if(ratio != 1.0) {
-			weston_matrix_init(&_transform.matrix);
-			weston_matrix_scale(&_transform.matrix, ratio, ratio, 1.0);
-			wl_list_insert(&_default_view->geometry.transformation_list, &_transform.link);
-		}
-
-		float x = floor(_wished_position.x + (_wished_position.w -
-				_page_surface->width() * ratio)/2.0);
-		float y = floor(_wished_position.y + (_wished_position.h -
-				_page_surface->height() * ratio)/2.0);
-
-		weston_view_set_position(_default_view, x, y);
-		weston_view_schedule_repaint(_default_view);
-
-	} else {
-		_wished_position = _floating_wished_position;
-
-		if(_transform.link.next)
-			wl_list_remove(&_transform.link);
-
-		weston_view_set_position(_default_view, _floating_wished_position.x,
-				_floating_wished_position.y);
-		weston_view_schedule_repaint(_default_view);
-
-	}
+//
+//	if (is(MANAGED_NOTEBOOK) or is(MANAGED_FULLSCREEN)) {
+//		_wished_position = _notebook_wished_position;
+//
+//		double ratio = compute_ratio_to_fit(_page_surface->width(),
+//				_page_surface->height(), _wished_position.w,
+//				_wished_position.h);
+//
+//		/* if ratio > 1.0 then do not scale, just center */
+//		if(ratio >= 1.0) {
+//			ratio = 1.0;
+//		}
+//
+//		if(_transform.link.next)
+//			wl_list_remove(&_transform.link);
+//
+//		if(ratio != 1.0) {
+//			weston_matrix_init(&_transform.matrix);
+//			weston_matrix_scale(&_transform.matrix, ratio, ratio, 1.0);
+//			wl_list_insert(&_default_view->geometry.transformation_list, &_transform.link);
+//		}
+//
+//		float x = floor(_wished_position.x + (_wished_position.w -
+//				_page_surface->width() * ratio)/2.0);
+//		float y = floor(_wished_position.y + (_wished_position.h -
+//				_page_surface->height() * ratio)/2.0);
+//
+//		weston_view_set_position(_default_view, x, y);
+//		weston_view_schedule_repaint(_default_view);
+//
+//	} else {
+//		_wished_position = _floating_wished_position;
+//
+//		if(_transform.link.next)
+//			wl_list_remove(&_transform.link);
+//
+//		weston_view_set_position(_default_view, _floating_wished_position.x,
+//				_floating_wished_position.y);
+//		weston_view_schedule_repaint(_default_view);
+//
+//	}
 
 }
 
@@ -232,46 +219,42 @@ void view_t::activate() {
 	queue_redraw();
 }
 
-bool view_t::button(weston_pointer_grab * grab, uint32_t time, uint32_t button, uint32_t state) {
-	auto pointer = grab->pointer;
-	wl_fixed_t view_x;
-	wl_fixed_t view_y;
-	int view_ix;
-	int view_iy;
-	int ix = wl_fixed_to_int(pointer->x);
-	int iy = wl_fixed_to_int(pointer->y);
-
-	if (!pixman_region32_contains_point(
-			&_default_view->transform.boundingbox, ix, iy, NULL))
-		return false;
-
-	weston_view_from_global_fixed(_default_view, pointer->x, pointer->y, &view_x, &view_y);
-	view_ix = wl_fixed_to_int(view_x);
-	view_iy = wl_fixed_to_int(view_y);
-
-	if (!pixman_region32_contains_point(&_default_view->surface->input,
-					    view_ix, view_iy, NULL))
-		return false;
-
-	if (_default_view->geometry.scissor_enabled &&
-	    !pixman_region32_contains_point(&_default_view->geometry.scissor,
-					    view_ix, view_iy, NULL))
-		return false;
-
-	if (pointer->button_count == 0 &&
-			 state == WL_POINTER_BUTTON_STATE_RELEASED) {
-		_ctx->set_keyboard_focus(pointer->seat, shared_from_this());
-	}
+bool view_t::button(page_pointer_grab * pointer, ClutterEvent const & event) {
+//	auto pointer = grab->pointer;
+//	wl_fixed_t view_x;
+//	wl_fixed_t view_y;
+//	int view_ix;
+//	int view_iy;
+//	int ix = wl_fixed_to_int(pointer->x);
+//	int iy = wl_fixed_to_int(pointer->y);
+//
+//	if (!pixman_region32_contains_point(
+//			&_default_view->transform.boundingbox, ix, iy, NULL))
+//		return false;
+//
+//	weston_view_from_global_fixed(_default_view, pointer->x, pointer->y, &view_x, &view_y);
+//	view_ix = wl_fixed_to_int(view_x);
+//	view_iy = wl_fixed_to_int(view_y);
+//
+//	if (!pixman_region32_contains_point(&_default_view->surface->input,
+//					    view_ix, view_iy, NULL))
+//		return false;
+//
+//	if (_default_view->geometry.scissor_enabled &&
+//	    !pixman_region32_contains_point(&_default_view->geometry.scissor,
+//					    view_ix, view_iy, NULL))
+//		return false;
+//
+//	if (pointer->button_count == 0 &&
+//			 state == WL_POINTER_BUTTON_STATE_RELEASED) {
+//		_ctx->set_keyboard_focus(pointer->seat, shared_from_this());
+//	}
 
 	return true;
 
 }
 
 void view_t::queue_redraw() {
-
-	if(_default_view) {
-		weston_view_schedule_repaint(_default_view);
-	}
 
 	if(is(MANAGED_FLOATING)) {
 		//_is_resized = true;

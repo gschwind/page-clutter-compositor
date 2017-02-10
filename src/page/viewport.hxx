@@ -69,7 +69,7 @@ class viewport_t: public page_component_t {
 
 public:
 
-	viewport_t(page_context_t * ctx, rect const & area, void * output);
+	viewport_t(page_context_t * ctx, rect const & area);
 	virtual ~viewport_t();
 
 	auto raw_area() const -> rect const &;

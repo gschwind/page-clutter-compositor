@@ -52,49 +52,49 @@ struct key_desc_t {
 	 **/
 	void _find_key_from_string(string const & desc) {
 
-		/* no binding is set */
-		ks = XKB_KEY_NoSymbol;
-		mod = 0;
-
-		if(desc == "null")
-			return;
-
-		/* find all modifier */
-		std::size_t bos = 0;
-		std::size_t eos = desc.find(" ", bos);
-		while(eos != std::string::npos) {
-			std::string modifier = desc.substr(bos, eos-bos);
-
-			/* check for supported modifier */
-			if(modifier == "shift") {
-				mod |= MODIFIER_SHIFT;
-			} else if (modifier == "lock") {
-				mod |= 0;
-			} else if (modifier == "control") {
-				mod |= MODIFIER_CTRL;
-			} else if (modifier == "mod1") {
-				mod |= MODIFIER_ALT;
-			} else if (modifier == "mod2") {
-				mod |= 0;
-			} else if (modifier == "mod3") {
-				mod |= 0;
-			} else if (modifier == "mod4") {
-				mod |= MODIFIER_SUPER;
-			} else if (modifier == "mod5") {
-				mod |= 0;
-			} else {
-				throw except("invalid modifier '%s' for key binding", modifier.c_str());
-			}
-
-			bos = eos+1; /* next char of char space */
-			eos = desc.find(" ", bos);
-		}
-
-		keysym_name = desc.substr(bos);
-		ks = xkb_keysym_from_name(keysym_name.c_str(), XKB_KEYSYM_NO_FLAGS);
-		if(ks == XKB_KEY_NoSymbol) {
-			throw except("key binding not found");
-		}
+//		/* no binding is set */
+//		ks = XKB_KEY_NoSymbol;
+//		mod = 0;
+//
+//		if(desc == "null")
+//			return;
+//
+//		/* find all modifier */
+//		std::size_t bos = 0;
+//		std::size_t eos = desc.find(" ", bos);
+//		while(eos != std::string::npos) {
+//			std::string modifier = desc.substr(bos, eos-bos);
+//
+//			/* check for supported modifier */
+//			if(modifier == "shift") {
+//				mod |= MODIFIER_SHIFT;
+//			} else if (modifier == "lock") {
+//				mod |= 0;
+//			} else if (modifier == "control") {
+//				mod |= MODIFIER_CTRL;
+//			} else if (modifier == "mod1") {
+//				mod |= MODIFIER_ALT;
+//			} else if (modifier == "mod2") {
+//				mod |= 0;
+//			} else if (modifier == "mod3") {
+//				mod |= 0;
+//			} else if (modifier == "mod4") {
+//				mod |= MODIFIER_SUPER;
+//			} else if (modifier == "mod5") {
+//				mod |= 0;
+//			} else {
+//				throw except("invalid modifier '%s' for key binding", modifier.c_str());
+//			}
+//
+//			bos = eos+1; /* next char of char space */
+//			eos = desc.find(" ", bos);
+//		}
+//
+//		keysym_name = desc.substr(bos);
+//		ks = xkb_keysym_from_name(keysym_name.c_str(), XKB_KEYSYM_NO_FLAGS);
+//		if(ks == XKB_KEY_NoSymbol) {
+//			throw except("key binding not found");
+//		}
 	}
 
 };

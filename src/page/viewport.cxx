@@ -16,8 +16,7 @@ namespace page {
 
 using namespace std;
 
-viewport_t::viewport_t(page_context_t * ctx, rect const & area,
-		weston_output * output) :
+viewport_t::viewport_t(page_context_t * ctx, rect const & area) :
 		_ctx{ctx},
 		_raw_aera{area},
 		_effective_area{area},
@@ -25,8 +24,7 @@ viewport_t::viewport_t(page_context_t * ctx, rect const & area,
 		//_win{XCB_NONE},
 		_back_surf{nullptr},
 		_exposed{false},
-		_subtree{nullptr},
-		_output{output}
+		_subtree{nullptr}
 {
 	_page_area = rect{0, 0, _effective_area.w, _effective_area.h};
 	create_window();
@@ -37,26 +35,6 @@ viewport_t::viewport_t(page_context_t * ctx, rect const & area,
 
 	_backbround_surface = nullptr;
 	_default_view = nullptr;
-
-	/** create the solid color background **/
-//	_backbround_surface = weston_surface_create(ctx->ec);
-//	weston_surface_set_color(_backbround_surface, 1.0f, 0.0f, 0.0f, 0.1f);
-//    weston_surface_set_size(_backbround_surface, area.w, area.h);
-//    pixman_region32_fini(&_backbround_surface->opaque);
-//    pixman_region32_init_rect(&_backbround_surface->opaque, 0, 0, area.w,
-//    		area.h);
-//    weston_surface_damage(_backbround_surface);
-//    //pixman_region32_fini(&_backbround_surface->input);
-//    //pixman_region32_init_rect(&s->input, 0, 0, w, h);
-//
-//	_backbround_surface->timeline.force_refresh = 1;
-//    _default_view = weston_view_create(_backbround_surface);
-//	weston_view_set_position(_default_view, area.x, area.y);
-//	weston_view_geometry_dirty(_default_view);
-
-	_pix = _ctx->create_pixmap(area.w, area.h);
-	_pix_on_ack_buffer = _pix->on_ack_buffer.connect(this,
-			&viewport_t::_on_ack_buffer);
 
 }
 
@@ -224,46 +202,43 @@ void viewport_t::create_window() {
 
 void viewport_t::_redraw_back_buffer() {
 	//printf("call %s\n", __PRETTY_FUNCTION__);
-
-	if(_pix->get_cairo_surface() == nullptr)
-		return;
-
-	if(not _is_durty)
-		return;
-
-	cairo_t * cr = cairo_create(_pix->get_cairo_surface());
-	if(cairo_status(cr)) {
-		printf("XXX %s\n", cairo_status_to_string(cairo_status(cr)));
-	}
-	cairo_identity_matrix(cr);
-	if(cairo_status(cr)) {
-		printf("XXX %s\n", cairo_status_to_string(cairo_status(cr)));
-	}
-
-	cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
-	cairo_paint(cr);
-
-	auto splits = filter_class<split_t>(get_all_children());
-	for (auto x : splits) {
-		x->render_legacy(cr);
-	}
-
-	auto notebooks = filter_class<notebook_t>(get_all_children());
-	for (auto x : notebooks) {
-		x->render_legacy(cr);
-	}
-
-	cairo_surface_flush(_pix->get_cairo_surface());
-	warn(cairo_get_reference_count(cr) == 1);
-	cairo_destroy(cr);
-
-	_is_durty = false;
-	_exposed = true;
-	_damaged += _effective_area;
-
-	(*_ctx->ec->renderer->attach)(_backbround_surface, _pix->wbuffer());
-	weston_surface_damage(_pix->wsurface());
-	(*_ctx->ec->renderer->flush_damage)(_backbround_surface);
+//
+//	if(not _is_durty)
+//		return;
+//
+//	cairo_t * cr = cairo_create(_pix->get_cairo_surface());
+//	if(cairo_status(cr)) {
+//		printf("XXX %s\n", cairo_status_to_string(cairo_status(cr)));
+//	}
+//	cairo_identity_matrix(cr);
+//	if(cairo_status(cr)) {
+//		printf("XXX %s\n", cairo_status_to_string(cairo_status(cr)));
+//	}
+//
+//	cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+//	cairo_paint(cr);
+//
+//	auto splits = filter_class<split_t>(get_all_children());
+//	for (auto x : splits) {
+//		x->render_legacy(cr);
+//	}
+//
+//	auto notebooks = filter_class<notebook_t>(get_all_children());
+//	for (auto x : notebooks) {
+//		x->render_legacy(cr);
+//	}
+//
+//	cairo_surface_flush(_pix->get_cairo_surface());
+//	warn(cairo_get_reference_count(cr) == 1);
+//	cairo_destroy(cr);
+//
+//	_is_durty = false;
+//	_exposed = true;
+//	_damaged += _effective_area;
+//
+//	(*_ctx->ec->renderer->attach)(_backbround_surface, _pix->wbuffer());
+//	weston_surface_damage(_pix->wsurface());
+//	(*_ctx->ec->renderer->flush_damage)(_backbround_surface);
 
 }
 
@@ -360,39 +335,8 @@ void viewport_t::get_min_allocation(int & width, int & height) const {
 
 }
 
-auto viewport_t::get_output() const -> weston_output * {
-	printf("xxxx %p\n", _output);
-	return _output;
-}
-
 auto viewport_t::get_default_view() const -> ClutterActor * {
 	return _default_view;
-}
-
-void viewport_t::_on_ack_buffer(pixmap_t * p) {
-	assert(_pix.get() == p);
-
-	_backbround_surface = _pix->wsurface();
-//	pixman_region32_fini(&_backbround_surface->opaque);
-//	pixman_region32_init_rect(&_backbround_surface->opaque, 0, 0,
-//			_effective_area.w, _effective_area.h);
-//	pixman_region32_fini(&_backbround_surface->input);
-//	pixman_region32_init_rect(&_backbround_surface->input, 0, 0,
-//			_effective_area.w, _effective_area.h);
-	weston_surface_set_role(_backbround_surface, "page_viewport",
-			nullptr, 0);
-	weston_surface_damage(_backbround_surface);
-
-	_backbround_surface->timeline.force_refresh = 1;
-	_default_view = weston_view_create(_backbround_surface);
-	weston_view_set_position(_default_view, _effective_area.x, _effective_area.y);
-	//weston_view_set_mask_infinite(_default_view);
-	weston_view_geometry_dirty(_default_view);
-
-	queue_redraw();
-	_ctx->sync_tree_view();
-
-
 }
 
 }

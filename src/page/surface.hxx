@@ -12,6 +12,8 @@
 #include <string>
 
 #include "tree-types.hxx"
+#include "libpage/page-types.hxx"
+#include "wl/wl-types.hxx"
 
 namespace page {
 

@@ -22,7 +22,7 @@
 #include "wl-surface.hxx"
 #include "wl-shell-surface.hxx"
 
-#include "page-core.hxx"
+#include "libpage/page-core.hxx"
 
 namespace page {
 namespace wl {

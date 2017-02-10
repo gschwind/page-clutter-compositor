@@ -10,6 +10,7 @@
 #include "tree.hxx"
 
 #include <cassert>
+#include <utility>
 
 #include "libpage/utils.hxx"
 
@@ -189,12 +190,12 @@ void tree_t::activate(shared_ptr<tree_t> t) {
 	move_back(_children, t);
 }
 
-bool tree_t::button(weston_pointer_grab * grab, uint32_t time, uint32_t button, uint32_t state)
+bool tree_t::button(page_pointer_grab * grab, ClutterEvent const & event)
 {
 	return false;
 }
 
-bool tree_t::motion(weston_pointer_grab * grab, uint32_t time, weston_pointer_motion_event * event)
+bool tree_t::motion(page_pointer_grab * grab, ClutterEvent const & event)
 {
 	return false;
 }
@@ -307,12 +308,12 @@ void tree_t::broadcast_trigger_redraw() {
 	_broadcast_deep_first(&tree_t::trigger_redraw);
 }
 
-bool tree_t::broadcast_button(weston_pointer_grab * grab, uint32_t time, uint32_t button, uint32_t state) {
-	return _broadcast_deep_first(&tree_t::button, grab, time, button, state);
+bool tree_t::broadcast_button(page_pointer_grab * grab, ClutterEvent const & event) {
+	return _broadcast_deep_first(&tree_t::button, grab, event);
 }
 
-bool tree_t::broadcast_motion(weston_pointer_grab * grab, uint32_t time, weston_pointer_motion_event * event) {
-	return _broadcast_deep_first(&tree_t::motion, grab, time, event);
+bool tree_t::broadcast_motion(page_pointer_grab * grab, ClutterEvent const & event) {
+	return _broadcast_deep_first(&tree_t::motion, grab, event);
 }
 
 void tree_t::broadcast_update_layout(time64_t const time) {

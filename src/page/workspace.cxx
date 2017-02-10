@@ -11,7 +11,7 @@
 #include <typeinfo>
 #include "viewport.hxx"
 #include "workspace.hxx"
-
+#include "exception.hxx"
 #include "view.hxx"
 
 namespace page {

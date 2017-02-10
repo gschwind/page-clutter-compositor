@@ -88,7 +88,7 @@ public:
 
 	virtual void activate();
 	virtual void activate(shared_ptr<tree_t> t);
-	virtual bool button(ClutterEvent const & event);
+	virtual bool button(page_pointer_grab * pointer, ClutterEvent const & event);
 	//virtual bool button_press(xcb_button_press_event_t const * ev);
 	//virtual bool button_release(xcb_button_release_event_t const * ev);
 	//virtual bool button_motion(xcb_motion_notify_event_t const * ev);
@@ -113,7 +113,6 @@ public:
 	virtual rect allocation() const;
 	virtual void replace(shared_ptr<page_component_t> src, shared_ptr<page_component_t> by);
 	virtual void get_min_allocation(int & width, int & height) const;
-	//virtual auto get_output() const -> weston_output *;
 
 };
 

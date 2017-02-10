@@ -28,9 +28,11 @@
 #include <memory>
 #include <map>
 #include <list>
+#include <set>
 #include <functional>
 #include <vector>
 #include <limits>
+#include <algorithm>
 
 #include "page/box.hxx"
 
@@ -40,6 +42,19 @@ using namespace std;
 
 template <typename T, std::size_t N>
 constexpr std::size_t countof(T const (&)[N]) noexcept { return N; }
+
+// identity is used to avoid template type deduction.
+template<typename T>
+struct identity {
+	using type = T;
+};
+
+#define warn(test) \
+	do { \
+		if(not (test)) { \
+			printf("WARN %s:%d (%s) fail!\n", __FILE__, __LINE__, #test); \
+		} \
+	} while(false)
 
 template<typename T>
 T * resource_get(struct wl_resource * r) {
@@ -79,14 +94,9 @@ vector<shared_ptr<T0>> lock(list<weak_ptr<T0>> & x) {
 	return ret;
 }
 
-template<typename T0>
-std::list<std::weak_ptr<T0>> weak(std::list<std::shared_ptr<T0>> const & x) {
-	return std::list<std::weak_ptr<T0>>{x.begin(), x.end()};
-}
-
-template<typename T0>
-std::vector<std::weak_ptr<T0>> weak(std::vector<std::shared_ptr<T0>> const & x) {
-	return std::vector<std::weak_ptr<T0>>{x.begin(), x.end()};
+template<template<typename, typename...> class C, typename T, typename ... R>
+C<std::weak_ptr<T>, R...> weak(C<std::shared_ptr<T>, R...> const & x) {
+	return C<std::weak_ptr<T>, R...>{x.begin(), x.end()};
 }
 
 static std::string xformat(char const * fmt, ...) {
@@ -142,6 +152,79 @@ std::list<std::shared_ptr<T0>> filter_class(std::list<std::shared_ptr<T1>> const
 	}
 	return ret;
 }
+
+template<template<typename, typename...> class C, typename T, typename ... R>
+bool has_key(C<T, R...> const & x, T const & key) {
+	auto i = std::find(x.begin(), x.end(), key);
+	return i != x.end();
+}
+
+template<typename T, typename ... R>
+bool has_key(std::map<T, R...> const & x, T const & key) {
+	auto i = x.find(key);
+	return i != x.end();
+}
+
+template<typename T>
+void move_front(std::list<weak_ptr<T>> & l, shared_ptr<T> const & v) {
+	auto pos = std::find_if(l.begin(), l.end(), [v](weak_ptr<T> & l) { return l.lock() == v; });
+	if(pos != l.end()) {
+		l.splice(l.begin(), l, pos);
+	} else {
+		l.push_front(v);
+	}
+}
+
+template<typename T>
+void move_back(std::list<weak_ptr<T>> & l, shared_ptr<T> const & v) {
+	auto pos = std::find_if(l.begin(), l.end(), [v](weak_ptr<T> & l) { return l.lock() == v; });
+	if(pos != l.end()) {
+		l.splice(l.end(), l, pos);
+	} else {
+		l.push_back(v);
+	}
+}
+
+template<typename T>
+void move_front(std::list<T> & l, T const & v) {
+	auto pos = std::find(l.begin(), l.end(), v);
+	if(pos != l.end()) {
+		l.splice(l.begin(), l, pos);
+	} else {
+		l.push_front(v);
+	}
+}
+
+template<typename T>
+void move_back(std::list<T> & l, T const & v) {
+	auto pos = std::find(l.begin(), l.end(), v);
+	if(pos != l.end()) {
+		l.splice(l.end(), l, pos);
+	} else {
+		l.push_back(v);
+	}
+}
+
+
+enum corner_mask_e : uint8_t {
+	CAIRO_CORNER_TOPLEFT   = 0x01U,
+	CAIRO_CORNER_TOPRIGHT  = 0x02U,
+	CAIRO_CORNER_BOTLEFT   = 0x04U,
+	CAIRO_CORNER_BOTRIGHT  = 0x08U,
+	CAIRO_CORNER_ALL       = 0x0fU,
+	CAIRO_CORNER_TOP       = 0x03U,
+	CAIRO_CORNER_BOT       = 0x0cU,
+	CAIRO_CORNER_LEFT      = 0x05U,
+	CAIRO_CORNER_RIGHT     = 0x0aU
+};
+
+/**
+ * Draw rectangle with all corner rounded
+ **/
+void cairo_rectangle_arc_corner(cairo_t * cr, double x, double y, double w, double h, double radius, uint8_t corner_mask);
+void cairo_rectangle_arc_corner(cairo_t * cr, rect const & position, double radius, uint8_t corner_mask);
+
+
 
 }
 
