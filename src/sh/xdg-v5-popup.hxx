@@ -29,30 +29,29 @@ namespace page {
 namespace sh {
 
 using namespace wayland_cxx_wrapper;
+using namespace std;
 
 struct xdg_v5_popup : public xdg_popup_vtable {
 	xdg_v5_shell * shell;
 
 	page_context_t *       _ctx;
 	wl_client *            _client;
-	weston_surface *       _surface;
+	wl::wl_surface *       _surface;
 	uint32_t               _id;
-	struct wl_resource *   _resource;
+	wl::wl_surface *       _parent;
+
 	wl_listener            _surface_destroy;
 
 	wl_listener_t<struct weston_surface> on_surface_destroy;
 	wl_listener_t<struct weston_surface> on_surface_commit;
 
-	wl_client * client;
-	wl_resource * resource;
-	uint32_t id;
-	weston_surface * _surface;
+	// relative position of the popup against the parent
 	int32_t x;
 	int32_t y;
 
-	signal<xdg_surface_popup_t *> destroy;
+	signal<xdg_v5_popup *> destroy;
 
-	xdg_v5_popup(struct wl_client *client, uint32_t version, uint32_t id, xdg_v5_shell * shell);
+	xdg_v5_popup(struct wl_client *client, uint32_t version, uint32_t id, xdg_v5_shell * shell, page_context_t * ctx, wl::wl_surface * surface, wl::wl_surface * parent, int32_t x, int32_t y);
 	virtual ~xdg_v5_popup();
 
 	/* xdg_popup_vtable */
@@ -60,8 +59,7 @@ struct xdg_v5_popup : public xdg_popup_vtable {
 	virtual void delete_resource(struct wl_resource * resource) override;
 
 	/* page_surface_interface */
-	virtual weston_surface * surface() const override;
-	virtual weston_view * create_weston_view() override;
+	virtual wl::wl_surface * surface() const override;
 	virtual int32_t width() const override;
 	virtual int32_t height() const override;
 	virtual string const & title() const override;

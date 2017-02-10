@@ -24,9 +24,20 @@
 namespace page {
 namespace sh {
 
-xdg_v5_popup::xdg_v5_popup(struct wl_client *client, uint32_t version, uint32_t id, xdg_v5_shell * shell) :
+xdg_v5_popup::xdg_v5_popup(struct wl_client *client, uint32_t version,
+		uint32_t id,
+		xdg_v5_shell * shell,
+		page_context_t * ctx, wl::wl_surface * surface,
+		wl::wl_surface * parent,
+		int32_t x, int32_t y) :
 		xdg_popup_vtable{client, version, id},
-		shell{shell}
+		shell{shell},
+		_id{id},
+		_client{client},
+		_ctx{ctx},
+		_surface{surface},
+		_parent{parent},
+		y{y}, x{x}
 {
 	// TODO Auto-generated constructor stub
 
@@ -50,12 +61,8 @@ void xdg_v5_popup::delete_resource(struct wl_resource * resource)
 
 
 /* page_surface_interface */
-weston_surface * xdg_v5_popup::surface() const {
+wl::wl_surface * xdg_v5_popup::surface() const {
 	return _surface;
-}
-
-weston_view * xdg_v5_popup::create_weston_view() {
-	return weston_view_create(_surface);
 }
 
 int32_t xdg_v5_popup::width() const {

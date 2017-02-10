@@ -44,7 +44,7 @@ void page_default_pointer_grab::focus(ClutterEvent const & event)
 		return;
 
 	wl_fixed_t sx, sy;
-	auto surface = pointer->pick_actor(&event, sx, sy);
+	auto surface = pointer->pick_surface_actor(&event, sx, sy);
 	pointer->set_focus(surface, sx, sy);
 
 }
@@ -60,7 +60,7 @@ void page_default_pointer_grab::button(ClutterEvent const & event)
 
 	/* TODO: remove following because it must be set by the wm */
 	wl_fixed_t sx, sy;
-	auto surface = pointer->pick_actor(&event, sx, sy);
+	auto surface = pointer->pick_surface_actor(&event, sx, sy);
 	if(surface)
 		pointer->seat->keyboard->set_focus(surface);
 }

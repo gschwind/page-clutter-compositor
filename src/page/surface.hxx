@@ -41,8 +41,7 @@ struct surface_t {
 
 	virtual ~surface_t() = default;
 
-	virtual auto surface() const -> struct weston_surface * = 0;
-	virtual auto create_weston_view() -> struct weston_view * = 0;
+	virtual auto surface() const -> wl::wl_surface * = 0;
 	virtual auto width() const -> int32_t = 0;
 	virtual auto height() const -> int32_t = 0;
 	virtual auto title() const -> string const & = 0;

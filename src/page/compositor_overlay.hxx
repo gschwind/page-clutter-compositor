@@ -16,8 +16,6 @@
 #include <cairo/cairo-xlib.h>
 #include <cairo/cairo-xcb.h>
 
-#include "pixmap.hxx"
-
 namespace page {
 
 

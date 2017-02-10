@@ -11,8 +11,6 @@
 #include "page_context.hxx"
 #include "page_component.hxx"
 #include "compositor_overlay.hxx"
-#include "xdg-shell-v5-surface-popup.hxx"
-#include "xdg-shell-v5-surface-toplevel.hxx"
 
 namespace page {
 

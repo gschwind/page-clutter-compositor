@@ -45,7 +45,7 @@
 
 #include "page_event.hxx"
 
-#include "utils.hxx"
+#include "libpage/utils.hxx"
 #include "mainloop.hxx"
 #include "page_root.hxx"
 #include "listener.hxx"
@@ -54,17 +54,7 @@
 
 #include "wl/wl-shell.hxx"
 
-/* xdg-shell-v5 protocol */
-#include "sh/xdg-v5-shell.hxx"
-#include "sh/xdg-v5-popup.hxx"
-#include "sh/xdg-v5-surface.hxx"
-
-/* xdg-shell-v6 protocol */
-#include "sh/xdg-v6-shell.hxx"
-#include "sh/xdg-v6-surface.hxx"
-#include "sh/xdg-v6-popup.hxx"
-#include "sh/xdg-v6-toplevel.hxx"
-#include "sh/xdg-v6-positioner.hxx"
+#include "sh/sh-types.hxx"
 
 
 namespace page {
@@ -104,17 +94,9 @@ struct key_bind_cmd_t {
 
 struct page_t : public page_core, public page_context_t, public connectable {
 	shared_ptr<page_root_t> _root;
-	weston_layer default_layer;
 	theme_t * _theme;
 	page_configuration_t configuration;
 	config_handler_t _conf;
-
-	pointer_grab_handler_t * _grab_handler;
-
-	list<slot> _slots;
-
-
-	list<weston_output *> _outputs;
 
 	/**
 	 * Store data to allow proper revert fullscreen window to
@@ -129,48 +111,7 @@ struct page_t : public page_core, public page_context_t, public connectable {
 	bool use_pixman;
 	bool repaint_scheduled;
 
-	wl_listener destroy;
-
-	/* surface signals */
-	wl_listener create_surface;
-	wl_listener activate;
-	wl_listener transform;
-
-	wl_listener kill;
-	wl_listener idle;
-	wl_listener wake;
-
-	wl_listener show_input_panel;
-	wl_listener hide_input_panel;
-	wl_listener update_input_panel;
-
-	wl_listener_t<weston_seat> seat_created;
-	wl_listener_t<weston_output> output_created;
-	wl_listener_t<weston_output> output_pending;
-	wl_listener output_destroyed;
-	wl_listener output_moved;
-	wl_listener output_resized;
-
-	wl_listener session;
-
-	list<pixmap_p> pixmap_list;
-
 	view_w _current_focus;
-
-	using repaint_func = int (*)(weston_output *, pixman_region32_t *);
-	using start_repaint_loop_func = void (*)(weston_output *);
-
-	map<weston_output *, repaint_func> repaint_functions;
-	map<weston_output *, start_repaint_loop_func> start_repaint_loop_functions;
-
-	struct _default_grab_interface_t {
-		weston_pointer_grab_interface grab_interface;
-		page_t * ths;
-	} default_grab_pod;
-
-	list<wl_shell_client_t *> _wl_shell_clients;
-	list<xdg_shell_client_t *> _xdg_shell_v5_clients;
-	list<xdg_shell_v6_client_t *> _xdg_shell_v6_clients;
 
 	struct wl_global * _global_wl_shell;
 	struct wl_global * _global_xdg_shell_v5;
@@ -212,41 +153,39 @@ struct page_t : public page_core, public page_context_t, public connectable {
 	/* run page main loop */
 	void run();
 
-	void xdg_shell_v5_client_destroy(xdg_shell_client_t *);
-	void xdg_shell_v6_client_destroy(xdg_shell_v6_client_t *);
-	void wl_shell_client_destroy(wl_shell_client_t *);
-	void client_create_popup(xdg_shell_client_t *, xdg_surface_popup_t *);
-	void client_create_toplevel(xdg_shell_client_t *, xdg_surface_toplevel_t *);
+	void xdg_shell_v5_client_destroy(sh::xdg_v5_shell *);
+	void xdg_shell_v6_client_destroy(sh::xdg_v5_shell *);
+	void wl_shell_client_destroy(wl::wl_shell *);
 
 	void switch_focused_to_fullscreen();
 	void switch_focused_to_floating();
 	void switch_focused_to_notebook();
 
-	void handle_quit_page(weston_keyboard * wk, uint32_t time, uint32_t key);
-	void handle_toggle_fullscreen(weston_keyboard * wk, uint32_t time, uint32_t key);
-	void handle_close_window(weston_keyboard * wk, uint32_t time, uint32_t key);
-	void handle_goto_desktop_at_right(weston_keyboard * wk, uint32_t time, uint32_t key);
-	void handle_goto_desktop_at_left(weston_keyboard * wk, uint32_t time, uint32_t key);
-	void handle_bind_window(weston_keyboard * wk, uint32_t time, uint32_t key);
-	void handle_set_fullscreen_window(weston_keyboard * wk, uint32_t time, uint32_t key);
-	void handle_set_floating_window(weston_keyboard * wk, uint32_t time, uint32_t key);
+	void handle_quit_page(page_keyboard * wk, ClutterEvent const & event);
+	void handle_toggle_fullscreen(page_keyboard * wk, ClutterEvent const & event);
+	void handle_close_window(page_keyboard * wk, ClutterEvent const & event);
+	void handle_goto_desktop_at_right(page_keyboard * wk, ClutterEvent const & event);
+	void handle_goto_desktop_at_left(page_keyboard * wk, ClutterEvent const & event);
+	void handle_bind_window(page_keyboard * wk, ClutterEvent const & event);
+	void handle_set_fullscreen_window(page_keyboard * wk, ClutterEvent const & event);
+	void handle_set_floating_window(page_keyboard * wk, ClutterEvent const & event);
 
-	void handle_alt_left_button(struct weston_pointer *pointer, uint32_t time, uint32_t button);
-	void handle_alt_right_button(struct weston_pointer *pointer, uint32_t time, uint32_t button);
+	void handle_alt_left_button(page_pointer *pointer, ClutterEvent const & event);
+	void handle_alt_right_button(page_pointer *pointer, ClutterEvent const & event);
 
-	void handle_bind_cmd_0(weston_keyboard * wk, uint32_t time, uint32_t key);
-	void handle_bind_cmd_1(weston_keyboard * wk, uint32_t time, uint32_t key);
-	void handle_bind_cmd_2(weston_keyboard * wk, uint32_t time, uint32_t key);
-	void handle_bind_cmd_3(weston_keyboard * wk, uint32_t time, uint32_t key);
-	void handle_bind_cmd_4(weston_keyboard * wk, uint32_t time, uint32_t key);
-	void handle_bind_cmd_5(weston_keyboard * wk, uint32_t time, uint32_t key);
-	void handle_bind_cmd_6(weston_keyboard * wk, uint32_t time, uint32_t key);
-	void handle_bind_cmd_7(weston_keyboard * wk, uint32_t time, uint32_t key);
-	void handle_bind_cmd_8(weston_keyboard * wk, uint32_t time, uint32_t key);
-	void handle_bind_cmd_9(weston_keyboard * wk, uint32_t time, uint32_t key);
+	void handle_bind_cmd_0(page_keyboard * wk, ClutterEvent const & event);
+	void handle_bind_cmd_1(page_keyboard * wk, ClutterEvent const & event);
+	void handle_bind_cmd_2(page_keyboard * wk, ClutterEvent const & event);
+	void handle_bind_cmd_3(page_keyboard * wk, ClutterEvent const & event);
+	void handle_bind_cmd_4(page_keyboard * wk, ClutterEvent const & event);
+	void handle_bind_cmd_5(page_keyboard * wk, ClutterEvent const & event);
+	void handle_bind_cmd_6(page_keyboard * wk, ClutterEvent const & event);
+	void handle_bind_cmd_7(page_keyboard * wk, ClutterEvent const & event);
+	void handle_bind_cmd_8(page_keyboard * wk, ClutterEvent const & event);
+	void handle_bind_cmd_9(page_keyboard * wk, ClutterEvent const & event);
 
 
-	view_p lookup_for_view(struct weston_view * v);
+	view_p lookup_for_view(ClutterActor * v);
 
 	//	void set_default_pop(shared_ptr<notebook_t> x);
 //	display_compositor_t * get_render_context();
@@ -381,12 +320,12 @@ struct page_t : public page_core, public page_context_t, public connectable {
 //	bool check_for_destroyed_window(xcb_window_t w);
 //
 //	void update_keymap();
-
-	template<void (page_t::*func)(weston_keyboard *, uint32_t, uint32_t)>
-	void bind_key(xkb_keymap * keymap, key_desc_t & key);
-	void bind_all_keys(weston_seat * seat);
-
-	void on_seat_created(weston_seat * seat);
+//
+//	template<void (page_t::*func)(weston_keyboard *, uint32_t, uint32_t)>
+//	void bind_key(xkb_keymap * keymap, key_desc_t & key);
+//	void bind_all_keys(weston_seat * seat);
+//
+//	void on_seat_created(weston_seat * seat);
 
 //	shared_ptr<xdg_surface_toplevel_t> find_hidden_client_with(xcb_window_t w);
 //
@@ -412,7 +351,6 @@ struct page_t : public page_core, public page_context_t, public connectable {
 //
 //	void mark_durty(shared_ptr<tree_t> t);
 //
-	unsigned int find_current_desktop(shared_ptr<xdg_surface_base_t> c);
 //
 //	void process_pending_events();
 //
@@ -426,33 +364,15 @@ struct page_t : public page_core, public page_context_t, public connectable {
 //
 //	auto find_client_managed_with(xcb_window_t w) -> shared_ptr<xdg_surface_toplevel_t>;
 
-	void process_focus(weston_pointer_grab * grab);
-	void process_motion(weston_pointer_grab * grab, uint32_t time, weston_pointer_motion_event *event);
-	void process_button(weston_pointer_grab * grab, uint32_t time, uint32_t button, uint32_t state);
-	void process_axis(weston_pointer_grab * grab, uint32_t time, weston_pointer_axis_event *event);
-	void process_axis_source(weston_pointer_grab * grab, uint32_t source);
-	void process_frame(weston_pointer_grab * grab);
-	void process_cancel(weston_pointer_grab * grab);
 
-	void connect_all();
-	void on_output_created(weston_output * output);
-	void on_output_pending(weston_output * output);
-	void load_x11_backend(weston_compositor* ec);
-	void load_drm_backend(weston_compositor* ec);
 	static void bind_wl_shell(wl_client * client, void * data,
 					      uint32_t version, uint32_t id);
-	static void bind_xdg_shell_v5(wl_client * client, void * data,
+	static void bind_xdg_v5_shell(wl_client * client, void * data,
 					      uint32_t version, uint32_t id);
-	static void bind_xdg_shell_v6(wl_client * client, void * data,
+	static void bind_xdg_v6_shell(wl_client * client, void * data,
 					      uint32_t version, uint32_t id);
 	static void print_tree_binding(struct weston_keyboard *keyboard, uint32_t time,
 			  uint32_t key, void *data);
-
-	static void page_start_repaint_loop(struct weston_output *output);
-	static int page_repaint(struct weston_output *output_base,
-			   pixman_region32_t *damage);
-
-	void page_repaint_idle();
 
 	void configure_surface(view_p,
 			int32_t sx, int32_t sy);
@@ -463,15 +383,11 @@ struct page_t : public page_core, public page_context_t, public connectable {
 //
 	virtual auto conf() const -> page_configuration_t const &;
 	virtual auto theme() const -> theme_t const *;
-//	virtual void overlay_add(shared_ptr<tree_t> x);
-//	virtual void add_global_damage(region const & r);
 	virtual auto find_mouse_viewport(int x, int y) const -> viewport_p;
 	virtual auto get_current_workspace() const -> workspace_p const &;
 	virtual auto get_workspace(int id) const -> workspace_p const &;
 	virtual int  get_workspace_count() const;
 	virtual int  create_workspace();
-	virtual void grab_start(weston_pointer * pointer, pointer_grab_handler_t * handler);
-	virtual void grab_stop(weston_pointer * pointer);
 	virtual void detach(tree_p t);
 	virtual void insert_window_in_notebook(view_p x, notebook_p n = nullptr);
 	virtual void fullscreen_client_to_viewport(view_p c, viewport_p v);
@@ -480,19 +396,11 @@ struct page_t : public page_core, public page_context_t, public connectable {
 	virtual void split_right(notebook_p nbk, view_p c);
 	virtual void split_top(notebook_p nbk, view_p c);
 	virtual void split_bottom(notebook_p nbk, view_p c);
-	virtual void set_keyboard_focus(struct weston_seat * seat, view_p w);
+	virtual void set_keyboard_focus(page_seat * seat, view_p w);
 	virtual void notebook_close(notebook_p nbk);
-//	virtual int  left_most_border();
-//	virtual int  top_most_border();
 	virtual auto global_client_focus_history() -> list<view_w>;
-//	virtual auto net_client_list() -> list<shared_ptr<xdg_surface_toplevel_t>>;
-//	virtual auto keymap() const -> keymap_t const *;
-//	virtual auto create_view(xcb_window_t w) -> shared_ptr<client_view_t>;
-//	virtual void make_surface_stats(int & size, int & count);
-//	virtual auto mainloop() -> mainloop_t *;
 	virtual void sync_tree_view();
 	virtual void manage_client(surface_t * s);
-	virtual auto create_pixmap(uint32_t width, uint32_t height) -> pixmap_p;
 	virtual void manage_popup(surface_t * s);
 	virtual void configure_popup(surface_t * s);
 	virtual void schedule_repaint();

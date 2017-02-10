@@ -30,15 +30,11 @@ grab_popup_t::~grab_popup_t() {
 }
 
 void grab_popup_t::focus(ClutterEvent const & event) {
-	struct weston_view *view;
 	wl_fixed_t sx, sy;
-
 	if (pointer->button_count > 0)
 		return;
-
-	auto surface = pointer->pick_actor(&event, sx, sy);
+	auto surface = pointer->pick_surface_actor(&event, sx, sy);
 	pointer->set_focus(surface, sx, sy);
-
 }
 
 void grab_popup_t::motion(ClutterEvent const & event) {
@@ -50,7 +46,7 @@ void grab_popup_t::button(ClutterEvent const & event) {
 
 	/* TODO: remove following because it must be set by the wm */
 	wl_fixed_t sx, sy;
-	auto surface = pointer->pick_actor(&event, sx, sy);
+	auto surface = pointer->pick_surface_actor(&event, sx, sy);
 	if(surface)
 		pointer->seat->keyboard->set_focus(surface);
 

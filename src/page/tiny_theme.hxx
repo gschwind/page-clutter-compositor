@@ -15,13 +15,12 @@
 #include <memory>
 #include <cairo/cairo.h>
 
-#include "utils.hxx"
+#include "libpage/utils.hxx"
 #include "theme.hxx"
 #include "simple2_theme.hxx"
 #include "color.hxx"
 #include "config_handler.hxx"
 #include "renderable.hxx"
-#include "pixmap.hxx"
 
 namespace page {
 

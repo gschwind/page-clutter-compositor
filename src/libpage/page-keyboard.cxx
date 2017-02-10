@@ -194,7 +194,7 @@ err_keymap_str:
 
 bool page_keyboard::handle_keyboard_event(ClutterEvent const & event)
 {
-	bool is_press = event.type == CLUTTER_KEY_PRESS;
+	bool is_press = (event.type == CLUTTER_KEY_PRESS);
 	bool handled;
 
 	/* Synthetic key events are for autorepeat. Ignore those, as
@@ -203,7 +203,7 @@ bool page_keyboard::handle_keyboard_event(ClutterEvent const & event)
 		return false;
 
 	{ // update key state
-		gboolean is_press = event.type == CLUTTER_KEY_PRESS;
+		gboolean is_press = (event.type == CLUTTER_KEY_PRESS);
 
 		/* If we get a key event but still have pending modifier state
 		 * changes from a previous event that didn't get cleared, we need to

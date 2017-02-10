@@ -365,7 +365,7 @@ auto viewport_t::get_output() const -> weston_output * {
 	return _output;
 }
 
-auto viewport_t::get_default_view() const -> weston_view * {
+auto viewport_t::get_default_view() const -> ClutterActor * {
 	return _default_view;
 }
 

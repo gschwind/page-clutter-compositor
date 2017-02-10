@@ -11,7 +11,7 @@
 
 #include <cassert>
 
-#include "utils.hxx"
+#include "libpage/utils.hxx"
 
 namespace page {
 
@@ -209,7 +209,7 @@ uint32_t tree_t::get_xid() const {
 	return 0;
 }
 
-auto tree_t::get_parent_default_view() const -> weston_view * {
+auto tree_t::get_parent_default_view() const -> ClutterActor * {
 	if(get_default_view())
 		return get_default_view();
 
@@ -347,7 +347,7 @@ auto tree_t::get_damaged() -> region
 	return region{};
 }
 
-auto tree_t::get_default_view() const -> weston_view * {
+auto tree_t::get_default_view() const -> ClutterActor * {
 	return nullptr;
 }
 

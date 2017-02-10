@@ -1,7 +1,7 @@
 /*
- * Copyright (2016) Benoit Gschwind
+ * Copyright (2017) Benoit Gschwind
  *
- * sh-types.hxx is part of page-compositor.
+ * default-keyboard-grab.hxx is part of page-compositor.
  *
  * page-compositor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,21 +18,20 @@
  *
  */
 
-#ifndef SH_SH_TYPES_HXX_
-#define SH_SH_TYPES_HXX_
+#ifndef SRC_PAGE_DEFAULT_KEYBOARD_GRAB_HXX_
+#define SRC_PAGE_DEFAULT_KEYBOARD_GRAB_HXX_
+
+#include "libpage/page-default-keyboard-grab.hxx"
 
 namespace page {
-namespace sh {
 
-struct xdg_v5_shell;
-struct xdg_v5_surface;
-struct xdg_v5_popup;
+struct default_keyboard_grab : public page_default_keyboard_grab {
+	page_context_t * _ctx;
 
-struct xdg_v6_shell;
+};
 
 }
-}
 
 
 
-#endif /* SH_SH_TYPES_HXX_ */
+#endif /* SRC_PAGE_DEFAULT_KEYBOARD_GRAB_HXX_ */

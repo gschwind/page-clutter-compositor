@@ -300,11 +300,11 @@ void view_t::signal_title_change() {
 	title_change.emit(this);
 }
 
-auto view_t::get_default_view() const -> weston_view * {
+auto view_t::get_default_view() const -> ClutterActor * {
 	return _default_view;
 }
 
-weston_surface * view_t::surface() const {
+auto view_t::surface() const -> wl::wl_surface * {
 	return _page_surface->surface();
 }
 

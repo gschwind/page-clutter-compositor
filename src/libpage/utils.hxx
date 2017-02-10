@@ -104,6 +104,45 @@ static std::string xformat(char const * fmt, ...) {
 cairo_region_t * cairo_region_create_infini();
 int create_anonymous_file(off_t size, GError **error);
 
+template<typename T0, typename T1>
+std::list<std::weak_ptr<T0>> filter_class(std::list<std::weak_ptr<T1>> const & x) {
+	std::list<std::weak_ptr<T0>> ret;
+	for (auto i : x) {
+		if(i.expired())
+			continue;
+
+		auto n = dynamic_pointer_cast<T0>(i.lock());
+		if (n != nullptr) {
+			ret.push_back(n);
+		}
+	}
+	return ret;
+}
+
+template<typename T0, typename T1>
+std::vector<std::shared_ptr<T0>> filter_class(std::vector<std::shared_ptr<T1>> const & x) {
+	std::vector<std::shared_ptr<T0>> ret;
+	for (auto i : x) {
+		auto n = dynamic_pointer_cast<T0>(i);
+		if (n != nullptr) {
+			ret.push_back(n);
+		}
+	}
+	return ret;
+}
+
+template<typename T0, typename T1>
+std::list<std::shared_ptr<T0>> filter_class(std::list<std::shared_ptr<T1>> const & x) {
+	std::list<std::shared_ptr<T0>> ret;
+	for (auto i : x) {
+		auto n = dynamic_pointer_cast<T0>(i);
+		if (n != nullptr) {
+			ret.push_back(n);
+		}
+	}
+	return ret;
+}
+
 }
 
 #endif /* SRC_UTILS_HXX_ */

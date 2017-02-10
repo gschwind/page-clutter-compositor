@@ -1445,7 +1445,7 @@ void simple2_theme_t::render_floating_base(
 
 }
 
-void simple2_theme_t::render_popup_notebook0(cairo_t * cr, icon64 * icon, unsigned int width,
+void simple2_theme_t::render_popup_notebook0(cairo_t * cr, void * icon, unsigned int width,
 		unsigned int height, string const & title) const {
 
 	cairo_save(cr);

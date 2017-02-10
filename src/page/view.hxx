@@ -75,7 +75,7 @@ public:
 
 	void signal_title_change();
 
-	weston_surface * surface() const;
+	wl::wl_surface * surface() const;
 
 	auto shared_from_this() -> shared_ptr<view_t>;
 

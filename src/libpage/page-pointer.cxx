@@ -57,11 +57,9 @@ page_pointer::~page_pointer() {
 /**
  * Find an actor under the cursor
  * @input event: may be NULL
- * @output sx: relative position of pointer for the surface returned
- * @output sy: relative position of pointer for the surface returned
- * @return: the surface where the cursor is above.
+ * @return: the actor where the cursor is above.
  **/
-wl::wl_surface * page_pointer::pick_actor(ClutterEvent const * event, wl_fixed_t & sx, wl_fixed_t & sy)
+auto page_pointer::pick_actor(ClutterEvent const * event) -> ClutterActor *
 {
 	ClutterActor *actor;
 
@@ -72,6 +70,22 @@ wl::wl_surface * page_pointer::pick_actor(ClutterEvent const * event, wl_fixed_t
 
 	printf("actor = %p\n", actor);
 	printf("actor type = %s\n", g_type_name(G_TYPE_FROM_INSTANCE(actor)));
+
+	return actor;
+
+}
+
+/**
+ * Find a wl_surface actor under the cursor
+ * @input event: may be NULL
+ * @output sx: relative position of pointer for the surface returned
+ * @output sy: relative position of pointer for the surface returned
+ * @return: the surface where the cursor is above.
+ **/
+wl::wl_surface * page_pointer::pick_surface_actor(ClutterEvent const * event, wl_fixed_t & sx, wl_fixed_t & sy)
+{
+
+	auto actor = pick_actor(event);
 
 	if(not META_IS_SURFACE_ACTOR_WAYLAND(actor)) {
 		return nullptr;

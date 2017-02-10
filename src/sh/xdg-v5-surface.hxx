@@ -37,7 +37,7 @@ struct xdg_v5_surface : public xdg_surface_vtable, public surface_t {
 
 	page_context_t *       _ctx;
 	wl_client *            _client;
-	weston_surface *       _surface;
+	wl::wl_surface *       _surface;
 	uint32_t               _id;
 	struct wl_resource *   _resource;
 	wl_listener            _surface_destroy;

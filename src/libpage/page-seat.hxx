@@ -76,7 +76,6 @@ struct page_seat {
 //	struct input_method *input_method;
 	string seat_name;
 
-
 	page_seat(page_core * core, uint32_t capabilities);
 	~page_seat();
 

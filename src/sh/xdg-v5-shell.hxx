@@ -22,7 +22,10 @@
 #define SH_XDG_V5_SHELL_HXX_
 
 #include "xdg-shell-unstable-v5-interface.hxx"
-#include "page-types.hxx"
+
+#include "sh-types.hxx"
+
+#include "libpage/page-types.hxx"
 
 namespace page {
 namespace sh {
@@ -40,11 +43,6 @@ struct xdg_v5_shell : public xdg_shell_vtable {
 	wl_resource * xdg_shell_resource;
 
 	signal<xdg_shell_client_t *> destroy;
-
-	map<uint32_t, xdg_surface_toplevel_t *> xdg_surface_toplevel_map;
-	map<uint32_t, xdg_surface_popup_t *> xdg_surface_popup_map;
-
-	map<struct weston_surface *, xdg_surface_base_t *> surfaces_map;
 
 	xdg_v5_shell(struct wl_client *client, uint32_t version, uint32_t id, page_core * core);
 	virtual ~xdg_v5_shell();

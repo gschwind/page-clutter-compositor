@@ -10,7 +10,6 @@
 
 #include <string>
 #include <xkbcommon/xkbcommon.h>
-#include <compositor.h>
 
 #include "exception.hxx"
 
