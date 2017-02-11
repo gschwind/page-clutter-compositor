@@ -181,7 +181,7 @@ void viewport_t::trigger_redraw() {
 /* mark renderable_page for redraw */
 void viewport_t::queue_redraw() {
 	_is_durty = true;
-	//_ctx->schedule_repaint();
+	clutter_content_invalidate(_canvas);
 }
 
 region viewport_t::get_damaged() {
