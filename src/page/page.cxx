@@ -514,10 +514,10 @@ void page_t::handle_alt_right_button(page_pointer *pointer, ClutterEvent const &
 	double x = event.button.x;
 	double y = event.button.y;
 
-	if(view->is(MANAGED_FLOATING)) {
-		grab_start(pointer, new grab_floating_resize_t(this, view,
-			BTN_LEFT, x, y, EDGE_BOTTOM_RIGHT));
-	}
+//	if(view->is(MANAGED_FLOATING)) {
+//		grab_start(pointer, new grab_floating_resize_t(this, view,
+//			BTN_LEFT, x, y, EDGE_BOTTOM_RIGHT));
+//	}
 }
 
 void page_t::handle_bind_cmd_0(page_keyboard * wk, ClutterEvent const & event) {

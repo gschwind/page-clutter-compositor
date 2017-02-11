@@ -19,7 +19,7 @@
  */
 
 #include "wl-pointer.hxx"
-#include "page-pointer.hxx"
+#include "libpage/page-pointer.hxx"
 
 namespace page {
 namespace wl {

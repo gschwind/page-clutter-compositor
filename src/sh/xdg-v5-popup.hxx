@@ -24,6 +24,10 @@
 #include "xdg-shell-unstable-v5-interface.hxx"
 
 #include "sh-types.hxx"
+#include "wl/wl-types.hxx"
+
+#include "libpage/signals.hxx"
+#include "page/page_context.hxx"
 
 namespace page {
 namespace sh {
@@ -31,7 +35,7 @@ namespace sh {
 using namespace wayland_cxx_wrapper;
 using namespace std;
 
-struct xdg_v5_popup : public xdg_popup_vtable {
+struct xdg_v5_popup : public xdg_popup_vtable, public surface_t {
 	xdg_v5_shell * shell;
 
 	page_context_t *       _ctx;
@@ -41,9 +45,6 @@ struct xdg_v5_popup : public xdg_popup_vtable {
 	wl::wl_surface *       _parent;
 
 	wl_listener            _surface_destroy;
-
-	wl_listener_t<struct weston_surface> on_surface_destroy;
-	wl_listener_t<struct weston_surface> on_surface_commit;
 
 	// relative position of the popup against the parent
 	int32_t x;

@@ -21,14 +21,19 @@
 #ifndef WL_WL_SHELL_SURFACE_HXX_
 #define WL_WL_SHELL_SURFACE_HXX_
 
+#include <map>
+
 #include "wl-types.hxx"
 #include "page/page_context.hxx"
 #include "libpage/page-types.hxx"
 #include "wayland-interface.hxx"
+#include "page/xpage-types.hxx"
+#include "libpage/signals.hxx"
 
 namespace page {
 namespace wl {
 
+using namespace std;
 using namespace wayland_cxx_wrapper;
 
 struct wl_shell_surface : public wl_shell_surface_vtable {
@@ -39,7 +44,7 @@ struct wl_shell_surface : public wl_shell_surface_vtable {
 
 	page_context_t *        _ctx;
 	struct wl_client *      _client;
-	struct weston_surface * _surface;
+	wl::wl_surface        * _surface;
 	uint32_t                _id;
 	struct wl_resource *    _resource;
 	struct wl_listener      _surface_destroy;
@@ -73,7 +78,7 @@ struct wl_shell_surface : public wl_shell_surface_vtable {
 	/* 0 if ack by client, otherwise the last serial sent */
 	uint32_t _ack_serial;
 
-	signal<wl_shell_surface_t *> destroy;
+	signal<wl_shell_surface *> destroy;
 
 	wl_shell_surface(struct wl_client *client, uint32_t version, uint32_t id, page_core * core, wl_surface * surface);
 	virtual ~wl_shell_surface();

@@ -66,11 +66,13 @@ wl::wl_surface * xdg_v5_popup::surface() const {
 }
 
 int32_t xdg_v5_popup::width() const {
-	return _surface->width;
+	return 0;
+//	return _surface->width;
 }
 
 int32_t xdg_v5_popup::height() const {
-	return _surface->height;
+	return 0;
+//	return _surface->height;
 }
 
 string const & xdg_v5_popup::title() const {

@@ -22,7 +22,7 @@
 
 #include <wayland-server-protocol.h>
 
-#include "page-keyboard.hxx"
+#include "libpage/page-keyboard.hxx"
 
 namespace page {
 namespace wl {

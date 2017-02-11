@@ -20,7 +20,7 @@
 
 #include "wl-output.hxx"
 
-#include "page-output.hxx"
+#include "libpage/page-output.hxx"
 
 namespace page {
 namespace wl {

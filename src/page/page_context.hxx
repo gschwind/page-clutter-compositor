@@ -72,8 +72,8 @@ public:
 	virtual auto get_workspace(int id) const -> workspace_p const & = 0;
 	virtual int  get_workspace_count() const = 0;
 	virtual int  create_workspace() = 0;
-	virtual void grab_start(page_pointer * pointer, page_pointer_grab * handler) = 0;
-	virtual void grab_stop(page_pointer * pointer) = 0;
+	//virtual void grab_start(page_pointer * pointer, page_pointer_grab * handler) = 0;
+	//virtual void grab_stop(page_pointer * pointer) = 0;
 	virtual void detach(tree_p t) = 0;
 	virtual void insert_window_in_notebook(view_p x, notebook_p n = nullptr) = 0;
 	virtual void fullscreen_client_to_viewport(view_p c, viewport_p v) = 0;
@@ -82,7 +82,7 @@ public:
 	virtual void split_right(notebook_p nbk, view_p c) = 0;
 	virtual void split_top(notebook_p nbk, view_p c) = 0;
 	virtual void split_bottom(notebook_p nbk, view_p c) = 0;
-	virtual void set_keyboard_focus(struct weston_seat * seat, view_p w) = 0;
+	//virtual void set_keyboard_focus(struct weston_seat * seat, view_p w) = 0;
 	virtual void notebook_close(notebook_p nbk) = 0;
 //	virtual int  left_most_border() = 0;
 //	virtual int  top_most_border() = 0;

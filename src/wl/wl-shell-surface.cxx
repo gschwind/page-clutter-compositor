@@ -23,12 +23,15 @@
 
 #include <clutter/clutter.h>
 
-#include "page-core.hxx"
+#include "wayland-server-protocol.h"
+
+#include "page/page_context.hxx"
+#include "libpage/page-core.hxx"
 
 namespace page {
 namespace wl {
 
-map<uint32_t, edge_e> const wl_shell_surface_t::_edge_map{
+map<uint32_t, edge_e> const wl_shell_surface::_edge_map{
 	{WL_SHELL_SURFACE_RESIZE_NONE, EDGE_NONE},
 	{WL_SHELL_SURFACE_RESIZE_TOP, EDGE_TOP},
 	{WL_SHELL_SURFACE_RESIZE_BOTTOM, EDGE_BOTTOM},
@@ -41,31 +44,30 @@ map<uint32_t, edge_e> const wl_shell_surface_t::_edge_map{
 };
 
 
-wl_shell_surface::wl_shell_surface(struct wl_client *client, uint32_t version, uint32_t id, page_core * core, wl_surface * surface) :
+wl_shell_surface::wl_shell_surface(struct wl_client *client, uint32_t version,
+		uint32_t id, page_core * core, wl_surface * surface) :
 		wl_shell_surface_vtable{client, version, id},
 		surface{surface},
 		core{core},
-		_ctx{ctx},
 		_id{id},
 		_client{client},
 		_surface{surface},
-		_current{},
-		_ack_serial{0}
+		_current{}
 {
-	_resource = wl_resource_create(_client, &wl_shell_surface_interface, 1, _id);
-	wl_shell_surface_vtable::set_implementation(_resource);
-
-	on_surface_destroy.connect(&_surface->destroy_signal, this, &wl_shell_surface_t::surface_destroyed);
-	on_surface_commit.connect(&_surface->commit_signal, this, &wl_shell_surface_t::surface_commited);
+//	_resource = wl_resource_create(_client, &wl_shell_surface_interface, 1, _id);
+//	wl_shell_surface_vtable::set_implementation(_resource);
+//
+//	on_surface_destroy.connect(&_surface->destroy_signal, this, &wl_shell_surface_t::surface_destroyed);
+//	on_surface_commit.connect(&_surface->commit_signal, this, &wl_shell_surface_t::surface_commited);
 }
 
 wl_shell_surface::~wl_shell_surface() {
 	// TODO Auto-generated destructor stub
 	printf("call %s %p\n", __PRETTY_FUNCTION__, this);
-	if(_surface) {
-		on_surface_destroy.disconnect();
-		on_surface_commit.disconnect();
-	}
+//	if(_surface) {
+//		on_surface_destroy.disconnect();
+//		on_surface_commit.disconnect();
+//	}
 }
 
 void wl_shell_surface::recv_pong(struct wl_client * client, struct wl_resource * resource, uint32_t serial) {
@@ -73,32 +75,32 @@ void wl_shell_surface::recv_pong(struct wl_client * client, struct wl_resource *
 }
 
 void wl_shell_surface::recv_move(struct wl_client * client, struct wl_resource * resource, struct wl_resource * seat, uint32_t serial) {
-	auto seat = resource_get<struct weston_seat>(seat_resource);
-	_ctx->start_move(this, seat, serial);
+//	auto seat = resource_get<struct weston_seat>(seat_resource);
+//	_ctx->start_move(this, seat, serial);
 }
 
 void wl_shell_surface::recv_resize(struct wl_client * client, struct wl_resource * resource, struct wl_resource * seat, uint32_t serial, uint32_t edges) {
-	auto seat = resource_get<struct weston_seat>(seat_resource);
-	_ctx->start_resize(this, seat, serial, edge_map(edges));
+//	auto seat = resource_get<struct weston_seat>(seat_resource);
+//	_ctx->start_resize(this, seat, serial, edge_map(edges));
 }
 
 void wl_shell_surface::recv_set_toplevel(struct wl_client * client, struct wl_resource * resource) {
 	printf("call %s (%p)\n", __PRETTY_FUNCTION__, this);
 
-	if(clutter_actor_get_parent(CLUTTER_ACTOR(surface->actor)))
-		return;
-
-	clutter_actor_add_child(CLUTTER_ACTOR(core->_main_stage), CLUTTER_ACTOR(surface->actor));
-	clutter_actor_show(CLUTTER_ACTOR(surface->actor));
-
-	/* tell weston how to use this data */
-
-	if(_master_view.expired()) {
-		if (weston_surface_set_role(_surface, "wl_shell_surface_toplevel",
-				_resource, WL_SHELL_ERROR_ROLE) < 0)
-			return;
-		_ctx->manage_client(this);
-	}
+//	if(clutter_actor_get_parent(CLUTTER_ACTOR(surface->actor)))
+//		return;
+//
+//	clutter_actor_add_child(CLUTTER_ACTOR(core->_main_stage), CLUTTER_ACTOR(surface->actor));
+//	clutter_actor_show(CLUTTER_ACTOR(surface->actor));
+//
+//	/* tell weston how to use this data */
+//
+//	if(_master_view.expired()) {
+//		if (weston_surface_set_role(_surface, "wl_shell_surface_toplevel",
+//				_resource, WL_SHELL_ERROR_ROLE) < 0)
+//			return;
+//		_ctx->manage_client(this);
+//	}
 
 }
 
@@ -114,21 +116,21 @@ void wl_shell_surface::recv_set_fullscreen(struct wl_client * client, struct wl_
 }
 
 void wl_shell_surface::recv_set_popup(struct wl_client * client, struct wl_resource * resource, struct wl_resource * seat, uint32_t serial, struct wl_resource * parent, int32_t x, int32_t y, uint32_t flags) {
-	if(not _master_view.expired())
-		return;
-
-	/* tell weston how to use this data */
-	if (weston_surface_set_role(_surface, "wl_shell_surface_popup",
-			_resource, WL_SHELL_ERROR_ROLE) < 0)
-		return;
-
-	_parent = wl_shell_surface_t::get(parent);
-	_x_offset = x;
-	_y_offset = y;
-	_seat = resource_get<weston_seat>(seat);
-	_serial = serial;
-
-	_ctx->manage_popup(this);
+//	if(not _master_view.expired())
+//		return;
+//
+//	/* tell weston how to use this data */
+//	if (weston_surface_set_role(_surface, "wl_shell_surface_popup",
+//			_resource, WL_SHELL_ERROR_ROLE) < 0)
+//		return;
+//
+//	_parent = wl_shell_surface_t::get(parent);
+//	_x_offset = x;
+//	_y_offset = y;
+//	_seat = resource_get<weston_seat>(seat);
+//	_serial = serial;
+//
+//	_ctx->manage_popup(this);
 
 	// start_popup(ps, ps, x, y)
 	// start_grab_popup(ps, seat)
@@ -143,9 +145,9 @@ void wl_shell_surface::recv_set_maximized(struct wl_client * client, struct wl_r
 void wl_shell_surface::recv_set_title(struct wl_client * client, struct wl_resource * resource, char const * title) {
 	_current.title = title;
 
-	if(not _master_view.expired()) {
-		_master_view.lock()->signal_title_change();
-	}
+//	if(not _master_view.expired()) {
+//		_master_view.lock()->signal_title_change();
+//	}
 
 }
 

@@ -20,13 +20,13 @@
 
 #include "wl-seat.hxx"
 
-#include "utils.hxx"
+#include "libpage/utils.hxx"
 
 #include "wl-pointer.hxx"
 #include "wl-keyboard.hxx"
 #include "wl-touch.hxx"
 
-#include "page-seat.hxx"
+#include "libpage/page-seat.hxx"
 
 
 namespace page {

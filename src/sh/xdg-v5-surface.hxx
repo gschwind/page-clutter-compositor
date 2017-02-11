@@ -21,19 +21,27 @@
 #ifndef SH_XDG_V5_SURFACE_HXX_
 #define SH_XDG_V5_SURFACE_HXX_
 
+#include <map>
+
 #include "xdg-shell-unstable-v5-interface.hxx"
 
 #include "wl/wl-types.hxx"
 #include "sh/sh-types.hxx"
 
+
+#include "libpage/signals.hxx"
+#include "page/xpage-types.hxx"
+#include "page/page_context.hxx"
+
+
 namespace page {
 namespace sh {
 
+using namespace std;
 using namespace wayland_cxx_wrapper;
 
 struct xdg_v5_surface : public xdg_surface_vtable, public surface_t {
 	xdg_v5_shell * shell;
-	wl::wl_surface * surface;
 
 	page_context_t *       _ctx;
 	wl_client *            _client;
@@ -41,9 +49,6 @@ struct xdg_v5_surface : public xdg_surface_vtable, public surface_t {
 	uint32_t               _id;
 	struct wl_resource *   _resource;
 	wl_listener            _surface_destroy;
-
-	wl_listener_t<struct weston_surface> on_surface_destroy;
-	wl_listener_t<struct weston_surface> on_surface_commit;
 
 	friend class page::page_t;
 
@@ -69,7 +74,7 @@ struct xdg_v5_surface : public xdg_surface_vtable, public surface_t {
 	/* 0 if ack by client, otherwise the last serial sent */
 	uint32_t _ack_serial;
 
-	signal<xdg_surface_toplevel_t *> destroy;
+	signal<xdg_v5_surface *> destroy;
 
 	static map<uint32_t, edge_e> const _edge_map;
 
@@ -98,7 +103,7 @@ struct xdg_v5_surface : public xdg_surface_vtable, public surface_t {
 	virtual void delete_resource(struct wl_resource * resource) override;
 
 	/* page_surface_interface */
-	virtual wl::wl_surface surface() const override;
+	virtual wl::wl_surface * surface() const override;
 	virtual int32_t width() const override;
 	virtual int32_t height() const override;
 	virtual string const & title() const override;

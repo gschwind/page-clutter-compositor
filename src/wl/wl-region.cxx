@@ -20,7 +20,7 @@
 
 #include "wl-region.hxx"
 
-#include "utils.hxx"
+#include "libpage/utils.hxx"
 
 namespace page {
 namespace wl {

@@ -20,7 +20,7 @@
 
 #include "xdg-v5-shell.hxx"
 
-#include "page-core.hxx"
+#include "libpage/page-core.hxx"
 #include "sh/xdg-v5-surface.hxx"
 #include "wl/wl-surface.hxx"
 
@@ -30,9 +30,7 @@ namespace sh {
 xdg_v5_shell::xdg_v5_shell(struct wl_client *client, uint32_t version, uint32_t id, page_core * core) :
 		xdg_shell_vtable{client, version, id},
 		core{core},
-		_ctx{ctx},
-		xdg_shell_resource{nullptr},
-		client{client}
+		xdg_shell_resource{nullptr}
 {
 	// TODO Auto-generated constructor stub
 
@@ -63,17 +61,17 @@ void xdg_v5_shell::recv_get_xdg_surface(struct wl_client * client, struct wl_res
 {
 
 
-	/* disable shared_ptr, they are managed by wl_resource */
-	auto xdg_surface = new xdg_surface_toplevel_t(_ctx, client, surface, id);
-
-//	surfaces_map[surface] = xdg_surface;
-//	xdg_surface_toplevel_map[id] = xdg_surface;
-//	connect(xdg_surface->destroy, this, &xdg_shell_client_t::destroy_toplevel);
-
-	printf("exit %s\n", __PRETTY_FUNCTION__);
-
-	auto surface = wl::wl_surface::get(surface_resource);
-	auto xdg = new xdg_v5_surface(client, wl_resource_get_version(resource), id, this, surface);
+//	/* disable shared_ptr, they are managed by wl_resource */
+//	auto xdg_surface = new xdg_surface_toplevel_t(_ctx, client, surface, id);
+//
+////	surfaces_map[surface] = xdg_surface;
+////	xdg_surface_toplevel_map[id] = xdg_surface;
+////	connect(xdg_surface->destroy, this, &xdg_shell_client_t::destroy_toplevel);
+//
+//	printf("exit %s\n", __PRETTY_FUNCTION__);
+//
+//	auto surface = wl::wl_surface::get(surface_resource);
+//	auto xdg = new xdg_v5_surface(client, wl_resource_get_version(resource), id, this, surface);
 
 }
 
@@ -85,18 +83,18 @@ void xdg_v5_shell::recv_get_xdg_popup(struct wl_client * client,
 		uint32_t serial, int32_t x, int32_t y)
 {
 	printf("call %s\n", __PRETTY_FUNCTION__);
-	/* In our case nullptr */
-	auto surface = wl::wl_surface::get(surface_resource);
-	auto parent = wl::wl_surface::get(parent_resource);
-	auto seat = wl::wl_seat::get(seat_resource);
-
-	printf("p=%p, x=%d, y=%d\n", surface, x, y);
-
-	/* TODO: check for serial */
-
-	/* disable shared_ptr for now, the resource is managed by wl_resource */
-	auto xdg_popup = new xdg_v5_popup(client, resource, id,
-			this, _ctx, surface, parent, seat, x, y);
+//	/* In our case nullptr */
+//	auto surface = wl::wl_surface::get(surface_resource);
+//	auto parent = wl::wl_surface::get(parent_resource);
+//	auto seat = wl::wl_seat::get(seat_resource);
+//
+//	printf("p=%p, x=%d, y=%d\n", surface, x, y);
+//
+//	/* TODO: check for serial */
+//
+//	/* disable shared_ptr for now, the resource is managed by wl_resource */
+//	auto xdg_popup = new xdg_v5_popup(client, resource, id,
+//			this, _ctx, surface, parent, seat, x, y);
 
 //	surfaces_map[surface] = xdg_popup;
 //	xdg_surface_popup_map[id] = xdg_popup;

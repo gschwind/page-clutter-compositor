@@ -93,10 +93,10 @@ void grab_split_t::motion(ClutterEvent const & event) {
 	//TODO
 	//weston_pointer_move(pointer, event);
 
-	if(_split.expired()) {
-		_ctx->grab_stop(pointer);
-		return;
-	}
+//	if(_split.expired()) {
+//		_ctx->grab_stop(pointer);
+//		return;
+//	}
 
 	/** current global position **/
 //	double x = wl_fixed_to_double(pointer->x);
@@ -486,10 +486,10 @@ grab_floating_resize_t::~grab_floating_resize_t() {
 void grab_floating_resize_t::motion(ClutterEvent const & event)
 {
 
-	if (f.expired()) {
-		_ctx->grab_stop(pointer);
-		return;
-	}
+//	if (f.expired()) {
+//		_ctx->grab_stop(pointer);
+//		return;
+//	}
 
 	auto f = this->f.lock();
 
@@ -604,10 +604,10 @@ void grab_floating_resize_t::motion(ClutterEvent const & event)
 
 void grab_floating_resize_t::button(ClutterEvent const & event)
 {
-	if (f.expired()) {
-		_ctx->grab_stop(pointer);
-		return;
-	}
+//	if (f.expired()) {
+//		_ctx->grab_stop(pointer);
+//		return;
+//	}
 
 	double x = 0.0; // wl_fixed_to_double(pointer->x);
 	double y = 0.0; // wl_fixed_to_double(pointer->y);
@@ -646,10 +646,10 @@ grab_fullscreen_client_t::~grab_fullscreen_client_t() {
 }
 
 void grab_fullscreen_client_t::motion(ClutterEvent const & event) {
-	if (mw.expired()) {
-		_ctx->grab_stop(pointer);
-		return;
-	}
+//	if (mw.expired()) {
+//		_ctx->grab_stop(pointer);
+//		return;
+//	}
 
 	/** update pointer position **/
 	//weston_pointer_move(pointer, event);
@@ -671,10 +671,10 @@ void grab_fullscreen_client_t::motion(ClutterEvent const & event) {
 
 void grab_fullscreen_client_t::button(ClutterEvent const & event) {
 
-	if(mw.expired()) {
-		_ctx->grab_stop(pointer);
-		return;
-	}
+//	if(mw.expired()) {
+//		_ctx->grab_stop(pointer);
+//		return;
+//	}
 
 	double x = 0.0; // wl_fixed_to_double(pointer->x);
 	double y = 0.0; // wl_fixed_to_double(pointer->y);

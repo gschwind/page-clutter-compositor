@@ -25,7 +25,9 @@
 
 #include "sh-types.hxx"
 
+#include "page/page_context.hxx"
 #include "libpage/page-types.hxx"
+#include "libpage/signals.hxx"
 
 namespace page {
 namespace sh {
@@ -42,7 +44,7 @@ struct xdg_v5_shell : public xdg_shell_vtable {
 	/* resource created for xdg_shell */
 	wl_resource * xdg_shell_resource;
 
-	signal<xdg_shell_client_t *> destroy;
+	signal<xdg_v5_shell *> destroy;
 
 	xdg_v5_shell(struct wl_client *client, uint32_t version, uint32_t id, page_core * core);
 	virtual ~xdg_v5_shell();
