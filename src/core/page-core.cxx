@@ -162,43 +162,15 @@ void page_core::clutter_init(int * argc, char *** argv)
 		throw except("fail to initialize clutter");
 	}
 
-
 	_main_stage = clutter_stage_new();
 	clutter_stage_set_minimum_size(CLUTTER_STAGE(_main_stage), 1600, 1600);
 	clutter_stage_set_title(CLUTTER_STAGE(_main_stage), "X11 output");
 	clutter_event_add_filter(CLUTTER_STAGE(_main_stage), &wrapper_page_event_filter, NULL, this);
 	clutter_actor_set_width(_main_stage, 1600);
 	clutter_actor_set_height(_main_stage, 1600);
-	clutter_actor_set_background_color(_main_stage, CLUTTER_COLOR_LightSkyBlue);
+	clutter_actor_set_background_color(_main_stage, CLUTTER_COLOR_Gray);
 	clutter_actor_show(CLUTTER_ACTOR(_main_stage));
 
-	auto xcanvas = clutter_canvas_new();
-	clutter_canvas_set_size(CLUTTER_CANVAS(xcanvas), 100, 100);
-
-	g_signal_connect(CLUTTER_CANVAS(xcanvas), "draw",
-			G_CALLBACK(test_draw), this);
-
-	auto xactor = clutter_actor_new();
-	clutter_actor_set_content(xactor, xcanvas);
-	clutter_actor_set_content_scaling_filters(xactor,
-	                                             CLUTTER_SCALING_FILTER_TRILINEAR,
-	                                             CLUTTER_SCALING_FILTER_LINEAR);
-	clutter_actor_set_reactive (xactor, TRUE);
-	g_signal_connect(CLUTTER_CANVAS(xactor), "motion-event",
-			G_CALLBACK(motion_test), this);
-
-	clutter_actor_add_child(CLUTTER_ACTOR(_main_stage), CLUTTER_ACTOR(xactor));
-	clutter_actor_set_size(xactor, 200, 200);
-	clutter_actor_show(xactor);
-
-	clutter_actor_set_position(CLUTTER_ACTOR(xactor), 1000, 1000);
-	//clutter_actor_show(CLUTTER_ACTOR(xactor));
-	clutter_content_invalidate(CLUTTER_CONTENT(xcanvas));
-
-	//g_object_unref (xcanvas);
-	//g_object_unref(xactor);
-
-	//clutter_threads_add_timeout (1000, invalidate_clock, xcanvas);
 
 	/* We use connect_after() here to accomodate code in GNOME Shell that,
 	 * when benchmarking drawing performance, connects to ::after-paint

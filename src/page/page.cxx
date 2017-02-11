@@ -347,6 +347,7 @@ void page_t::run() {
 	_global_xdg_shell_v6 = wl_global_create(dpy, &zxdg_shell_v6_interface, 1, this,
 			&page_t::bind_xdg_v6_shell);
 
+	sync_tree_view();
 	page_core::run();
 
 	cout << "Page END" << endl;
