@@ -22,7 +22,7 @@ namespace page {
 //using namespace std;
 //
 //class renderable_notebook_fading_t : public tree_t {
-//	page_context_t * _ctx;
+//	page_t * _ctx;
 //
 //	double _ratio;
 //	rect _location;
@@ -34,7 +34,7 @@ namespace page {
 //
 //public:
 //
-//	renderable_notebook_fading_t(page_context_t * ctx, shared_ptr<pixmap_t> surface, int x, int y) :
+//	renderable_notebook_fading_t(page_t * ctx, shared_ptr<pixmap_t> surface, int x, int y) :
 //		_surface{surface},
 //		_ratio{1.0},
 //		_ctx{ctx}

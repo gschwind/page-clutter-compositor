@@ -20,7 +20,7 @@ namespace page {
 //
 //struct popup_notebook0_t : public tree_t {
 //	static int const border_width = 6;
-//	page_context_t * _ctx;
+//	page_t * _ctx;
 //
 //protected:
 //	rect _position;
@@ -30,7 +30,7 @@ namespace page {
 //	xcb_window_t _wid;
 //
 //public:
-//	popup_notebook0_t(page_context_t * ctx) :
+//	popup_notebook0_t(page_t * ctx) :
 //			_position{-1, -1, 1, 1} , _ctx{ctx} {
 //
 //		_is_visible = false;

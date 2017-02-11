@@ -27,7 +27,7 @@ namespace sh {
 xdg_v5_popup::xdg_v5_popup(struct wl_client *client, uint32_t version,
 		uint32_t id,
 		xdg_v5_shell * shell,
-		page_context_t * ctx, wl::wl_surface * surface,
+		page_t * ctx, wl::wl_surface * surface,
 		wl::wl_surface * parent,
 		int32_t x, int32_t y) :
 		xdg_popup_vtable{client, version, id},

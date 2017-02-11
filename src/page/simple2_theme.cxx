@@ -15,10 +15,8 @@
 #include "renderable_solid.hxx"
 #include "renderable_pixmap.hxx"
 #include "simple2_theme.hxx"
-#include "box.hxx"
-#include "color.hxx"
-
-#include "blur_image_surface.hxx"
+#include "utils/box.hxx"
+#include "utils/color.hxx"
 
 namespace page {
 

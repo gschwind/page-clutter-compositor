@@ -32,7 +32,7 @@
 #include "page-output.hxx"
 #include "page-keyboard.hxx"
 
-#include "exception.hxx"
+#include "utils/exception.hxx"
 #include "wayland-interface.hxx"
 #include "xdg-shell-unstable-v5-interface.hxx"
 

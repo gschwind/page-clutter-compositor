@@ -11,7 +11,7 @@
 #ifndef PAGE_EVENT_HXX_
 #define PAGE_EVENT_HXX_
 
-#include "box.hxx"
+#include "utils/box.hxx"
 #include "tree.hxx"
 
 using namespace std;

@@ -8,7 +8,7 @@
 #ifndef RENDERABLE_PIXMAP_HXX_
 #define RENDERABLE_PIXMAP_HXX_
 
-#include "page_context.hxx"
+#include "page.hxx"
 #include "tree.hxx"
 
 namespace page {
@@ -16,7 +16,7 @@ namespace page {
 using namespace std;
 
 //class renderable_pixmap_t : public tree_t {
-//	page_context_t * _ctx;
+//	page_t * _ctx;
 //
 //	rect _location;
 //	shared_ptr<pixmap_t> _surf;
@@ -25,7 +25,7 @@ using namespace std;
 //
 //public:
 //
-//	renderable_pixmap_t(page_context_t * ctx, shared_ptr<pixmap_t> s, int x, int y) :
+//	renderable_pixmap_t(page_t * ctx, shared_ptr<pixmap_t> s, int x, int y) :
 //		_ctx{ctx},
 //		_surf{s}
 //	{

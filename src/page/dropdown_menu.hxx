@@ -70,14 +70,14 @@ namespace page {
 //};
 //
 //struct dropdown_menu_overlay_t : public tree_t {
-//	page_context_t * _ctx;
+//	page_t * _ctx;
 //	uint32_t _pix;
 //	cairo_surface_t * _surf;
 //	rect _position;
 //	uint32_t _wid;
 //	bool _is_durty;
 //
-//	dropdown_menu_overlay_t(page_context_t * ctx, rect position) : _ctx{ctx}, _position{position} {
+//	dropdown_menu_overlay_t(page_t * ctx, rect position) : _ctx{ctx}, _position{position} {
 //		/* TODO */
 //	}
 //
@@ -169,7 +169,7 @@ namespace page {
 //	using item_t = dropdown_menu_entry_t<TDATA>;
 //
 //private:
-//	page_context_t * _ctx;
+//	page_t * _ctx;
 //	std::vector<std::shared_ptr<item_t>> _items;
 //	int _selected;
 //	shared_ptr<dropdown_menu_overlay_t> pop;
@@ -184,7 +184,7 @@ namespace page {
 //
 //
 //	template<typename F>
-//	dropdown_menu_t(page_context_t * ctx, std::vector<std::shared_ptr<item_t>> items, xcb_button_t button, int x, int y, int width, rect start_position, F f) :
+//	dropdown_menu_t(page_t * ctx, std::vector<std::shared_ptr<item_t>> items, xcb_button_t button, int x, int y, int width, rect start_position, F f) :
 //	_ctx{ctx},
 //	_start_position{start_position},
 //	_button{button},

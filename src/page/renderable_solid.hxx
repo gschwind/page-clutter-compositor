@@ -11,7 +11,7 @@
 #include "tree.hxx"
 #include "utils/utils.hxx"
 #include "renderable.hxx"
-#include "color.hxx"
+#include "utils/color.hxx"
 
 namespace page {
 

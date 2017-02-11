@@ -7,15 +7,16 @@
  *
  */
 
+#include <string>
+#include <algorithm>
+#include <iostream>
+
 #include "config.hxx"
 #include "renderable_solid.hxx"
 #include "renderable_pixmap.hxx"
 #include "tiny_theme.hxx"
-#include "box.hxx"
-#include "color.hxx"
-#include <string>
-#include <algorithm>
-#include <iostream>
+#include "utils/box.hxx"
+#include "utils/color.hxx"
 
 namespace page {
 

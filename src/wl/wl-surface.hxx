@@ -27,7 +27,7 @@
 
 #include "meta/meta-surface-actor-wayland.hxx"
 
-#include "core/signals.hxx"
+#include "utils/signals.hxx"
 #include "wayland-interface.hxx"
 #include "wl-types.hxx"
 #include "wl/wl-surface-state.hxx"

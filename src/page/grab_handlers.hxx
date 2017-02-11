@@ -8,6 +8,8 @@
 #ifndef SRC_GRAB_HANDLERS_HXX_
 #define SRC_GRAB_HANDLERS_HXX_
 
+#include <memory>
+
 #include "core/page-keyboard-grab.hxx"
 
 #include "default-pointer-grab.hxx"
@@ -35,11 +37,9 @@ enum notebook_area_e {
 };
 
 struct grab_popup_t : public default_pointer_grab {
-	page_context_t * _ctx;
-	page_pointer * pointer;
-	surface_t * _surface;
+	surface_t * surface;
 
-	grab_popup_t(page_context_t * ctx, surface_t * s);
+	grab_popup_t(page_t * ctx, surface_t * s);
 	virtual ~grab_popup_t();
 
 	virtual void focus(ClutterEvent const & event) override;
@@ -53,8 +53,6 @@ struct grab_popup_t : public default_pointer_grab {
 };
 
 class grab_split_t : public default_pointer_grab {
-	page_context_t * _ctx;
-	page_pointer * pointer;
 	weak_ptr<split_t> _split;
 	rect _slider_area;
 	rect _split_root_allocation;
@@ -62,7 +60,7 @@ class grab_split_t : public default_pointer_grab {
 	//shared_ptr<popup_split_t> _ps;
 
 public:
-	grab_split_t(page_context_t * ctx, shared_ptr<split_t> s);
+	grab_split_t(page_t * ctx, shared_ptr<split_t> s);
 
 	virtual ~grab_split_t();
 
@@ -77,8 +75,6 @@ public:
 };
 
 class grab_bind_client_t : public default_pointer_grab {
-	page_context_t * ctx;
-	page_pointer * pointer;
 	view_w c;
 
 	rect start_position;
@@ -92,7 +88,7 @@ class grab_bind_client_t : public default_pointer_grab {
 
 public:
 
-	grab_bind_client_t(page_context_t * ctx,
+	grab_bind_client_t(page_t * ctx,
 			view_p c, uint32_t button,
 			rect const & pos);
 
@@ -109,7 +105,6 @@ public:
 };
 
 struct mode_data_notebook_client_menu_t {
-	page_pointer * pointer;
 	notebook_w from;
 	view_w client;
 	bool active_grab;
@@ -141,8 +136,6 @@ enum resize_mode_e {
 
 
 struct grab_floating_move_t : public default_pointer_grab {
-	page_pointer * pointer;
-	page_context_t * _ctx;
 	int x_root;
 	int y_root;
 	rect original_position;
@@ -153,7 +146,7 @@ struct grab_floating_move_t : public default_pointer_grab {
 
 	//shared_ptr<popup_notebook0_t> pfm;
 
-	grab_floating_move_t(page_context_t * ctx, view_p f,
+	grab_floating_move_t(page_t * ctx, view_p f,
 			unsigned int button, int x, int y);
 
 	virtual ~grab_floating_move_t();
@@ -169,8 +162,6 @@ struct grab_floating_move_t : public default_pointer_grab {
 };
 
 struct grab_floating_resize_t : public default_pointer_grab {
-	page_pointer * pointer;
-	page_context_t * _ctx;
 	view_w f;
 
 	edge_e mode;
@@ -184,7 +175,7 @@ struct grab_floating_resize_t : public default_pointer_grab {
 
 public:
 
-	grab_floating_resize_t(page_context_t * _ctx,
+	grab_floating_resize_t(page_t * _ctx,
 			view_p f, uint32_t button, int x,
 			int y, edge_e mode);
 
@@ -201,8 +192,6 @@ public:
 };
 
 struct grab_fullscreen_client_t : public default_pointer_grab {
-	page_pointer * pointer;
-	page_context_t * _ctx;
 	view_w mw;
 	viewport_w v;
 	//shared_ptr<popup_notebook0_t> pn0;
@@ -210,7 +199,7 @@ struct grab_fullscreen_client_t : public default_pointer_grab {
 
 public:
 
-	grab_fullscreen_client_t(page_context_t * ctx,
+	grab_fullscreen_client_t(page_t * ctx,
 			view_p mw, uint32_t button, int x, int y);
 
 	virtual ~grab_fullscreen_client_t();
@@ -226,7 +215,7 @@ public:
 };
 
 //struct grab_alt_tab_t : public pointer_grab_handler_t {
-//	page_context_t * _ctx;
+//	page_t * _ctx;
 //	list<client_managed_w> _client_list;
 //	list<popup_alt_tab_p> _popup_list;
 //
@@ -238,7 +227,7 @@ public:
 //
 //public:
 //
-//	grab_alt_tab_t(page_context_t * ctx, list<client_managed_p> managed_window, xcb_timestamp_t time);
+//	grab_alt_tab_t(page_t * ctx, list<client_managed_p> managed_window, xcb_timestamp_t time);
 //
 //	virtual ~grab_alt_tab_t();
 //	virtual void button_press(xcb_button_press_event_t const * e);

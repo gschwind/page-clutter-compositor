@@ -23,12 +23,12 @@
 
 #include <map>
 
+#include "page/ui-types.hxx"
 #include "wl-types.hxx"
-#include "page/page_context.hxx"
+#include "page/page.hxx"
 #include "core/page-types.hxx"
 #include "wayland-interface.hxx"
-#include "page/xpage-types.hxx"
-#include "core/signals.hxx"
+#include "utils/signals.hxx"
 
 namespace page {
 namespace wl {
@@ -42,7 +42,7 @@ struct wl_shell_surface : public wl_shell_surface_vtable {
 
 	friend class page::page_t;
 
-	page_context_t *        _ctx;
+	page_t *        _ctx;
 	struct wl_client *      _client;
 	wl::wl_surface        * _surface;
 	uint32_t                _id;

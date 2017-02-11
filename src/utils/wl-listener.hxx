@@ -9,6 +9,7 @@
 #define SRC_LISTENER_HXX_
 
 #include <functional>
+#include <wayland-server.h>
 
 namespace page {
 

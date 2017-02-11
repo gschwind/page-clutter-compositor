@@ -23,7 +23,7 @@
 #include "xdg-shell-unstable-v5-server-protocol.h"
 
 #include "xdg-v5-shell.hxx"
-#include "page/page_context.hxx"
+#include "page/page.hxx"
 #include "core/page-core.hxx"
 
 #include "wl/wl-surface.hxx"

@@ -9,29 +9,18 @@
 #define SRC_XDG_SURFACE_TOPLEVEL_VIEW_HXX_
 
 #include "tree.hxx"
-#include "page_context.hxx"
+#include "page.hxx"
 #include "listener.hxx"
 #include "surface.hxx"
 
 namespace page {
 
-class page_t;
-
 using namespace std;
-
-enum managed_window_type_e {
-	MANAGED_UNCONFIGURED,
-	MANAGED_FLOATING,
-	MANAGED_NOTEBOOK,
-	MANAGED_FULLSCREEN,
-	MANAGED_DOCK,
-	MANAGED_POPUP
-};
 
 class view_t : public tree_t {
 
 	friend class page_t;
-	page_context_t * _ctx;
+	page_t * _ctx;
 	surface_t * _page_surface;
 
 	/** hold floating position **/
@@ -79,7 +68,7 @@ public:
 
 	auto shared_from_this() -> shared_ptr<view_t>;
 
-	view_t(page_context_t * ctx, surface_t * s);
+	view_t(page_t * ctx, surface_t * s);
 	virtual ~view_t();
 
 	/* read only attributes */

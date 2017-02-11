@@ -24,10 +24,9 @@
 #include "xdg-shell-unstable-v5-interface.hxx"
 
 #include "sh-types.hxx"
-
-#include "page/page_context.hxx"
+#include "utils/utils.hxx"
 #include "core/page-types.hxx"
-#include "core/signals.hxx"
+#include "page/ui-types.hxx"
 
 namespace page {
 namespace sh {
@@ -37,7 +36,7 @@ using namespace wayland_cxx_wrapper;
 struct xdg_v5_shell : public xdg_shell_vtable {
 	page_core * core;
 
-	page_context_t * _ctx;
+	page_t * _ctx;
 
 	wl_client * client;
 

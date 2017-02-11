@@ -15,12 +15,13 @@
 #include <cassert>
 #include <memory>
 
+#include "tree-types.hxx"
 #include "theme.hxx"
 #include "renderable_notebook_fading.hxx"
 #include "renderable_pixmap.hxx"
 #include "renderable_empty.hxx"
 
-#include "page_context.hxx"
+#include "page.hxx"
 #include "page_component.hxx"
 #include "renderable_thumbnail.hxx"
 #include "renderable_unmanaged_gaussian_shadow.hxx"
@@ -36,7 +37,7 @@ class grab_bind_client_t;
 class notebook_t : public page_component_t {
 	time64_t const animation_duration;
 
-	page_context_t * _ctx;
+	page_t * _ctx;
 
 	rect _allocation;
 
@@ -194,7 +195,7 @@ class notebook_t : public page_component_t {
 
 public:
 
-	notebook_t(page_context_t * ctx);
+	notebook_t(page_t * ctx);
 	virtual ~notebook_t();
 
 	/**

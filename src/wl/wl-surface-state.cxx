@@ -21,6 +21,7 @@
 #include "wl/wl-surface-state.hxx"
 
 #include <cassert>
+#include "utils/utils.hxx"
 #include "wl/wl-buffer.hxx"
 
 namespace page {

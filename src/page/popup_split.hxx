@@ -20,7 +20,7 @@ namespace page {
 //
 //	tree_t * _parent;
 //
-//	page_context_t * _ctx;
+//	page_t * _ctx;
 //	double _current_split;
 //
 //	weak_ptr<split_t> _s_base;
@@ -73,7 +73,7 @@ namespace page {
 //	}
 //
 //
-//	popup_split_t(page_context_t * ctx, shared_ptr<split_t> split) :
+//	popup_split_t(page_t * ctx, shared_ptr<split_t> split) :
 //		_ctx{ctx},
 //		_s_base{split},
 //		_current_split{split->ratio()},

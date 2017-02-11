@@ -8,19 +8,19 @@
 #include <iostream>
 
 #include "grab_handlers.hxx"
-#include "page_context.hxx"
+#include "page.hxx"
 #include "view.hxx"
 #include "core/page-seat.hxx"
 #include "core/page-keyboard.hxx"
+#include "core/page-pointer.hxx"
 
 namespace page {
 
 using namespace std;
 
-
-grab_popup_t::grab_popup_t(page_context_t * ctx, surface_t * s) :
-		_ctx{ctx},
-		_surface{s}
+grab_popup_t::grab_popup_t(page_t * ctx, surface_t * s) :
+		default_pointer_grab{ctx},
+		surface{s}
 {
 
 }
@@ -30,6 +30,7 @@ grab_popup_t::~grab_popup_t() {
 }
 
 void grab_popup_t::focus(ClutterEvent const & event) {
+	auto pointer = _ctx->seat->pointer;
 	wl_fixed_t sx, sy;
 	if (pointer->button_count > 0)
 		return;
@@ -38,11 +39,11 @@ void grab_popup_t::focus(ClutterEvent const & event) {
 }
 
 void grab_popup_t::motion(ClutterEvent const & event) {
-	pointer->broadcast_motion(event);
+	_ctx->seat->pointer->broadcast_motion(event);
 }
 
 void grab_popup_t::button(ClutterEvent const & event) {
-	pointer->broadcast_button(event);
+	auto pointer = _ctx->seat->pointer;
 
 	/* TODO: remove following because it must be set by the wm */
 	wl_fixed_t sx, sy;
@@ -60,7 +61,7 @@ void grab_popup_t::axis_source(uint32_t source) {
 	/* TODO */
 }
 void grab_popup_t::frame() {
-	pointer->broadcast_frame();
+	_ctx->seat->pointer->broadcast_frame();
 }
 
 void grab_popup_t::cancel() {
@@ -70,8 +71,8 @@ void grab_popup_t::cancel() {
 }
 
 
-grab_split_t::grab_split_t(page_context_t * ctx, split_p s) :
-		_ctx{ctx},
+grab_split_t::grab_split_t(page_t * ctx, split_p s) :
+		default_pointer_grab{ctx},
 		_split{s}
 {
 	_slider_area = s->to_root_position(s->get_split_bar_area());
@@ -152,10 +153,10 @@ void grab_split_t::button(ClutterEvent const & event) {
 
 }
 
-grab_bind_client_t::grab_bind_client_t(page_context_t * ctx,
+grab_bind_client_t::grab_bind_client_t(page_t * ctx,
 		view_p c, uint32_t button,
 		rect const & pos) :
-		ctx{ctx},
+		default_pointer_grab{ctx},
 		c{c},
 		start_position{pos},
 		target_notebook{},
@@ -358,9 +359,9 @@ void grab_bind_client_t::button(ClutterEvent const & event)
 }
 
 
-grab_floating_move_t::grab_floating_move_t(page_context_t * ctx,
+grab_floating_move_t::grab_floating_move_t(page_t * ctx,
 		view_p f, uint32_t button, int x, int y) :
-		_ctx{ctx},
+		default_pointer_grab{ctx},
 		f{f},
 		original_position{f->get_wished_position()},
 		final_position{f->get_wished_position()},
@@ -454,10 +455,10 @@ void grab_floating_move_t::button(ClutterEvent const & event)
 }
 
 
-grab_floating_resize_t::grab_floating_resize_t(page_context_t * ctx,
+grab_floating_resize_t::grab_floating_resize_t(page_t * ctx,
 		view_p f, uint32_t button,
 		int x, int y, edge_e mode) :
-		_ctx{ctx},
+		default_pointer_grab{ctx},
 		f{f},
 		mode{mode},
 		x_root{x},
@@ -625,12 +626,12 @@ void grab_floating_resize_t::button(ClutterEvent const & event)
 //	}
 }
 
-grab_fullscreen_client_t::grab_fullscreen_client_t(page_context_t * ctx,
+grab_fullscreen_client_t::grab_fullscreen_client_t(page_t * ctx,
 		view_p mw, uint32_t button, int x, int y) :
- _ctx{ctx},
- mw{mw},
- //pn0{nullptr},
- _button{button}
+	default_pointer_grab{ctx},
+	mw{mw},
+	//pn0{nullptr},
+	_button{button}
 {
 	v = _ctx->find_mouse_viewport(x, y);
 //	pn0 = make_shared<popup_notebook0_t>(ctx);
@@ -704,7 +705,7 @@ void grab_fullscreen_client_t::button(ClutterEvent const & event) {
 //	}
 //}
 
-//grab_alt_tab_t::grab_alt_tab_t(page_context_t * ctx, list<client_managed_p> managed_window, xcb_timestamp_t time) : _ctx{ctx} {
+//grab_alt_tab_t::grab_alt_tab_t(page_t * ctx, list<client_managed_p> managed_window, xcb_timestamp_t time) : _ctx{ctx} {
 //	_client_list = weak(managed_window);
 //
 //	auto viewport_list = _ctx->get_current_workspace()->get_viewports();

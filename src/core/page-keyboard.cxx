@@ -29,7 +29,7 @@
 #include <X11/Xlib-xcb.h>
 #include <xkbcommon/xkbcommon-x11.h>
 
-#include "utils.hxx"
+#include "utils/utils.hxx"
 #include "page-default-keyboard-grab.hxx"
 #include "wl/wl-keyboard.hxx"
 #include "wl/wl-surface.hxx"

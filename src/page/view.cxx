@@ -32,7 +32,7 @@ void view_t::add_popup_child(view_p c,
 }
 
 view_t::view_t(
-		page_context_t * ctx,
+		page_t * ctx,
 		surface_t * xdg_surface) :
 	_ctx{ctx},
 	_floating_wished_position{},

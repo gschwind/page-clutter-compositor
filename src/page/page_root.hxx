@@ -8,7 +8,7 @@
 #ifndef SRC_PAGE_ROOT_HXX_
 #define SRC_PAGE_ROOT_HXX_
 
-#include "page_context.hxx"
+#include "page.hxx"
 #include "page_component.hxx"
 #include "compositor_overlay.hxx"
 
@@ -18,7 +18,7 @@ class page_root_t : public tree_t {
 	friend class page_t;
 
 
-	page_context_t * _ctx;
+	page_t * _ctx;
 
 	rect _root_position;
 
@@ -39,7 +39,7 @@ class page_root_t : public tree_t {
 
 public:
 
-	page_root_t(page_context_t * ctx);
+	page_root_t(page_t * ctx);
 	~page_root_t();
 
 	/**

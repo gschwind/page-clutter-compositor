@@ -20,7 +20,7 @@ namespace page {
 
 
 struct compositor_overlay_t : public tree_t {
-	page_context_t * _ctx;
+	page_t * _ctx;
 
 	PangoFontDescription * _fps_font_desc;
 	PangoFontMap * _fps_font_map;
@@ -33,7 +33,7 @@ struct compositor_overlay_t : public tree_t {
 
 public:
 
-	compositor_overlay_t(page_context_t * ctx, rect const & pos) : _ctx{ctx}, _position{pos}, _has_damage{false} {
+	compositor_overlay_t(page_t * ctx, rect const & pos) : _ctx{ctx}, _position{pos}, _has_damage{false} {
 		_fps_font_desc = pango_font_description_from_string("Mono 11");
 		_fps_font_map = pango_cairo_font_map_new();
 		_fps_context = pango_font_map_create_context(_fps_font_map);

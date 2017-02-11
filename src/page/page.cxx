@@ -7,6 +7,8 @@
  *
  */
 
+#include "config.hxx"
+
 /* According to POSIX.1-2001 */
 #include <sys/select.h>
 #include <poll.h>
@@ -66,6 +68,8 @@
 #include "core/page-pointer.hxx"
 #include "core/page-seat.hxx"
 
+#include "page/page_root.hxx"
+
 /* ICCCM definition */
 #define _NET_WM_STATE_REMOVE 0
 #define _NET_WM_STATE_ADD 1
@@ -106,7 +110,7 @@ void page_t::destroy_surface(surface_t * s) {
 //	}
 //}
 
-void page_t::start_resize(surface_t * s, struct weston_seat * seat, uint32_t serial, edge_e edges) {
+//void page_t::start_resize(surface_t * s, struct weston_seat * seat, uint32_t serial, edge_e edges) {
 //	if(s->_master_view.expired())
 //		return;
 //
@@ -119,7 +123,7 @@ void page_t::start_resize(surface_t * s, struct weston_seat * seat, uint32_t ser
 //		grab_start(pointer, new grab_floating_resize_t(this, master_view,
 //			BTN_LEFT, x, y, edges));
 //	}
-}
+//}
 
 //time64_t const page_t::default_wait{1000000000L / 120L};
 
@@ -192,7 +196,7 @@ void page_t::init(int * argc, char *** argv)
 	/* load configurations, from lower priority to high one */
 
 	/* load default configuration */
-	_conf.merge_from_file_if_exist(string{DATA_DIR "/page/page.conf"});
+	_conf.merge_from_file_if_exist(string{DATADIR "/page/page.conf"});
 
 	/* load homedir configuration */
 	{
@@ -1263,12 +1267,12 @@ void page_t::configure_popup(surface_t * s) {
 	s->send_configure_popup(s->_x_offset, s->_y_offset, s->width(), s->height());
 }
 
-void page_t::create_unmanaged_window(xcb_window_t w, xcb_atom_t type) {
+//void page_t::create_unmanaged_window(xcb_window_t w, xcb_atom_t type) {
 //	auto uw = make_shared<client_not_managed_t>(this, w, type);
 //	_dpy->map(uw->orig());
 //	uw->show();
 //	safe_update_transient_for(uw);
-}
+//}
 
 shared_ptr<viewport_t> page_t::find_mouse_viewport(int x, int y) const {
 	auto viewports = get_current_workspace()->get_viewports();

@@ -15,7 +15,7 @@ namespace page {
 
 using namespace std;
 //
-//popup_alt_tab_t::popup_alt_tab_t(page_context_t * ctx, list<client_managed_p> client_list, viewport_p viewport) :
+//popup_alt_tab_t::popup_alt_tab_t(page_t * ctx, list<client_managed_p> client_list, viewport_p viewport) :
 //	_ctx{ctx},
 //	_selected{},
 //	_is_durty{true},

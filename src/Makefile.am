@@ -72,7 +72,6 @@ page_compositor_SOURCES = \
 	page/workspace.hxx \
 	page/default-pointer-grab.cxx \
 	page/default-pointer-grab.hxx \
-	page/blur_image_surface.cxx \
 	page/dropdown_menu.cxx \
 	page/grab_handlers.cxx \
 	page/leak_checker.cxx \
@@ -82,7 +81,6 @@ page_compositor_SOURCES = \
 	page/simple2_theme.cxx \
 	page/surface.cxx \
 	page/tiny_theme.cxx \
-	page/blur_image_surface.hxx \
 	page/box.hxx \
 	page/cairo_surface_type_name.hxx \
 	page/color.hxx \

@@ -18,15 +18,41 @@
  *
  */
 
-#ifndef SRC_PAGE_XPAGE_TYPES_HXX_
-#define SRC_PAGE_XPAGE_TYPES_HXX_
+#ifndef SRC_PAGE_UI_TYPES_HXX_
+#define SRC_PAGE_UI_TYPES_HXX_
+
+#include "tree-types.hxx"
+#include "key_desc.hxx"
 
 namespace page {
 
 struct page_t;
+struct surface_t;
+struct theme_t;
+
+enum managed_window_type_e : uint32_t {
+	MANAGED_UNCONFIGURED,
+	MANAGED_FLOATING,
+	MANAGED_NOTEBOOK,
+	MANAGED_FULLSCREEN,
+	MANAGED_DOCK,
+	MANAGED_POPUP
+};
+
+enum edge_e : uint32_t {
+	EDGE_NONE = 0,
+	EDGE_TOP = 1,
+	EDGE_BOTTOM = 2,
+	EDGE_LEFT = 4,
+	EDGE_TOP_LEFT = 5,
+	EDGE_BOTTOM_LEFT = 6,
+	EDGE_RIGHT = 8,
+	EDGE_TOP_RIGHT = 9,
+	EDGE_BOTTOM_RIGHT = 10
+};
 
 }
 
 
 
-#endif /* SRC_PAGE_XPAGE_TYPES_HXX_ */
+#endif /* SRC_PAGE_UI_TYPES_HXX_ */

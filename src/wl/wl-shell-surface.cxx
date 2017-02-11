@@ -25,7 +25,7 @@
 
 #include "wayland-server-protocol.h"
 
-#include "page/page_context.hxx"
+#include "page/page.hxx"
 #include "core/page-core.hxx"
 
 namespace page {

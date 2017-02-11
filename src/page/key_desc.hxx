@@ -11,7 +11,7 @@
 #include <string>
 #include <xkbcommon/xkbcommon.h>
 
-#include "exception.hxx"
+#include "utils/exception.hxx"
 
 namespace page {
 

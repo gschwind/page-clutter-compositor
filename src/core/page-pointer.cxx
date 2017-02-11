@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <linux/input.h>
 
+#include "utils/utils.hxx"
 #include "page-default-pointer-grab.hxx"
 #include "page-seat.hxx"
 #include "wl/wl-surface.hxx"

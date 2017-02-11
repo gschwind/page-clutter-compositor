@@ -26,7 +26,7 @@
 namespace page {
 
 struct default_keyboard_grab : public page_default_keyboard_grab {
-	page_context_t * _ctx;
+	page_t * _ctx;
 
 };
 

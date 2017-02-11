@@ -16,7 +16,7 @@
 #include "renderable.hxx"
 #include "split.hxx"
 #include "theme.hxx"
-#include "page_context.hxx"
+#include "page.hxx"
 #include "page_component.hxx"
 #include "notebook.hxx"
 
@@ -26,7 +26,7 @@ using namespace std;
 
 class viewport_t: public page_component_t {
 
-	page_context_t * _ctx;
+	page_t * _ctx;
 
 	region _damaged;
 
@@ -69,7 +69,7 @@ class viewport_t: public page_component_t {
 
 public:
 
-	viewport_t(page_context_t * ctx, rect const & area);
+	viewport_t(page_t * ctx, rect const & area);
 	virtual ~viewport_t();
 
 	auto raw_area() const -> rect const &;

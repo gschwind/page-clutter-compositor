@@ -22,14 +22,14 @@
 #define SRC_PAGE_DEFAULT_POINTER_GRAB_HXX_
 
 #include "core/page-pointer-grab.hxx"
-#include "page_context.hxx"
+#include "page.hxx"
 
 namespace page {
 
 struct default_pointer_grab : public page_pointer_grab {
-	page_context_t * _ctx;
+	page_t * _ctx;
 
-	default_pointer_grab(page_context_t * ctx, page_pointer * pointer);
+	default_pointer_grab(page_t * ctx);
 	virtual ~default_pointer_grab() override;
 
 	virtual void focus(ClutterEvent const & event) override;

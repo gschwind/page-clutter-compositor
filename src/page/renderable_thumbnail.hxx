@@ -26,7 +26,7 @@ namespace page {
 //
 //
 //class renderable_thumbnail_t : public tree_t {
-//	page_context_t * _ctx;
+//	page_t * _ctx;
 //	int _title_width;
 //
 //	thumnail_anchor_e _target_anchor;
@@ -45,7 +45,7 @@ namespace page {
 //	renderable_thumbnail_t & operator=(renderable_thumbnail_t const &);
 //public:
 //
-//	renderable_thumbnail_t(page_context_t * ctx, shared_ptr<xdg_surface_toplevel_t> c, rect const & target_position, thumnail_anchor_e target_anchor) :
+//	renderable_thumbnail_t(page_t * ctx, shared_ptr<xdg_surface_toplevel_t> c, rect const & target_position, thumnail_anchor_e target_anchor) :
 //		_ctx{ctx},
 //		_c{c},
 //		_title_width{0},

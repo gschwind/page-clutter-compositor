@@ -24,9 +24,11 @@
 #include "core/page-keyboard.hxx"
 #include "core/page-seat.hxx"
 
+#include "page/page.hxx"
+
 namespace page {
 
-default_pointer_grab::default_pointer_grab(page_context_t * ctx, page_pointer * pointer) :
+default_pointer_grab::default_pointer_grab(page_t * ctx) :
 		_ctx{ctx}
 {
 	// TODO Auto-generated constructor stub
@@ -53,11 +55,12 @@ void default_pointer_grab::focus(ClutterEvent const & event)
 
 void default_pointer_grab::motion(ClutterEvent const & event)
 {
-	pointer->broadcast_motion(event);
+	_ctx->seat->pointer->broadcast_motion(event);
 }
 
 void default_pointer_grab::button(ClutterEvent const & event)
 {
+	auto pointer = _ctx->seat->pointer;
 	pointer->broadcast_button(event);
 
 	/* TODO: remove following because it must be set by the wm */
@@ -79,7 +82,7 @@ void default_pointer_grab::axis_source(uint32_t source)
 
 void default_pointer_grab::frame()
 {
-	pointer->broadcast_frame();
+	_ctx->seat->pointer->broadcast_frame();
 }
 
 void default_pointer_grab::cancel()

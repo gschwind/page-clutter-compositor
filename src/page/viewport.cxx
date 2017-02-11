@@ -16,7 +16,7 @@ namespace page {
 
 using namespace std;
 
-viewport_t::viewport_t(page_context_t * ctx, rect const & area) :
+viewport_t::viewport_t(page_t * ctx, rect const & area) :
 		_ctx{ctx},
 		_raw_aera{area},
 		_effective_area{area},
@@ -257,7 +257,7 @@ void viewport_t::trigger_redraw() {
 /* mark renderable_page for redraw */
 void viewport_t::queue_redraw() {
 	_is_durty = true;
-	_ctx->schedule_repaint();
+	//_ctx->schedule_repaint();
 }
 
 region viewport_t::get_damaged() {

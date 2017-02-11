@@ -18,44 +18,15 @@
 #include <array>
 #include <thread>
 
+
 #include "config.hxx"
-#include "core/page-core.hxx"
-
-#include "time.hxx"
-
-#include "config_handler.hxx"
-
-#include "key_desc.hxx"
-#include "keymap.hxx"
-
-#include "theme.hxx"
-
-#include "popup_alt_tab.hxx"
-#include "popup_notebook0.hxx"
-#include "popup_split.hxx"
-
-#include "dropdown_menu.hxx"
-
-#include "page_component.hxx"
-#include "notebook.hxx"
-#include "split.hxx"
-#include "viewport.hxx"
-#include "workspace.hxx"
-#include "compositor_overlay.hxx"
-
-#include "page_event.hxx"
-
 #include "utils/utils.hxx"
-#include "mainloop.hxx"
-#include "page_root.hxx"
-#include "listener.hxx"
-#include "view.hxx"
-
-
-#include "wl/wl-shell.hxx"
-
+#include "core/page-types.hxx"
+#include "page/ui-types.hxx"
 #include "sh/sh-types.hxx"
+#include "wl/wl-types.hxx"
 
+#include "core/page-core.hxx"
 
 namespace page {
 
@@ -69,30 +40,22 @@ struct fullscreen_data_t {
 	notebook_w revert_notebook;
 };
 
-/* process_mode_e define possible state of page */
-enum process_mode_e {
-	PROCESS_NORMAL,						// default evant processing
-	PROCESS_SPLIT_GRAB,					// when split is moving
-	PROCESS_NOTEBOOK_GRAB,				// when notebook tab is moved
-	PROCESS_NOTEBOOK_BUTTON_PRESS,		// when click on close/unbind button
-	PROCESS_FLOATING_MOVE,				// when a floating window is moved
-	PROCESS_FLOATING_RESIZE,			// when resizing a floating window
-	PROCESS_FLOATING_CLOSE,				// when clicking close button of floating window
-	PROCESS_FLOATING_BIND,				// when clicking bind button
-	PROCESS_FULLSCREEN_MOVE,			// when mod4+click to change fullscreen window screen
-	PROCESS_FLOATING_MOVE_BY_CLIENT,	// when moving a floating window started by client himself
-	PROCESS_FLOATING_RESIZE_BY_CLIENT,	// when resizing a floating window started by client himself
-	PROCESS_NOTEBOOK_MENU,				// when notebook menu is shown
-	PROCESS_NOTEBOOK_CLIENT_MENU,		// when switch desktop menu is shown
-	PROCESS_ALT_TAB						// when alt-tab running
+struct page_configuration_t {
+	bool _replace_wm;
+	bool _menu_drop_down_shadow;
+	bool _auto_refocus;
+	bool _mouse_focus;
+	bool _enable_shade_windows;
+	int64_t _fade_in_time;
 };
+
 
 struct key_bind_cmd_t {
 	key_desc_t key;
 	string cmd;
 };
 
-struct page_t : public page_core, public page_context_t, public connectable {
+struct page_t : public page_core, public connectable {
 	shared_ptr<page_root_t> _root;
 	theme_t * _theme;
 	page_configuration_t configuration;
@@ -296,7 +259,7 @@ struct page_t : public page_core, public page_context_t, public connectable {
 //	void onmap(xcb_window_t w);
 //	void create_managed_window(xcb_window_t w, xcb_atom_t type);
 //	void ackwoledge_configure_request(xcb_configure_request_event_t const * e);
-	void create_unmanaged_window(xcb_window_t w, xcb_atom_t type);
+//	void create_unmanaged_window(xcb_window_t w, xcb_atom_t type);
 //	bool get_safe_net_wm_user_time(shared_ptr<xdg_surface_base_t> c, xcb_timestamp_t & time);
 //	void update_page_areas();
 //	void set_desktop_geometry(long width, long height);
@@ -378,35 +341,35 @@ struct page_t : public page_core, public page_context_t, public connectable {
 			int32_t sx, int32_t sy);
 
 //	/**
-//	 * page_context_t virtual API
+//	 * page_t virtual API
 //	 **/
 //
-	virtual auto conf() const -> page_configuration_t const &;
-	virtual auto theme() const -> theme_t const *;
-	virtual auto find_mouse_viewport(int x, int y) const -> viewport_p;
-	virtual auto get_current_workspace() const -> workspace_p const &;
-	virtual auto get_workspace(int id) const -> workspace_p const &;
-	virtual int  get_workspace_count() const;
-	virtual int  create_workspace();
-	virtual void detach(tree_p t);
-	virtual void insert_window_in_notebook(view_p x, notebook_p n = nullptr);
-	virtual void fullscreen_client_to_viewport(view_p c, viewport_p v);
-	virtual void unbind_window(view_p mw);
-	virtual void split_left(notebook_p nbk, view_p c);
-	virtual void split_right(notebook_p nbk, view_p c);
-	virtual void split_top(notebook_p nbk, view_p c);
-	virtual void split_bottom(notebook_p nbk, view_p c);
-	virtual void set_keyboard_focus(page_seat * seat, view_p w);
-	virtual void notebook_close(notebook_p nbk);
-	virtual auto global_client_focus_history() -> list<view_w>;
-	virtual void sync_tree_view();
-	virtual void manage_client(surface_t * s);
-	virtual void manage_popup(surface_t * s);
-	virtual void configure_popup(surface_t * s);
-	virtual void schedule_repaint();
-	virtual void destroy_surface(surface_t * s);
-	virtual void start_move(surface_t * s, struct weston_seat *seat, uint32_t serial);
-	virtual void start_resize(surface_t * s, struct weston_seat * seat, uint32_t serial, edge_e edges);
+	auto conf() const -> page_configuration_t const &;
+	auto theme() const -> theme_t const *;
+	auto find_mouse_viewport(int x, int y) const -> viewport_p;
+	auto get_current_workspace() const -> workspace_p const &;
+	auto get_workspace(int id) const -> workspace_p const &;
+	int  get_workspace_count() const;
+	int  create_workspace();
+	void detach(tree_p t);
+	void insert_window_in_notebook(view_p x, notebook_p n = nullptr);
+	void fullscreen_client_to_viewport(view_p c, viewport_p v);
+	void unbind_window(view_p mw);
+	void split_left(notebook_p nbk, view_p c);
+	void split_right(notebook_p nbk, view_p c);
+	void split_top(notebook_p nbk, view_p c);
+	void split_bottom(notebook_p nbk, view_p c);
+	void set_keyboard_focus(page_seat * seat, view_p w);
+	void notebook_close(notebook_p nbk);
+	auto global_client_focus_history() -> list<view_w>;
+	void sync_tree_view();
+	void manage_client(surface_t * s);
+	void manage_popup(surface_t * s);
+	void configure_popup(surface_t * s);
+	void schedule_repaint();
+	void destroy_surface(surface_t * s);
+	//void start_move(surface_t * s, struct weston_seat *seat, uint32_t serial);
+	//void start_resize(surface_t * s, struct weston_seat * seat, uint32_t serial, edge_e edges);
 
 };
 

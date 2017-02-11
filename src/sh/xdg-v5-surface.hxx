@@ -23,15 +23,16 @@
 
 #include <map>
 
+#include "../page/ui-types.hxx"
 #include "xdg-shell-unstable-v5-interface.hxx"
 
 #include "wl/wl-types.hxx"
 #include "sh/sh-types.hxx"
 
 
-#include "core/signals.hxx"
-#include "page/xpage-types.hxx"
-#include "page/page_context.hxx"
+#include "utils/signals.hxx"
+#include "page/page.hxx"
+#include "page/surface.hxx"
 
 
 namespace page {
@@ -43,7 +44,7 @@ using namespace wayland_cxx_wrapper;
 struct xdg_v5_surface : public xdg_surface_vtable, public surface_t {
 	xdg_v5_shell * shell;
 
-	page_context_t *       _ctx;
+	page_t *       _ctx;
 	wl_client *            _client;
 	wl::wl_surface *       _surface;
 	uint32_t               _id;

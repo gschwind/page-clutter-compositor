@@ -19,7 +19,7 @@ namespace page {
 
 using namespace std;
 
-split_t::split_t(page_context_t * ctx, split_type_e type) :
+split_t::split_t(page_t * ctx, split_type_e type) :
 		_ctx{ctx},
 		_type{type},
 		_ratio{0.5},

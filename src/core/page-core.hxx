@@ -25,7 +25,7 @@
 #include <wayland-server-core.h>
 #include <clutter/clutter.h>
 
-#include "config_handler.hxx"
+#include "utils/config_handler.hxx"
 #include "page-types.hxx"
 #include "wl/wl-types.hxx"
 

@@ -17,8 +17,8 @@
 
 #include "utils/utils.hxx"
 #include "theme.hxx"
-#include "color.hxx"
-#include "config_handler.hxx"
+#include "utils/color.hxx"
+#include "utils/config_handler.hxx"
 #include "renderable.hxx"
 
 namespace page {

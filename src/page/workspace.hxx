@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "utils/utils.hxx"
-#include "page_context.hxx"
+#include "page.hxx"
 #include "viewport.hxx"
 #include "renderable_pixmap.hxx"
 
@@ -30,7 +30,7 @@ enum workspace_switch_direction_e {
 struct workspace_t: public tree_t {
 
 private:
-	page_context_t * _ctx;
+	page_t * _ctx;
 
 	//rect _allocation;
 	rect _workarea;
@@ -62,7 +62,7 @@ private:
 
 public:
 
-	workspace_t(page_context_t * ctx, unsigned id);
+	workspace_t(page_t * ctx, unsigned id);
 	~workspace_t() { }
 
 
