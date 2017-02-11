@@ -25,6 +25,7 @@
 #include "core/page-seat.hxx"
 
 #include "page/page.hxx"
+#include "page/page_root.hxx"
 
 namespace page {
 
@@ -56,6 +57,7 @@ void default_pointer_grab::focus(ClutterEvent const & event)
 void default_pointer_grab::motion(ClutterEvent const & event)
 {
 	_ctx->seat->pointer->broadcast_motion(event);
+	_ctx->_root->broadcast_motion(this, event);
 }
 
 void default_pointer_grab::button(ClutterEvent const & event)
@@ -68,6 +70,7 @@ void default_pointer_grab::button(ClutterEvent const & event)
 	auto surface = pointer->pick_surface_actor(&event, sx, sy);
 	if(surface)
 		pointer->seat->keyboard->set_focus(surface);
+	_ctx->_root->broadcast_button(this, event);
 }
 
 void default_pointer_grab::axis(ClutterEvent const & event)

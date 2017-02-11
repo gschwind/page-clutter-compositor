@@ -188,14 +188,6 @@ region viewport_t::get_damaged() {
 	return _damaged;
 }
 
-//xcb_window_t viewport_t::get_parent_xid() const {
-//	return _win;
-//}
-//
-//xcb_window_t viewport_t::get_xid() const {
-//	return _win;
-//}
-
 void viewport_t::paint_expose() {
 	if(not _is_visible)
 		return;

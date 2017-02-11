@@ -222,8 +222,8 @@ public:
 	virtual region get_damaged();
 	virtual void queue_redraw();
 
-	virtual bool button(ClutterEvent const & event);
-	virtual bool motion(ClutterEvent const & event);
+	virtual bool button(page_pointer_grab * grab, ClutterEvent const & event) override;
+	virtual bool motion(page_pointer_grab * grab, ClutterEvent const & event) override;
 
 	/**
 	 * page_component_t interface

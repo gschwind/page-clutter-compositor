@@ -16,6 +16,9 @@
 #include "renderable_unmanaged_gaussian_shadow.hxx"
 #include "view.hxx"
 
+#include "core/page-seat.hxx"
+#include "core/page-pointer.hxx"
+
 namespace page {
 
 using namespace std;
@@ -860,7 +863,7 @@ void notebook_t::_stop_exposay() {
 	queue_redraw();
 }
 
-bool notebook_t::button(ClutterEvent const & event) {
+bool notebook_t::button(page_pointer_grab * grab, ClutterEvent const & event) {
 //
 //	if (pointer->focus != get_parent_default_view()) {
 //		return false;
@@ -1076,11 +1079,11 @@ void notebook_t::_update_mouse_over() {
 
 }
 
-bool notebook_t::motion(ClutterEvent const & event) {
-//	auto pointer = grab->pointer;
-//
-//	if(pointer == nullptr)
-//		return false;
+bool notebook_t::motion(page_pointer_grab * grab, ClutterEvent const & event) {
+	auto pointer = _ctx->seat->pointer;
+
+	if(pointer == nullptr)
+		return false;
 //
 //	if (pointer->focus != get_parent_default_view()) {
 //		_has_mouse_change = true;
@@ -1092,18 +1095,18 @@ bool notebook_t::motion(ClutterEvent const & event) {
 //	wl_fixed_t vx, vy;
 //
 //	weston_view_from_global_fixed(pointer->focus, grab->pointer->x, grab->pointer->y, &vx, &vy);
-//
-//	double x = wl_fixed_to_double(vx);
-//	double y = wl_fixed_to_double(vy);
-//
-//
-//	//printf("event x=%f, y=%f\n", x, y);
-//
-//	_has_mouse_change = true;
-//	_mouse_over.event_x = x;
-//	_mouse_over.event_y = y;
-//
-//	update_layout();
+
+	double x = pointer->x;
+	double y = pointer->y;
+
+
+	//printf("event x=%f, y=%f\n", x, y);
+
+	_has_mouse_change = true;
+	_mouse_over.event_x = x;
+	_mouse_over.event_y = y;
+
+	update_layout();
 
 	return false;
 
