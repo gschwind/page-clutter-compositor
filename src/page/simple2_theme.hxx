@@ -15,7 +15,7 @@
 
 #include <cairo/cairo.h>
 
-#include "libpage/utils.hxx"
+#include "utils/utils.hxx"
 #include "theme.hxx"
 #include "color.hxx"
 #include "config_handler.hxx"

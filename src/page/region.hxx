@@ -17,7 +17,7 @@
 #include <iostream>
 #include <algorithm>
 
-#include "box.hxx"
+#include "utils/box.hxx"
 
 namespace page {
 

@@ -45,7 +45,7 @@
 
 #include "page_event.hxx"
 
-#include "libpage/utils.hxx"
+#include "utils/utils.hxx"
 #include "mainloop.hxx"
 #include "page_root.hxx"
 #include "listener.hxx"

@@ -12,7 +12,7 @@
 #include <cassert>
 #include <utility>
 
-#include "libpage/utils.hxx"
+#include "utils/utils.hxx"
 
 namespace page {
 

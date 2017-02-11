@@ -20,4 +20,44 @@
 
 #include "xdg-v6-shell.hxx"
 
+namespace page {
+namespace sh {
 
+xdg_v6_shell::xdg_v6_shell(struct wl_client *client, uint32_t version, uint32_t id, page_core * core) :
+		zxdg_shell_v6_vtable(client, version, id)
+{
+
+}
+
+xdg_v6_shell::~xdg_v6_shell()
+{
+
+}
+
+void xdg_v6_shell::recv_destroy(struct wl_client * client, struct wl_resource * resource)
+{
+
+}
+
+void xdg_v6_shell::recv_create_positioner(struct wl_client * client, struct wl_resource * resource, uint32_t id)
+{
+
+}
+
+void xdg_v6_shell::recv_get_xdg_surface(struct wl_client * client, struct wl_resource * resource, uint32_t id, struct wl_resource * surface)
+{
+
+}
+
+void xdg_v6_shell::recv_pong(struct wl_client * client, struct wl_resource * resource, uint32_t serial)
+{
+
+}
+
+void xdg_v6_shell::delete_resource(struct wl_resource * resource)
+{
+
+}
+
+}
+}

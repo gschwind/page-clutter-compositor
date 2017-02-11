@@ -15,7 +15,7 @@
 
 #include <cairo/cairo.h>
 
-#include "color.hxx"
+#include "utils/color.hxx"
 
 #include "leak_checker.hxx"
 

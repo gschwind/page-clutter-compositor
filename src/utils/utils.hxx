@@ -34,7 +34,12 @@
 #include <limits>
 #include <algorithm>
 
-#include "page/box.hxx"
+#include "box.hxx"
+#include "color.hxx"
+#include "signals.hxx"
+#include "exception.hxx"
+#include "config_handler.hxx"
+#include "wl-listener.hxx"
 
 namespace page {
 

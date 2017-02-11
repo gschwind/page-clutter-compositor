@@ -10,7 +10,7 @@
 #ifndef PAGE_COMPONENT_HXX_
 #define PAGE_COMPONENT_HXX_
 
-#include "box.hxx"
+#include "utils/box.hxx"
 #include "tree.hxx"
 
 namespace page {

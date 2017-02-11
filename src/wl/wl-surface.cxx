@@ -27,7 +27,7 @@
 
 #include "meta/region-utils.h"
 
-#include "libpage/utils.hxx"
+#include "utils/utils.hxx"
 #include "wl-compositor.hxx"
 #include "wl-buffer.hxx"
 #include "wl-region.hxx"

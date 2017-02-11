@@ -25,8 +25,6 @@
 #include <list>
 #include <map>
 
-#include "utils.hxx"
-
 namespace page {
 
 using namespace std;
@@ -87,10 +85,11 @@ public:
 		 * Copy the list of callback to avoid issue
 		 * if 'remove' is called during the signal.
 		 **/
-		auto callbacks = lock(_callback_list);
+		auto callbacks = _callback_list;
 
 		for(auto func: callbacks) {
-			(*func)(args...);
+			if(not func.expired())
+				(*func.lock())(args...);
 		}
 	}
 

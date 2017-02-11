@@ -8,7 +8,7 @@
 #ifndef THEME_TAB_HXX_
 #define THEME_TAB_HXX_
 
-#include "color.hxx"
+#include "utils/color.hxx"
 
 namespace page {
 

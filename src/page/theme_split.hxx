@@ -10,7 +10,7 @@
 #ifndef THEME_SPLIT_HXX_
 #define THEME_SPLIT_HXX_
 
-#include "box.hxx"
+#include "utils/box.hxx"
 
 namespace page {
 

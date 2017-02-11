@@ -39,7 +39,7 @@
 #include "xdg-shell-unstable-v5-server-protocol.h"
 #include "xdg-shell-unstable-v6-server-protocol.h"
 
-#include "libpage/utils.hxx"
+#include "utils/utils.hxx"
 
 #include "renderable.hxx"
 #include "key_desc.hxx"

@@ -21,12 +21,24 @@
 #ifndef SRC_PAGE_DEFAULT_POINTER_GRAB_HXX_
 #define SRC_PAGE_DEFAULT_POINTER_GRAB_HXX_
 
-#include "libpage/page-default-pointer-grab.hxx"
+#include "libpage/page-pointer-grab.hxx"
+#include "page_context.hxx"
 
 namespace page {
 
-struct default_pointer_grab : public page_default_pointer_grab {
+struct default_pointer_grab : public page_pointer_grab {
 	page_context_t * _ctx;
+
+	default_pointer_grab(page_context_t * ctx, page_pointer * pointer);
+	virtual ~default_pointer_grab() override;
+
+	virtual void focus(ClutterEvent const & event) override;
+	virtual void motion(ClutterEvent const & event) override;
+	virtual void button(ClutterEvent const & event) override;
+	virtual void axis(ClutterEvent const & event) override;
+	virtual void axis_source(uint32_t source) override;
+	virtual void frame() override;
+	virtual void cancel() override;
 
 };
 

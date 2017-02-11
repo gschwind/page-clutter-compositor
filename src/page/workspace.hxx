@@ -13,7 +13,7 @@
 #include <map>
 #include <vector>
 
-#include "libpage/utils.hxx"
+#include "utils/utils.hxx"
 #include "page_context.hxx"
 #include "viewport.hxx"
 #include "renderable_pixmap.hxx"

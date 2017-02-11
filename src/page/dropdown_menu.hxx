@@ -19,7 +19,7 @@
 
 
 #include "renderable.hxx"
-#include "box.hxx"
+#include "utils/box.hxx"
 #include "region.hxx"
 
 namespace page {

@@ -8,8 +8,9 @@
 #ifndef SRC_GRAB_HANDLERS_HXX_
 #define SRC_GRAB_HANDLERS_HXX_
 
-#include "libpage/page-pointer-grab.hxx"
 #include "libpage/page-keyboard-grab.hxx"
+
+#include "default-pointer-grab.hxx"
 
 #include "xdg-shell-unstable-v5-server-protocol.h"
 
@@ -33,7 +34,7 @@ enum notebook_area_e {
 	NOTEBOOK_AREA_CENTER
 };
 
-struct grab_popup_t : public page_pointer_grab {
+struct grab_popup_t : public default_pointer_grab {
 	page_context_t * _ctx;
 	page_pointer * pointer;
 	surface_t * _surface;
@@ -51,7 +52,7 @@ struct grab_popup_t : public page_pointer_grab {
 
 };
 
-class grab_split_t : public page_pointer_grab {
+class grab_split_t : public default_pointer_grab {
 	page_context_t * _ctx;
 	page_pointer * pointer;
 	weak_ptr<split_t> _split;
@@ -75,7 +76,7 @@ public:
 
 };
 
-class grab_bind_client_t : public page_pointer_grab {
+class grab_bind_client_t : public default_pointer_grab {
 	page_context_t * ctx;
 	page_pointer * pointer;
 	view_w c;
@@ -107,7 +108,7 @@ public:
 
 };
 
-struct mode_data_notebook_client_menu_t  : public page_pointer_grab {
+struct mode_data_notebook_client_menu_t {
 	page_pointer * pointer;
 	notebook_w from;
 	view_w client;
@@ -139,7 +140,7 @@ enum resize_mode_e {
 };
 
 
-struct grab_floating_move_t : public page_pointer_grab {
+struct grab_floating_move_t : public default_pointer_grab {
 	page_pointer * pointer;
 	page_context_t * _ctx;
 	int x_root;
@@ -167,7 +168,7 @@ struct grab_floating_move_t : public page_pointer_grab {
 
 };
 
-struct grab_floating_resize_t : public page_pointer_grab {
+struct grab_floating_resize_t : public default_pointer_grab {
 	page_pointer * pointer;
 	page_context_t * _ctx;
 	view_w f;
@@ -199,7 +200,7 @@ public:
 
 };
 
-struct grab_fullscreen_client_t : public page_pointer_grab {
+struct grab_fullscreen_client_t : public default_pointer_grab {
 	page_pointer * pointer;
 	page_context_t * _ctx;
 	view_w mw;

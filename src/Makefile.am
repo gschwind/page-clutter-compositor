@@ -49,6 +49,15 @@ BUILT_SOURCES = \
 	wayland-interface.hxx
 
 page_compositor_SOURCES = \
+	utils/config_handler.cxx \
+	utils/config_handler.hxx \
+	utils/utils.cxx \
+	utils/utils.hxx \
+	utils/box.hxx \
+	utils/exception.hxx \
+	utils/signals.hxx \
+	utils/wl-listener.hxx \
+	utils/color.hxx \
 	page/tree.cxx \
 	page/tree.hxx \
 	page/view.hxx \
@@ -61,6 +70,8 @@ page_compositor_SOURCES = \
 	page/viewport.hxx \
 	page/workspace.cxx \
 	page/workspace.hxx \
+	page/default-pointer-grab.cxx \
+	page/default-pointer-grab.hxx \
 	page/blur_image_surface.cxx \
 	page/dropdown_menu.cxx \
 	page/grab_handlers.cxx \
@@ -76,7 +87,6 @@ page_compositor_SOURCES = \
 	page/cairo_surface_type_name.hxx \
 	page/color.hxx \
 	page/compositor_overlay.hxx \
-	page/config.hxx \
 	page/dropdown_menu.hxx \
 	page/exception.hxx \
 	page/floating_event.hxx \
@@ -120,6 +130,22 @@ page_compositor_SOURCES = \
 	page/tree-types.hxx \
 	page/window_overlay.hxx \
 	page/x11_func_name.hxx \
+	sh/xdg-v5-popup.cxx \
+	sh/xdg-v5-popup.hxx \
+	sh/xdg-v5-shell.cxx \
+	sh/xdg-v5-shell.hxx \
+	sh/xdg-v5-surface.cxx \
+	sh/xdg-v5-surface.hxx \
+	sh/xdg-v6-popup.cxx \
+	sh/xdg-v6-popup.hxx \
+	sh/xdg-v6-positioner.cxx \
+	sh/xdg-v6-positioner.hxx \
+	sh/xdg-v6-shell.cxx \
+	sh/xdg-v6-shell.hxx \
+	sh/xdg-v6-surface.cxx \
+	sh/xdg-v6-surface.hxx \
+	sh/xdg-v6-toplevel.cxx \
+	sh/xdg-v6-toplevel.hxx \
 	meta/meta-surface-actor-wayland.cxx \
 	meta/meta-surface-actor-wayland.hxx \
 	meta/clutter-utils.c \
@@ -172,12 +198,6 @@ page_compositor_SOURCES = \
 	wl/wl-subcompositor.hxx \
 	wl/wl-subsurface.cxx \
 	wl/wl-subsurface.hxx \
-	sh/xdg-v5-shell.cxx \
-	sh/xdg-v5-shell.hxx \
-	sh/xdg-v5-surface.cxx \
-	sh/xdg-v5-surface.hxx \
-	sh/xdg-v5-popup.cxx \
-	sh/xdg-v5-popup.hxx \
 	libpage/page-core.cxx \
 	libpage/page-core.hxx \
 	libpage/page-seat.cxx \
@@ -198,10 +218,6 @@ page_compositor_SOURCES = \
 	libpage/page-default-keyboard-grab.hxx \
 	libpage/page-keyboard-grab.cxx \
 	libpage/page-keyboard-grab.hxx \
-	libpage/utils.cxx \
-	libpage/utils.hxx \
-	libpage/config_handler.cxx \
-	libpage/congig_handler.hxx \
 	wayland-interface.cxx \
 	wayland-interface.hxx \
 	xdg-shell-unstable-v5-interface.cxx \

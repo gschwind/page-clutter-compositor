@@ -13,7 +13,7 @@
 #include <memory>
 
 #include "tree.hxx"
-#include "libpage/utils.hxx"
+#include "utils/utils.hxx"
 #include "renderable.hxx"
 #include "mainloop.hxx"
 

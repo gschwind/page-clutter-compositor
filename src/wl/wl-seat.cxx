@@ -20,7 +20,7 @@
 
 #include "wl-seat.hxx"
 
-#include "libpage/utils.hxx"
+#include "utils/utils.hxx"
 
 #include "wl-pointer.hxx"
 #include "wl-keyboard.hxx"

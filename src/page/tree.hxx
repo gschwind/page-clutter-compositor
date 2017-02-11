@@ -17,7 +17,7 @@
 #include <clutter/clutter.h>
 
 #include "libpage/page-types.hxx"
-#include "libpage/utils.hxx"
+#include "utils/utils.hxx"
 #include "renderable.hxx"
 #include "time.hxx"
 #include "transition.hxx"

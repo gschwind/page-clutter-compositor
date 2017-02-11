@@ -14,7 +14,7 @@
 
 #include "renderable_floating_outer_gradien.hxx"
 #include "notebook.hxx"
-#include "libpage/utils.hxx"
+#include "utils/utils.hxx"
 #include "grab_handlers.hxx"
 
 namespace page {
