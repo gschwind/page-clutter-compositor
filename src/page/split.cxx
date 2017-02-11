@@ -15,6 +15,10 @@
 #include "split.hxx"
 #include "grab_handlers.hxx"
 
+#include "core/page-seat.hxx"
+#include "core/page-pointer.hxx"
+
+
 namespace page {
 
 using namespace std;
@@ -266,29 +270,25 @@ void split_t::append_children(vector<shared_ptr<tree_t>> & out) const {
 	out.insert(out.end(), _children.begin(), _children.end());
 }
 
-bool split_t::button(page_pointer_grab * pointer, ClutterEvent const & event) {
-//	auto pointer = grab->pointer;
-//
+bool split_t::button(page_pointer_grab * g, ClutterEvent const & event) {
+	auto pointer = _ctx->seat->pointer;
+
 //	if (pointer->focus != get_parent_default_view()) {
 //		return false;
 //	}
-//
-//	printf("button = %d\n", button);
-//
-//	wl_fixed_t vx, vy;
-//
-//	weston_view_from_global_fixed(pointer->focus, pointer->x,
-//			pointer->y, &vx, &vy);
-//
-//	double x = wl_fixed_to_double(vx);
-//	double y = wl_fixed_to_double(vy);
-//
-//	if (button == BTN_LEFT and _split_bar_area.is_inside(x, y)) {
-//		_ctx->grab_start(pointer, new grab_split_t { _ctx, shared_from_this() });
-//		return true;
-//	} else {
-//		return false;
-//	}
+
+	int32_t button = page_pointer::get_x11_button(event);
+
+	double x = pointer->x;
+	double y = pointer->y;
+	printf("button = %d (%f,%f)\n", button, x, y);
+
+	if (button == BTN_LEFT and _split_bar_area.is_inside(x, y)) {
+		pointer->start_grab(make_shared<grab_split_t>( _ctx, shared_from_this()));
+		return true;
+	} else {
+		return false;
+	}
 }
 
 shared_ptr<split_t> split_t::shared_from_this() {

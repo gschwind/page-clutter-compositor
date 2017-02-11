@@ -90,67 +90,61 @@ grab_split_t::~grab_split_t() {
 
 void grab_split_t::motion(ClutterEvent const & event) {
 
-	/** update pointer position **/
-	//TODO
-	//weston_pointer_move(pointer, event);
+	auto pointer = _ctx->seat->pointer;
 
-//	if(_split.expired()) {
-//		_ctx->grab_stop(pointer);
-//		return;
-//	}
+	if(_split.expired()) {
+		pointer->stop_grab();
+		return;
+	}
 
 	/** current global position **/
-//	double x = wl_fixed_to_double(pointer->x);
-//	double y = wl_fixed_to_double(pointer->y);
-//
-//	if (_split.lock()->type() == VERTICAL_SPLIT) {
-//		_split_ratio = (x - _split_root_allocation.x) / _split_root_allocation.w;
-//	} else {
-//		_split_ratio = (y - _split_root_allocation.y) / _split_root_allocation.h;
-//	}
-//
-//	_split_ratio = _split.lock()->compute_split_constaint(_split_ratio);
-//
-//	//_ps->set_position(_split_ratio);
+	double x = pointer->x;
+	double y = pointer->y;
+
+	if (_split.lock()->type() == VERTICAL_SPLIT) {
+		_split_ratio = (x - _split_root_allocation.x) / _split_root_allocation.w;
+	} else {
+		_split_ratio = (y - _split_root_allocation.y) / _split_root_allocation.h;
+	}
+
+	_split_ratio = _split.lock()->compute_split_constaint(_split_ratio);
+
+	//_ps->set_position(_split_ratio);
 }
 
 void grab_split_t::button(ClutterEvent const & event) {
-//	auto pointer = base.grab.pointer;
-//
-//	if(_split.expired()) {
-//		_ctx->grab_stop(pointer);
-//		return;
-//	}
-//
-//	double x = wl_fixed_to_double(pointer->x);
-//	double y = wl_fixed_to_double(pointer->y);
-//
-//	if (pointer->button_count == 0
-//			and state == WL_POINTER_BUTTON_STATE_RELEASED) {
-//
-//		if (_split.lock()->type() == VERTICAL_SPLIT) {
-//			_split_ratio = (x - _split_root_allocation.x)
-//					/ (double) (_split_root_allocation.w);
-//		} else {
-//			_split_ratio = (y - _split_root_allocation.y)
-//					/ (double) (_split_root_allocation.h);
-//		}
-//
-//		if (_split_ratio > 0.95)
-//			_split_ratio = 0.95;
-//		if (_split_ratio < 0.05)
-//			_split_ratio = 0.05;
-//
-//		_split_ratio = _split.lock()->compute_split_constaint(_split_ratio);
-//
-//		_split.lock()->queue_redraw();
-//		_split.lock()->set_split(_split_ratio);
-//
-//		_ctx->sync_tree_view();
-//		_ctx->grab_stop(pointer);
-//
-//	}
+	auto pointer = _ctx->seat->pointer;
 
+	if(_split.expired()) {
+		pointer->stop_grab();
+		return;
+	}
+
+	double x = pointer->x;
+	double y = pointer->y;
+
+	if (pointer->button_count == 0
+			and event.type == CLUTTER_BUTTON_RELEASE) {
+
+		if (_split.lock()->type() == VERTICAL_SPLIT) {
+			_split_ratio = (x - _split_root_allocation.x)
+					/ (double) (_split_root_allocation.w);
+		} else {
+			_split_ratio = (y - _split_root_allocation.y)
+					/ (double) (_split_root_allocation.h);
+		}
+
+		if (_split_ratio > 0.95)
+			_split_ratio = 0.95;
+		if (_split_ratio < 0.05)
+			_split_ratio = 0.05;
+
+		_split_ratio = _split.lock()->compute_split_constaint(_split_ratio);
+		_split.lock()->queue_redraw();
+		_split.lock()->set_split(_split_ratio);
+		_ctx->sync_tree_view();
+		pointer->stop_grab();
+	}
 }
 
 grab_bind_client_t::grab_bind_client_t(page_t * ctx,
@@ -175,40 +169,45 @@ grab_bind_client_t::~grab_bind_client_t() {
 
 void grab_bind_client_t::_find_target_notebook(int x, int y,
 		notebook_p & target, notebook_area_e & zone) {
-//
-//	target = nullptr;
-//	zone = NOTEBOOK_AREA_NONE;
-//
-//	/* place the popup */
-//	auto ln = filter_class<notebook_t>(
-//			ctx->get_current_workspace()->get_all_children());
-//	for (auto i : ln) {
-//		if (i->_area.tab.is_inside(x, y)) {
-//			zone = NOTEBOOK_AREA_TAB;
-//			target = i;
-//			break;
-//		} else if (i->_area.right.is_inside(x, y)) {
-//			zone = NOTEBOOK_AREA_RIGHT;
-//			target = i;
-//			break;
-//		} else if (i->_area.top.is_inside(x, y)) {
-//			zone = NOTEBOOK_AREA_TOP;
-//			target = i;
-//			break;
-//		} else if (i->_area.bottom.is_inside(x, y)) {
-//			zone = NOTEBOOK_AREA_BOTTOM;
-//			target = i;
-//			break;
-//		} else if (i->_area.left.is_inside(x, y)) {
-//			zone = NOTEBOOK_AREA_LEFT;
-//			target = i;
-//			break;
-//		} else if (i->_area.popup_center.is_inside(x, y)) {
-//			zone = NOTEBOOK_AREA_CENTER;
-//			target = i;
-//			break;
-//		}
-//	}
+
+	target = nullptr;
+	zone = NOTEBOOK_AREA_NONE;
+
+	/* place the popup */
+	auto ln = filter_class<notebook_t>(
+			_ctx->get_current_workspace()->get_all_children());
+	for (auto i : ln) {
+		if (i->_area.tab.is_inside(x, y)) {
+			zone = NOTEBOOK_AREA_TAB;
+			target = i;
+			break;
+		} else if (i->_area.right.is_inside(x, y)) {
+			zone = NOTEBOOK_AREA_RIGHT;
+			target = i;
+			break;
+		} else if (i->_area.top.is_inside(x, y)) {
+			zone = NOTEBOOK_AREA_TOP;
+			target = i;
+			break;
+		} else if (i->_area.bottom.is_inside(x, y)) {
+			zone = NOTEBOOK_AREA_BOTTOM;
+			target = i;
+			break;
+		} else if (i->_area.left.is_inside(x, y)) {
+			zone = NOTEBOOK_AREA_LEFT;
+			target = i;
+			break;
+		} else if (i->_area.popup_center.is_inside(x, y)) {
+			zone = NOTEBOOK_AREA_CENTER;
+			target = i;
+			break;
+		}
+	}
+}
+
+void grab_bind_client_t::focus(ClutterEvent const & event)
+{
+	/* disable */
 }
 
 void grab_bind_client_t::motion(ClutterEvent const & event)

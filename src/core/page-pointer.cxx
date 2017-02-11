@@ -66,17 +66,11 @@ page_pointer::~page_pointer() {
 auto page_pointer::pick_actor(ClutterEvent const * event) -> ClutterActor *
 {
 	ClutterActor *actor;
-
 	if (event)
 		actor = clutter_event_get_source(event);
 	else
 		actor = clutter_input_device_get_pointer_actor(device);
-
-	printf("actor = %p\n", actor);
-	printf("actor type = %s\n", g_type_name(G_TYPE_FROM_INSTANCE(actor)));
-
 	return actor;
-
 }
 
 /**
@@ -96,7 +90,7 @@ wl::wl_surface * page_pointer::pick_surface_actor(ClutterEvent const * event, wl
 	}
 
 	auto surface = meta_surface_actor_wayland_get_surface(META_SURFACE_ACTOR_WAYLAND(actor));
-	get_relative_coordinates(*surface, sx, sx);
+	get_relative_coordinates(*surface, sx, sy);
 	return surface;
 
 }
@@ -208,7 +202,7 @@ void page_pointer::set_focus(wl::wl_surface * surface, wl_fixed_t sx, wl_fixed_t
 		focus_surface = NULL;
 	}
 
-	if (surface != NULL) {
+	if (surface != nullptr) {
 		struct wl_client *client = wl_resource_get_client(surface->_self_resource);
 		struct wl_display *display = wl_client_get_display(client);
 		ClutterPoint pos;

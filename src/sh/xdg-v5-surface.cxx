@@ -29,6 +29,8 @@
 #include "wl/wl-surface.hxx"
 #include "wl/wl-seat.hxx"
 
+#include "page/view.hxx"
+
 namespace page {
 namespace sh {
 
@@ -112,14 +114,14 @@ void xdg_v5_surface::surface_commit(wl::wl_surface * es)
 
 	if(_pending.title != _current.title) {
 		_current.title = _pending.title;
-//		if(not _master_view.expired()) {
-//			_master_view.lock()->signal_title_change();
-//		}
+		if(not _master_view.expired()) {
+			_master_view.lock()->signal_title_change();
+		}
 	}
 
-//	if(not _master_view.expired()) {
-//		_master_view.lock()->update_view();
-//	}
+	if(not _master_view.expired()) {
+		_master_view.lock()->update_view();
+	}
 
 	_current = _pending;
 

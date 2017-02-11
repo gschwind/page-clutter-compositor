@@ -44,20 +44,27 @@ default_pointer_grab::~default_pointer_grab()
 void default_pointer_grab::focus(ClutterEvent const & event)
 {
 	auto pointer = _ctx->seat->pointer;
-	/* passive pointer grab, do not refocus */
+	/* when button is pressed, passive grab is active pointer grab, thus do not
+	 * refocus */
 	if(pointer->button_count > 0)
 		return;
 
-	wl_fixed_t sx, sy;
-	auto surface = pointer->pick_surface_actor(&event, sx, sy);
-	pointer->set_focus(surface, sx, sy);
-
+	auto actor = pointer->pick_actor(&event);
+	if(META_IS_SURFACE_ACTOR_WAYLAND(actor)) {
+		wl_fixed_t sx, sy;
+		auto surface = meta_surface_actor_wayland_get_surface(META_SURFACE_ACTOR_WAYLAND(actor));
+		pointer->get_relative_coordinates(*surface, sx, sx);
+		pointer->set_focus(surface, sx, sy);
+	} else {
+		pointer->set_focus(nullptr, -1, -1);
+	}
 }
 
 void default_pointer_grab::motion(ClutterEvent const & event)
 {
 	_ctx->seat->pointer->broadcast_motion(event);
-	_ctx->_root->broadcast_motion(this, event);
+	if(_ctx->seat->pointer->focus_surface == nullptr)
+		_ctx->_root->broadcast_motion(this, event);
 }
 
 void default_pointer_grab::button(ClutterEvent const & event)
@@ -65,12 +72,16 @@ void default_pointer_grab::button(ClutterEvent const & event)
 	auto pointer = _ctx->seat->pointer;
 	pointer->broadcast_button(event);
 
-	/* TODO: remove following because it must be set by the wm */
+	// click on given surface, will focus keyboard on it, if this is not
+	// already the case.
 	wl_fixed_t sx, sy;
 	auto surface = pointer->pick_surface_actor(&event, sx, sy);
 	if(surface)
 		pointer->seat->keyboard->set_focus(surface);
-	_ctx->_root->broadcast_button(this, event);
+
+	if(_ctx->seat->pointer->focus_surface == nullptr)
+		_ctx->_root->broadcast_button(this, event);
+
 }
 
 void default_pointer_grab::axis(ClutterEvent const & event)

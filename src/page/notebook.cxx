@@ -871,8 +871,8 @@ bool notebook_t::button(page_pointer_grab * grab, ClutterEvent const & event) {
 //	}
 
 	int button = page_pointer::get_x11_button(event);
-	double x = pointer->x - _allocation.x;
-	double y = pointer->y - _allocation.y;
+	double x = pointer->x;
+	double y = pointer->y;
 
 	printf("button = %x (%f,%f)\n", button, x, y);
 

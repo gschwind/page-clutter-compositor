@@ -341,6 +341,8 @@ void wl_surface::recv_set_buffer_scale(struct wl_client * client, struct wl_reso
 		return;
 	}
 
+
+	printf("buffer scale = %d\n", scale);
 	// TODO
 	//pending.buffer_viewport.buffer.scale = scale;
 	//pending.buffer_viewport.changed = 1;

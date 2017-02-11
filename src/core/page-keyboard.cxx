@@ -392,7 +392,7 @@ void page_keyboard::set_focus (wl::wl_surface * surface)
 	if (focus_surface == surface)
 		return;
 
-	if (focus_surface != NULL) {
+	if (focus_surface != nullptr) {
 		struct wl_client *client = wl_resource_get_client(focus_surface->_self_resource);
 		auto range = client_keyboards.equal_range(client);
 		if (range.first != range.second) {

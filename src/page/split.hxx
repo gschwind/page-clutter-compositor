@@ -88,7 +88,7 @@ public:
 
 	virtual void activate();
 	virtual void activate(shared_ptr<tree_t> t);
-	virtual bool button(page_pointer_grab * pointer, ClutterEvent const & event);
+	virtual bool button(page_pointer_grab * pointer, ClutterEvent const & event) override;
 	//virtual bool button_press(xcb_button_press_event_t const * ev);
 	//virtual bool button_release(xcb_button_release_event_t const * ev);
 	//virtual bool button_motion(xcb_motion_notify_event_t const * ev);

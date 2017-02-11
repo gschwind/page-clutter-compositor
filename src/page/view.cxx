@@ -97,10 +97,6 @@ void view_t::update_view() {
 			ratio = 1.0;
 		}
 
-		if(ratio != 1.0) {
-			clutter_actor_set_scale(get_default_view(), ratio, ratio);
-		}
-
 		printf("window scale = %f\n", ratio);
 
 		float x = floor(_wished_position.x + (_wished_position.w -
@@ -108,12 +104,15 @@ void view_t::update_view() {
 		float y = floor(_wished_position.y + (_wished_position.h -
 				_page_surface->height() * ratio)/2.0);
 
-		clutter_actor_set_pivot_point(get_default_view(), 0, 0);
+		clutter_actor_set_pivot_point(get_default_view(), 0.0, 0.0);
+		clutter_actor_save_easing_state(get_default_view());
+		clutter_actor_set_scale(get_default_view(), ratio, ratio);
 		clutter_actor_set_position(get_default_view(), x, y);
+		clutter_actor_restore_easing_state(get_default_view());
 
 	} else {
 		_wished_position = _floating_wished_position;
-
+		clutter_actor_set_scale(get_default_view(), 1.0, 1.0);
 		clutter_actor_set_pivot_point(get_default_view(), 0, 0);
 		clutter_actor_set_position(get_default_view(),
 				_wished_position.x, _wished_position.y);

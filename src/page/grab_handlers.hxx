@@ -94,7 +94,7 @@ public:
 
 	virtual ~grab_bind_client_t();
 
-	using default_pointer_grab::focus;
+	virtual void focus(ClutterEvent const & event) override;
 	virtual void motion(ClutterEvent const & event) override;
 	virtual void button(ClutterEvent const & event) override;
 	using default_pointer_grab::axis;
