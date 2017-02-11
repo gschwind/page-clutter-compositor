@@ -337,6 +337,7 @@ void page_t::run() {
 		new_layout.push_back(make_shared<viewport_t>(this, rect{0, 0, 1600, 1600}));
 		d->set_layout(new_layout);
 		d->update_default_pop();
+		d->broadcast_update_layout(time64_t{});
 	}
 
 	_global_wl_shell = wl_global_create(dpy, &wl_shell_interface, 1, this,
@@ -738,18 +739,6 @@ void page_t::toggle_fullscreen(view_p c) {
 		fullscreen(c);
 }
 
-
-//void page_t::process_event(xcb_generic_event_t const * e) {
-//	auto x = _event_handlers.find(e->response_type);
-//	if(x != _event_handlers.end()) {
-//		if(x->second != nullptr) {
-//			(this->*(x->second))(e);
-//		}
-//	} else {
-//		//std::cout << "not handled event: " << cnx->event_type_name[(e->response_type&(~0x80))] << (e->response_type&(0x80)?" (fake)":"") << std::endl;
-//	}
-//}
-
 void page_t::insert_window_in_notebook(view_p x, notebook_p n) {
 	assert(x != nullptr);
 	if (n == nullptr)
@@ -757,28 +746,6 @@ void page_t::insert_window_in_notebook(view_p x, notebook_p n) {
 	assert(n != nullptr);
 	n->add_client(x);
 }
-
-/* update viewport and childs allocation */
-//void page_t::update_workarea() {
-////	for (auto d : _root->_desktop_list) {
-////		for (auto v : d->get_viewports()) {
-////			compute_viewport_allocation(d, v);
-////		}
-////		d->set_workarea(d->primary_viewport()->allocation());
-////	}
-////
-////	std::vector<uint32_t> workarea_data(_root->_desktop_list.size()*4);
-////	for(unsigned k = 0; k < _root->_desktop_list.size(); ++k) {
-////		workarea_data[k*4+0] = _root->_desktop_list[k]->workarea().x;
-////		workarea_data[k*4+1] = _root->_desktop_list[k]->workarea().y;
-////		workarea_data[k*4+2] = _root->_desktop_list[k]->workarea().w;
-////		workarea_data[k*4+3] = _root->_desktop_list[k]->workarea().h;
-////	}
-////
-////	_dpy->change_property(_dpy->root(), _NET_WORKAREA, CARDINAL, 32,
-////			&workarea_data[0], workarea_data.size());
-//
-//}
 
 void page_t::set_keyboard_focus(page_seat * seat,
 		shared_ptr<view_t> new_focus) {
@@ -1482,6 +1449,7 @@ void page_t::sync_tree_view() {
 
 	for(auto actor: views) {
 		clutter_actor_add_child(_main_stage, actor);
+		clutter_actor_show(actor);
 	}
 
 	//schedule_repaint();

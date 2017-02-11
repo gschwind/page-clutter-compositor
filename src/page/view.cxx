@@ -83,47 +83,39 @@ auto view_t::shared_from_this() -> view_p {
 
 void view_t::update_view() {
 	printf("call %s\n", __PRETTY_FUNCTION__);
-//
-//	if (is(MANAGED_NOTEBOOK) or is(MANAGED_FULLSCREEN)) {
-//		_wished_position = _notebook_wished_position;
-//
-//		double ratio = compute_ratio_to_fit(_page_surface->width(),
-//				_page_surface->height(), _wished_position.w,
-//				_wished_position.h);
-//
-//		/* if ratio > 1.0 then do not scale, just center */
-//		if(ratio >= 1.0) {
-//			ratio = 1.0;
-//		}
-//
-//		if(_transform.link.next)
-//			wl_list_remove(&_transform.link);
-//
-//		if(ratio != 1.0) {
-//			weston_matrix_init(&_transform.matrix);
-//			weston_matrix_scale(&_transform.matrix, ratio, ratio, 1.0);
-//			wl_list_insert(&_default_view->geometry.transformation_list, &_transform.link);
-//		}
-//
-//		float x = floor(_wished_position.x + (_wished_position.w -
-//				_page_surface->width() * ratio)/2.0);
-//		float y = floor(_wished_position.y + (_wished_position.h -
-//				_page_surface->height() * ratio)/2.0);
-//
-//		weston_view_set_position(_default_view, x, y);
-//		weston_view_schedule_repaint(_default_view);
-//
-//	} else {
-//		_wished_position = _floating_wished_position;
-//
-//		if(_transform.link.next)
-//			wl_list_remove(&_transform.link);
-//
-//		weston_view_set_position(_default_view, _floating_wished_position.x,
-//				_floating_wished_position.y);
-//		weston_view_schedule_repaint(_default_view);
-//
-//	}
+
+	if (is(MANAGED_NOTEBOOK) or is(MANAGED_FULLSCREEN)) {
+		_wished_position = _notebook_wished_position;
+		printf("update position to match = %s\n", _wished_position.to_string().c_str());
+
+		double ratio = compute_ratio_to_fit(_page_surface->width(),
+				_page_surface->height(), _wished_position.w,
+				_wished_position.h);
+
+		/* if ratio > 1.0 then do not scale, just center */
+		if(ratio >= 1.0) {
+			ratio = 1.0;
+		}
+
+		if(ratio != 1.0) {
+			clutter_actor_set_scale(get_default_view(), ratio, ratio);
+		}
+
+		printf("window scale = %f\n", ratio);
+
+		float x = floor(_wished_position.x + (_wished_position.w -
+				_page_surface->width() * ratio)/2.0);
+		float y = floor(_wished_position.y + (_wished_position.h -
+				_page_surface->height() * ratio)/2.0);
+
+		clutter_actor_set_pivot_point(get_default_view(), 0, 0);
+		clutter_actor_set_position(get_default_view(), x-_page_surface->width()/2, y-_page_surface->height()/2);
+
+	} else {
+		_wished_position = _floating_wished_position;
+		clutter_actor_set_position(get_default_view(),
+				_floating_wished_position.x, _floating_wished_position.y);
+	}
 
 }
 

@@ -228,7 +228,16 @@ enum corner_mask_e : uint8_t {
 void cairo_rectangle_arc_corner(cairo_t * cr, double x, double y, double w, double h, double radius, uint8_t corner_mask);
 void cairo_rectangle_arc_corner(cairo_t * cr, rect const & position, double radius, uint8_t corner_mask);
 
-
+inline double compute_ratio_to_fit(double src_width, double src_height,
+		double target_width, double target_height) {
+	double x_ratio = target_width / src_width;
+	double y_ratio = target_height / src_height;
+	if (x_ratio < y_ratio) {
+		return x_ratio;
+	} else {
+		return y_ratio;
+	}
+}
 
 }
 

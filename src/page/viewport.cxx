@@ -16,32 +16,48 @@ namespace page {
 
 using namespace std;
 
+gboolean viewport_t::wrapper_draw_callback(ClutterCanvas *canvas, cairo_t *cr, int width,
+		int height, gpointer user_data)
+{
+	auto viewport = reinterpret_cast<viewport_t*>(user_data);
+	viewport->draw(cr, width, height);
+	return FALSE;
+}
+
 viewport_t::viewport_t(page_t * ctx, rect const & area) :
 		_ctx{ctx},
 		_raw_aera{area},
 		_effective_area{area},
 		_is_durty{true},
-		//_win{XCB_NONE},
-		_back_surf{nullptr},
 		_exposed{false},
 		_subtree{nullptr}
 {
 	_page_area = rect{0, 0, _effective_area.w, _effective_area.h};
-	create_window();
-
 	_subtree = make_shared<notebook_t>(_ctx);
 	_subtree->set_parent(this);
 	_subtree->set_allocation(_page_area);
 
-	_backbround_surface = nullptr;
-	_default_view = nullptr;
+	printf("viewport size = %s\n", _page_area.to_string().c_str());
+
+	_canvas = clutter_canvas_new();
+	clutter_canvas_set_size(CLUTTER_CANVAS(_canvas), _effective_area.w, _effective_area.h);
+
+	_default_view = clutter_actor_new();
+	clutter_actor_set_content(_default_view, _canvas);
+	clutter_actor_set_content_scaling_filters(_default_view,
+			CLUTTER_SCALING_FILTER_NEAREST, CLUTTER_SCALING_FILTER_NEAREST);
+	clutter_actor_set_reactive (_default_view, TRUE);
+	g_signal_connect(CLUTTER_CANVAS(_canvas), "draw",
+			G_CALLBACK(wrapper_draw_callback), this);
+	clutter_content_invalidate(_canvas);
+	clutter_actor_set_position(_default_view, _effective_area.x, _effective_area.y);
+	clutter_actor_set_size(_default_view, _effective_area.w, _effective_area.h);
 
 }
 
 viewport_t::~viewport_t() {
-	destroy_renderable();
-	//xcb_destroy_window(_ctx->dpy()->xcb(), _win);
-	//_win = XCB_NONE;
+	g_object_unref(_canvas);
+	g_object_unref(_default_view);
 }
 
 void viewport_t::replace(shared_ptr<page_component_t> src, shared_ptr<page_component_t> by) {
@@ -125,10 +141,7 @@ void viewport_t::hide() {
 	if(_subtree != nullptr) {
 		_subtree->hide();
 	}
-
 	_is_visible = false;
-	//_ctx->dpy()->unmap(_win);
-	destroy_renderable();
 }
 
 void viewport_t::show() {
@@ -140,10 +153,6 @@ void viewport_t::show() {
 	}
 }
 
-void viewport_t::destroy_renderable() {
-	_back_surf = nullptr;
-}
-
 void viewport_t::update_renderable() {
 //	if(_ctx->cmp() != nullptr) {
 //		_back_surf = make_shared<pixmap_t>(PIXMAP_RGB, _page_area.w, _page_area.h);
@@ -151,95 +160,8 @@ void viewport_t::update_renderable() {
 	//_ctx->dpy()->move_resize(_win, _effective_area);
 }
 
-void viewport_t::create_window() {
-//	_win = xcb_generate_id(_ctx->dpy()->xcb());
-//
-//	xcb_visualid_t visual = _ctx->dpy()->root_visual()->visual_id;
-//	int depth = _ctx->dpy()->root_depth();
-//
-//	/** if visual is 32 bits, this values are mandatory **/
-//	xcb_colormap_t cmap = xcb_generate_id(_ctx->dpy()->xcb());
-//	xcb_create_colormap(_ctx->dpy()->xcb(), XCB_COLORMAP_ALLOC_NONE, cmap, _ctx->dpy()->root(), visual);
-//
-//	uint32_t value_mask = 0;
-//	uint32_t value[5];
-//
-//	value_mask |= XCB_CW_BACK_PIXEL;
-//	value[0] = _ctx->dpy()->xcb_screen()->black_pixel;
-//
-//	value_mask |= XCB_CW_BORDER_PIXEL;
-//	value[1] = _ctx->dpy()->xcb_screen()->black_pixel;
-//
-//	value_mask |= XCB_CW_OVERRIDE_REDIRECT;
-//	value[2] = True;
-//
-//	value_mask |= XCB_CW_EVENT_MASK;
-//	value[3] = XCB_EVENT_MASK_EXPOSURE | XCB_EVENT_MASK_POINTER_MOTION | XCB_EVENT_MASK_LEAVE_WINDOW;
-//
-//	value_mask |= XCB_CW_COLORMAP;
-//	value[4] = cmap;
-//
-//	_win = xcb_generate_id(_ctx->dpy()->xcb());
-//	xcb_create_window(_ctx->dpy()->xcb(), depth, _win, _ctx->dpy()->root(), _effective_area.x, _effective_area.y, _effective_area.w, _effective_area.h, 0, XCB_WINDOW_CLASS_INPUT_OUTPUT, visual, value_mask, value);
-//
-//	_ctx->dpy()->set_window_cursor(_win, _ctx->dpy()->xc_left_ptr);
-//
-//	/**
-//	 * This grab will freeze input for all client, all mouse button, until
-//	 * we choose what to do with them with XAllowEvents. we can choose to keep
-//	 * grabbing events or release event and allow further processing by other clients.
-//	 **/
-//	xcb_grab_button(_ctx->dpy()->xcb(), false, _win,
-//			DEFAULT_BUTTON_EVENT_MASK,
-//			XCB_GRAB_MODE_SYNC,
-//			XCB_GRAB_MODE_ASYNC,
-//			XCB_NONE,
-//			XCB_NONE,
-//			XCB_BUTTON_INDEX_ANY,
-//			XCB_MOD_MASK_ANY);
-
-}
-
 void viewport_t::_redraw_back_buffer() {
-	//printf("call %s\n", __PRETTY_FUNCTION__);
-//
-//	if(not _is_durty)
-//		return;
-//
-//	cairo_t * cr = cairo_create(_pix->get_cairo_surface());
-//	if(cairo_status(cr)) {
-//		printf("XXX %s\n", cairo_status_to_string(cairo_status(cr)));
-//	}
-//	cairo_identity_matrix(cr);
-//	if(cairo_status(cr)) {
-//		printf("XXX %s\n", cairo_status_to_string(cairo_status(cr)));
-//	}
-//
-//	cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
-//	cairo_paint(cr);
-//
-//	auto splits = filter_class<split_t>(get_all_children());
-//	for (auto x : splits) {
-//		x->render_legacy(cr);
-//	}
-//
-//	auto notebooks = filter_class<notebook_t>(get_all_children());
-//	for (auto x : notebooks) {
-//		x->render_legacy(cr);
-//	}
-//
-//	cairo_surface_flush(_pix->get_cairo_surface());
-//	warn(cairo_get_reference_count(cr) == 1);
-//	cairo_destroy(cr);
-//
-//	_is_durty = false;
-//	_exposed = true;
-//	_damaged += _effective_area;
-//
-//	(*_ctx->ec->renderer->attach)(_backbround_surface, _pix->wbuffer());
-//	weston_surface_damage(_pix->wsurface());
-//	(*_ctx->ec->renderer->flush_damage)(_backbround_surface);
-
+	clutter_content_invalidate(CLUTTER_CONTENT(_default_view));
 }
 
 void viewport_t::trigger_redraw() {
@@ -305,24 +227,33 @@ auto viewport_t::get_opaque_region() -> region {
 	return region{_effective_area};
 }
 
-void viewport_t::render(cairo_t * cr, region const & area) {
-	if(not _is_visible)
-		return;
-	if(_back_surf == nullptr)
-		return;
-	if(_back_surf == nullptr)
+void viewport_t::draw(cairo_t * cr, int width, int height) {
+	printf("call %s\n", __PRETTY_FUNCTION__);
+
+	if(not _is_durty)
 		return;
 
 	cairo_save(cr);
-	cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE);
-	cairo_set_source_surface(cr, _back_surf,
-			_effective_area.x, _effective_area.y);
-	region r = region{_effective_area} & area;
-	for (auto &i : r.rects()) {
-		cairo_clip(cr, i);
-		cairo_mask_surface(cr, _back_surf, _effective_area.x, _effective_area.y);
+	cairo_identity_matrix(cr);
+	cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+	cairo_paint(cr);
+
+	auto splits = filter_class<split_t>(get_all_children());
+	for (auto x : splits) {
+		x->render_legacy(cr);
 	}
+
+	auto notebooks = filter_class<notebook_t>(get_all_children());
+	for (auto x : notebooks) {
+		x->render_legacy(cr);
+	}
+
 	cairo_restore(cr);
+
+	_is_durty = false;
+	_exposed = true;
+	_damaged += _effective_area;
+
 }
 
 void viewport_t::get_min_allocation(int & width, int & height) const {

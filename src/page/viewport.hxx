@@ -35,9 +35,6 @@ class viewport_t: public page_component_t {
 	bool _is_durty;
 	bool _exposed;
 
-	/** rendering tabs is time consuming, thus use back buffer **/
-	cairo_surface_t * _back_surf;
-
 	slot _pix_on_ack_buffer;
 
 	/** area without considering dock windows **/
@@ -50,8 +47,7 @@ class viewport_t: public page_component_t {
 
 	shared_ptr<page_component_t> _subtree;
 
-	//weston_output * _output;
-	cairo_surface_t * _backbround_surface;
+	ClutterContent * _canvas;
 	ClutterActor * _default_view;
 
 	viewport_t(viewport_t const & v) = delete;
@@ -66,6 +62,8 @@ class viewport_t: public page_component_t {
 	void create_window();
 	void _redraw_back_buffer();
 	void paint_expose();
+	void draw(cairo_t * cr, int width, int height);
+	static gboolean wrapper_draw_callback(ClutterCanvas *canvas, cairo_t *cr, int width, int height, gpointer user_data);
 
 public:
 
@@ -86,7 +84,7 @@ public:
 
 	virtual void append_children(vector<shared_ptr<tree_t>> & out) const;
 	virtual void update_layout(time64_t const time);
-	virtual void render(cairo_t * cr, region const & area);
+	//virtual void render(cairo_t * cr, region const & area);
 	virtual void render_finished();
 
 	virtual auto get_opaque_region() -> region;

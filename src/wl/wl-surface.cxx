@@ -132,6 +132,8 @@ void wl_surface::commit_state(wl_surface_state & state) {
 					state.damage_surface = cairo_region_create();
 				}
 			}
+			width = buffer->width();
+			height = buffer->height();
 		}
 	}
 
