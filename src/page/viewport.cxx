@@ -35,9 +35,6 @@ viewport_t::viewport_t(page_t * ctx, rect const & area) :
 	_page_area = rect{0, 0, _effective_area.w, _effective_area.h};
 	_subtree = make_shared<notebook_t>(_ctx);
 	_subtree->set_parent(this);
-	_subtree->set_allocation(_page_area);
-
-	printf("viewport size = %s\n", _page_area.to_string().c_str());
 
 	_canvas = clutter_canvas_new();
 	g_object_ref_sink(_canvas);
@@ -54,6 +51,9 @@ viewport_t::viewport_t(page_t * ctx, rect const & area) :
 	clutter_content_invalidate(_canvas);
 	clutter_actor_set_position(_default_view, _effective_area.x, _effective_area.y);
 	clutter_actor_set_size(_default_view, _effective_area.w, _effective_area.h);
+
+	_subtree->set_allocation(_page_area);
+	printf("viewport size = %s\n", _page_area.to_string().c_str());
 
 }
 

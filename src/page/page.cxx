@@ -38,6 +38,8 @@
 #include <wayland-util.h>
 #include <linux/input.h>
 
+#include "xdg-shell-unstable-v5-interface.hxx"
+#include "xdg-shell-unstable-v6-interface.hxx"
 #include "xdg-shell-unstable-v5-server-protocol.h"
 #include "xdg-shell-unstable-v6-server-protocol.h"
 
@@ -78,10 +80,6 @@
 namespace page {
 
 using namespace wayland_cxx_wrapper;
-
-static void wrapper_bind_xdg_v5_shell(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
-	reinterpret_cast<page_t*>(data)->bind_xdg_v5_shell(client, version, id);
-}
 
 void page_t::bind_xdg_v5_shell(struct wl_client *client, uint32_t version, uint32_t id)
 {
@@ -139,8 +137,7 @@ void page_t::start_resize(surface_t * s, page_seat * seat, uint32_t serial, edge
 void page_t::bind_xdg_v5_shell(struct wl_client * client, void * data,
 				      uint32_t version, uint32_t id)
 {
-	page_t * ths = reinterpret_cast<page_t *>(data);
-	auto c = new sh::xdg_v5_shell(client, version, id, ths);
+	reinterpret_cast<page_t *>(data)->bind_xdg_v5_shell(client, version, id);
 }
 
 void page_t::bind_xdg_v6_shell(struct wl_client * client, void * data,
@@ -289,8 +286,6 @@ void page_t::init(int * argc, char *** argv)
 
 	configuration._fade_in_time = _conf.get_long("compositor", "fade_in_time");
 
-	wl_global_create(dpy, &xdg_shell_interface, xdg_shell_vtable::INTERFACE_VERSION, this, &wrapper_bind_xdg_v5_shell);
-
 	seat->pointer->set_default_grab(make_shared<default_pointer_grab>(this));
 
 }
@@ -342,7 +337,7 @@ void page_t::run() {
 
 	_global_wl_shell = wl_global_create(dpy, &wl_shell_interface, 1, this,
 			&page_t::bind_wl_shell);
-	_global_xdg_shell_v5 = wl_global_create(dpy, &xdg_shell_interface, 1, this,
+	_global_xdg_shell_v5 = wl_global_create(dpy, &xdg_shell_interface, xdg_shell_vtable::INTERFACE_VERSION, this,
 			&page_t::bind_xdg_v5_shell);
 	_global_xdg_shell_v6 = wl_global_create(dpy, &zxdg_shell_v6_interface, 1, this,
 			&page_t::bind_xdg_v6_shell);

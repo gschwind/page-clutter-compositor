@@ -65,7 +65,7 @@ xdg_v5_surface::~xdg_v5_surface()
 }
 
 xdg_v5_surface * xdg_v5_surface::get(struct wl_resource * r) {
-	return dynamic_cast<xdg_v5_surface *>(reinterpret_cast<xdg_surface_vtable*>(r));
+	return dynamic_cast<xdg_v5_surface *>(resource_get<xdg_surface_vtable>(r));
 }
 
 void xdg_v5_surface::surface_first_commit(wl::wl_surface * es)

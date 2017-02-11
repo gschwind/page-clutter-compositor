@@ -23,7 +23,7 @@ namespace wl {
 using namespace std;
 using namespace wayland_cxx_wrapper;
 
-struct wl_seat : private wl_seat_vtable {
+struct wl_seat : public wl_seat_vtable {
 	page_seat * seat;
 
 	list<shared_ptr<wl_pointer>> pointers;

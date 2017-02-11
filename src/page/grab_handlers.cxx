@@ -213,149 +213,151 @@ void grab_bind_client_t::_find_target_notebook(int x, int y,
 
 void grab_bind_client_t::motion(ClutterEvent const & event)
 {
-//	auto pointer = base.grab.pointer;
-//
-//	/** update pointer position **/
-//	weston_pointer_move(pointer, event);
-//
-//	/** current global position **/
-//	double x = wl_fixed_to_double(pointer->x);
-//	double y = wl_fixed_to_double(pointer->y);
-//
-//	/* do not start drag&drop for small move */
-////	if (not start_position.is_inside(x, y) and pn0 == nullptr) {
-////		pn0 = make_shared<popup_notebook0_t>(ctx);
-////		ctx->overlay_add(pn0);
-////		pn0->show();
-////	}
-//
-////	if (pn0 == nullptr)
-////		return;
-//
-//	notebook_p new_target;
-//	notebook_area_e new_zone;
-//	_find_target_notebook(x, y, new_target, new_zone);
-//
-//	if ((new_target != target_notebook.lock() or new_zone != zone)
-//			and new_zone != NOTEBOOK_AREA_NONE) {
-//		target_notebook = new_target;
-//		zone = new_zone;
-//		switch (zone) {
-//		case NOTEBOOK_AREA_TAB:
-//			//pn0->move_resize(new_target->_area.tab);
-//			break;
-//		case NOTEBOOK_AREA_RIGHT:
-//			//pn0->move_resize(new_target->_area.popup_right);
-//			break;
-//		case NOTEBOOK_AREA_TOP:
-//			//pn0->move_resize(new_target->_area.popup_top);
-//			break;
-//		case NOTEBOOK_AREA_BOTTOM:
-//			//pn0->move_resize(new_target->_area.popup_bottom);
-//			break;
-//		case NOTEBOOK_AREA_LEFT:
-//			//pn0->move_resize(new_target->_area.popup_left);
-//			break;
-//		case NOTEBOOK_AREA_CENTER:
-//			//pn0->move_resize(new_target->_area.popup_center);
-//			break;
-//		}
+	auto pointer = _ctx->seat->pointer;
+
+	if(c.expired()) {
+		pointer->stop_grab();
+		return;
+	}
+
+	/** current global position **/
+	double x = pointer->x;
+	double y = pointer->y;
+
+	/* do not start drag&drop for small move */
+//	if (not start_position.is_inside(x, y) and pn0 == nullptr) {
+//		pn0 = make_shared<popup_notebook0_t>(ctx);
+//		ctx->overlay_add(pn0);
+//		pn0->show();
 //	}
+
+//	if (pn0 == nullptr)
+//		return;
+
+	notebook_p new_target;
+	notebook_area_e new_zone;
+	_find_target_notebook(x, y, new_target, new_zone);
+
+	if ((new_target != target_notebook.lock() or new_zone != zone)
+			and new_zone != NOTEBOOK_AREA_NONE) {
+		target_notebook = new_target;
+		zone = new_zone;
+		switch (zone) {
+		case NOTEBOOK_AREA_TAB:
+			//pn0->move_resize(new_target->_area.tab);
+			break;
+		case NOTEBOOK_AREA_RIGHT:
+			//pn0->move_resize(new_target->_area.popup_right);
+			break;
+		case NOTEBOOK_AREA_TOP:
+			//pn0->move_resize(new_target->_area.popup_top);
+			break;
+		case NOTEBOOK_AREA_BOTTOM:
+			//pn0->move_resize(new_target->_area.popup_bottom);
+			break;
+		case NOTEBOOK_AREA_LEFT:
+			//pn0->move_resize(new_target->_area.popup_left);
+			break;
+		case NOTEBOOK_AREA_CENTER:
+			//pn0->move_resize(new_target->_area.popup_center);
+			break;
+		}
+	}
 }
 
 void grab_bind_client_t::button(ClutterEvent const & event)
 {
-//	auto pointer = base.grab.pointer;
-//
-//	if(c.expired()) {
-//		ctx->grab_stop(pointer);
-//		return;
-//	}
-//
-//	double x = wl_fixed_to_double(pointer->x);
-//	double y = wl_fixed_to_double(pointer->y);
-//
-//	auto c = this->c.lock();
-//
-//	if (pointer->button_count == 0
-//			and state == WL_POINTER_BUTTON_STATE_RELEASED) {
-//
-//		notebook_p new_target;
-//		notebook_area_e new_zone;
-//		_find_target_notebook(x, y, new_target, new_zone);
-//
-//		/* if the mouse is no where, keep old location */
-//		if((new_target == nullptr or new_zone == NOTEBOOK_AREA_NONE) and not target_notebook.expired()) {
-//			new_zone = zone;
-//			new_target = target_notebook.lock();
-//		}
-//
-//		if(new_target == nullptr or new_zone == NOTEBOOK_AREA_NONE
-//				or start_position.is_inside(x, y)) {
-//			if(c->is(MANAGED_FLOATING)) {
-//				ctx->detach(c);
-//				ctx->insert_window_in_notebook(c, nullptr);
-//			}
-//
-//			ctx->set_keyboard_focus(pointer->seat, c);
-//			ctx->sync_tree_view();
-//			ctx->grab_stop(pointer);
-//			return;
-//		}
-//
-//		switch(zone) {
-//		case NOTEBOOK_AREA_TAB:
-//		case NOTEBOOK_AREA_CENTER:
-//			if(new_target != c->parent()->shared_from_this()) {
-//				new_target->queue_redraw();
-//				c->queue_redraw();
-//				ctx->detach(c);
-//				ctx->insert_window_in_notebook(c, new_target);
-//				ctx->set_keyboard_focus(pointer->seat, c);
-//			}
-//			break;
-//		case NOTEBOOK_AREA_TOP:
-//			ctx->split_top(new_target, c);
-//			c->activate();
-//			//ctx->set_focus(c, time);
-//			break;
-//		case NOTEBOOK_AREA_LEFT:
-//			ctx->split_left(new_target, c);
-//			c->activate();
-//			//ctx->set_focus(c, time);
-//			break;
-//		case NOTEBOOK_AREA_BOTTOM:
-//			ctx->split_bottom(new_target, c);
-//			c->activate();
-//			//ctx->set_focus(c, time);
-//			break;
-//		case NOTEBOOK_AREA_RIGHT:
-//			ctx->split_right(new_target, c);
-//			c->activate();
-//			//ctx->set_focus(c, time);
-//			break;
-//		default:
-//			if(c->parent() != nullptr and c->is(MANAGED_NOTEBOOK)) {
-//				if(ctx->conf()._enable_shade_windows) {
-//					if(c->is_visible()) {
-//						//ctx->set_focus(nullptr, time);
-//						dynamic_pointer_cast<notebook_t>(c->parent())->iconify_client(c);
-//					} else {
-//						cout << "activate = " << c << endl;
-//						c->activate();
-//						//ctx->set_focus(c, time);
-//					}
-//				} else {
-//					c->activate();
-//					//ctx->set_focus(c, time);
-//				}
-//			}
-//		}
-//
-//		ctx->sync_tree_view();
-//		ctx->grab_stop(pointer);
-//
-//	}
+	auto pointer = _ctx->seat->pointer;
+
+	if(c.expired()) {
+		pointer->stop_grab();
+		return;
+	}
+
+	double x = pointer->x;
+	double y = pointer->y;
+
+	auto c = this->c.lock();
+
+	if (pointer->button_count == 0
+			and event.type == CLUTTER_BUTTON_RELEASE) {
+
+		notebook_p new_target;
+		notebook_area_e new_zone;
+		_find_target_notebook(x, y, new_target, new_zone);
+
+		/* if the mouse is no where, keep old location */
+		if((new_target == nullptr or new_zone == NOTEBOOK_AREA_NONE) and not target_notebook.expired()) {
+			new_zone = zone;
+			new_target = target_notebook.lock();
+		}
+
+		if(new_target == nullptr or new_zone == NOTEBOOK_AREA_NONE
+				or start_position.is_inside(x, y)) {
+			if(c->is(MANAGED_FLOATING)) {
+				_ctx->detach(c);
+				_ctx->insert_window_in_notebook(c, nullptr);
+			}
+
+			_ctx->set_keyboard_focus(pointer->seat, c);
+			_ctx->sync_tree_view();
+			pointer->stop_grab();
+			return;
+		}
+
+		switch(zone) {
+		case NOTEBOOK_AREA_TAB:
+		case NOTEBOOK_AREA_CENTER:
+			if(new_target != c->parent()->shared_from_this()) {
+				new_target->queue_redraw();
+				c->queue_redraw();
+				_ctx->detach(c);
+				_ctx->insert_window_in_notebook(c, new_target);
+				_ctx->set_keyboard_focus(pointer->seat, c);
+			}
+			break;
+		case NOTEBOOK_AREA_TOP:
+			_ctx->split_top(new_target, c);
+			c->activate();
+			//ctx->set_focus(c, time);
+			break;
+		case NOTEBOOK_AREA_LEFT:
+			_ctx->split_left(new_target, c);
+			c->activate();
+			//ctx->set_focus(c, time);
+			break;
+		case NOTEBOOK_AREA_BOTTOM:
+			_ctx->split_bottom(new_target, c);
+			c->activate();
+			//ctx->set_focus(c, time);
+			break;
+		case NOTEBOOK_AREA_RIGHT:
+			_ctx->split_right(new_target, c);
+			c->activate();
+			//ctx->set_focus(c, time);
+			break;
+		default:
+			if(c->parent() != nullptr and c->is(MANAGED_NOTEBOOK)) {
+				if(_ctx->conf()._enable_shade_windows) {
+					if(c->is_visible()) {
+						//ctx->set_focus(nullptr, time);
+						dynamic_pointer_cast<notebook_t>(c->parent())->iconify_client(c);
+					} else {
+						cout << "activate = " << c << endl;
+						c->activate();
+						//ctx->set_focus(c, time);
+					}
+				} else {
+					c->activate();
+					//ctx->set_focus(c, time);
+				}
+			}
+		}
+
+		_ctx->sync_tree_view();
+		pointer->stop_grab();
+
+	}
 }
 
 
