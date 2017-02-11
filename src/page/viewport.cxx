@@ -40,9 +40,11 @@ viewport_t::viewport_t(page_t * ctx, rect const & area) :
 	printf("viewport size = %s\n", _page_area.to_string().c_str());
 
 	_canvas = clutter_canvas_new();
+	g_object_ref_sink(_canvas);
 	clutter_canvas_set_size(CLUTTER_CANVAS(_canvas), _effective_area.w, _effective_area.h);
 
 	_default_view = clutter_actor_new();
+	g_object_ref_sink(_default_view);
 	clutter_actor_set_content(_default_view, _canvas);
 	clutter_actor_set_content_scaling_filters(_default_view,
 			CLUTTER_SCALING_FILTER_NEAREST, CLUTTER_SCALING_FILTER_NEAREST);

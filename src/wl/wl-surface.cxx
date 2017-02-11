@@ -48,6 +48,7 @@ wl_surface::wl_surface(wl_compositor * compositor, struct wl_client *client, uin
 	/* NOTE: following the source of clutter surface is not used by clutter,
 	 * this is just user data that can be retrieved by 	clutter_wayland_stage_get_wl_surface() */
 	actor = meta_surface_actor_wayland_new(this);
+	g_object_ref_sink(actor);
 
 	/* If the surface isn't reactive, not event are generated for that surface
 	 * and pointer go trough them  */
@@ -59,7 +60,7 @@ wl_surface::wl_surface(wl_compositor * compositor, struct wl_client *client, uin
 }
 
 wl_surface::~wl_surface() {
-	// TODO Auto-generated destructor stub
+	g_object_unref(actor);
 }
 
 wl_surface * wl_surface::get(struct wl_resource *r) {
