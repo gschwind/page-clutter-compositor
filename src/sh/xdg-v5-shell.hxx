@@ -21,6 +21,8 @@
 #ifndef SH_XDG_V5_SHELL_HXX_
 #define SH_XDG_V5_SHELL_HXX_
 
+#include <list>
+
 #include "xdg-shell-unstable-v5-interface.hxx"
 
 #include "sh-types.hxx"
@@ -31,21 +33,16 @@
 namespace page {
 namespace sh {
 
+using namespace std;
 using namespace wayland_cxx_wrapper;
 
 struct xdg_v5_shell : public xdg_shell_vtable {
-	page_core * core;
-
-	page_t * _ctx;
-
+	page_t * ctx;
 	wl_client * client;
-
-	/* resource created for xdg_shell */
-	wl_resource * xdg_shell_resource;
 
 	signal<xdg_v5_shell *> destroy;
 
-	xdg_v5_shell(struct wl_client *client, uint32_t version, uint32_t id, page_core * core);
+	xdg_v5_shell(struct wl_client *client, uint32_t version, uint32_t id, page_t * ctx);
 	virtual ~xdg_v5_shell();
 
 	/* xdg_shell_vtable */

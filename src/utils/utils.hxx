@@ -66,7 +66,6 @@ T * resource_get(struct wl_resource * r) {
 	return reinterpret_cast<T *>(wl_resource_get_user_data(r));
 }
 
-
 template <typename T>
 bool is_expired(weak_ptr<T> & x) {
 	return x.expired();

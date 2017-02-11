@@ -27,12 +27,11 @@
 namespace page {
 namespace sh {
 
-xdg_v5_shell::xdg_v5_shell(struct wl_client *client, uint32_t version, uint32_t id, page_core * core) :
+xdg_v5_shell::xdg_v5_shell(struct wl_client *client, uint32_t version, uint32_t id, page_t * ctx) :
 		xdg_shell_vtable{client, version, id},
-		core{core},
-		xdg_shell_resource{nullptr}
+		client{client},
+		ctx{ctx}
 {
-	// TODO Auto-generated constructor stub
 
 }
 
@@ -59,7 +58,7 @@ void xdg_v5_shell::recv_use_unstable_version(struct wl_client * client, struct w
 
 void xdg_v5_shell::recv_get_xdg_surface(struct wl_client * client, struct wl_resource * resource, uint32_t id, struct wl_resource * surface_resource)
 {
-
+	printf("call %s\n", __PRETTY_FUNCTION__);
 
 //	/* disable shared_ptr, they are managed by wl_resource */
 //	auto xdg_surface = new xdg_surface_toplevel_t(_ctx, client, surface, id);
@@ -70,8 +69,8 @@ void xdg_v5_shell::recv_get_xdg_surface(struct wl_client * client, struct wl_res
 //
 //	printf("exit %s\n", __PRETTY_FUNCTION__);
 //
-//	auto surface = wl::wl_surface::get(surface_resource);
-//	auto xdg = new xdg_v5_surface(client, wl_resource_get_version(resource), id, this, surface);
+	auto surface = wl::wl_surface::get(surface_resource);
+	auto xdg = new xdg_v5_surface(client, wl_resource_get_version(resource), id, this, surface);
 
 }
 

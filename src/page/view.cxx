@@ -16,6 +16,7 @@
 #include "notebook.hxx"
 #include "utils/utils.hxx"
 #include "grab_handlers.hxx"
+#include "wl/wl-surface.hxx"
 
 namespace page {
 
@@ -284,7 +285,7 @@ void view_t::signal_title_change() {
 }
 
 auto view_t::get_default_view() const -> ClutterActor * {
-	return _default_view;
+	return CLUTTER_ACTOR(_page_surface->surface()->actor);
 }
 
 auto view_t::surface() const -> wl::wl_surface * {

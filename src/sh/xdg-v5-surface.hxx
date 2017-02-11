@@ -41,14 +41,11 @@ namespace sh {
 using namespace std;
 using namespace wayland_cxx_wrapper;
 
-struct xdg_v5_surface : public xdg_surface_vtable, public surface_t {
+struct xdg_v5_surface : public xdg_surface_vtable, public surface_t, public connectable {
 	xdg_v5_shell * shell;
-
-	page_t *       _ctx;
 	wl_client *            _client;
 	wl::wl_surface *       _surface;
 	uint32_t               _id;
-	struct wl_resource *   _resource;
 	wl_listener            _surface_destroy;
 
 	friend class page::page_t;
@@ -85,6 +82,13 @@ struct xdg_v5_surface : public xdg_surface_vtable, public surface_t {
 
 	xdg_v5_surface(struct wl_client *client, uint32_t version, uint32_t id, xdg_v5_shell * shell, wl::wl_surface * surface);
 	virtual ~xdg_v5_surface();
+
+	static xdg_v5_surface * get(struct wl_resource * r);
+
+	void surface_first_commit(wl::wl_surface * s);
+	void surface_commit(wl::wl_surface * s);
+
+	edge_e edge_map(uint32_t edge);
 
 	/* xdg_surface_vtable */
 	virtual void recv_destroy(struct wl_client * client, struct wl_resource * resource) override;

@@ -23,6 +23,7 @@
 #include <wayland-server-core.h>
 #include <wayland-server-protocol.h>
 
+#include "utils/utils.hxx"
 #include "page-core.hxx"
 #include "page-pointer.hxx"
 #include "page-keyboard.hxx"

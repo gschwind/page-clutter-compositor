@@ -77,53 +77,62 @@
 
 namespace page {
 
-void page_t::destroy_surface(surface_t * s) {
-//	if(s->_master_view.expired())
-//		return;
-//
-//	if(_grab_handler and s->_has_popup_grab) {
-//		grab_stop(_grab_handler->base.grab.pointer);
-//	}
-//
-//	detach(s->_master_view.lock());
-//	assert(s->_master_view.expired());
-//	weston_compositor_damage_all(ec);
-//	sync_tree_view();
+using namespace wayland_cxx_wrapper;
+
+static void wrapper_bind_xdg_v5_shell(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
+	reinterpret_cast<page_t*>(data)->bind_xdg_v5_shell(client, version, id);
 }
 
-//void page_t::start_move(surface_t * s, page_seat * seat, uint32_t serial) {
-//	//printf("call %s\n", __PRETTY_FUNCTION__);
-//	if(s->_master_view.expired())
-//		return;
-//
-//	auto pointer = seat->pointer;
-//	double x = wl_fixed_to_double(pointer->x);
-//	double y = wl_fixed_to_double(pointer->y);
-//
-//	auto master_view = s->_master_view.lock();
-//	if(master_view->is(MANAGED_NOTEBOOK)) {
-//		grab_start(pointer, new grab_bind_client_t{this, master_view,
-//			BTN_LEFT, rect(x, y, 1, 1)});
-//	} else if(master_view->is(MANAGED_FLOATING)) {
-//		grab_start(pointer, new grab_floating_move_t(this, master_view,
-//			BTN_LEFT, x, y));
-//	}
-//}
+void page_t::bind_xdg_v5_shell(struct wl_client *client, uint32_t version, uint32_t id)
+{
+	new sh::xdg_v5_shell{client, version, id, this};
+}
 
-//void page_t::start_resize(surface_t * s, struct weston_seat * seat, uint32_t serial, edge_e edges) {
-//	if(s->_master_view.expired())
-//		return;
-//
-//	auto pointer = weston_seat_get_pointer(seat);
-//	double x = wl_fixed_to_double(pointer->x);
-//	double y = wl_fixed_to_double(pointer->y);
-//
-//	auto master_view = s->_master_view.lock();
-//	if(master_view->is(MANAGED_FLOATING)) {
-//		grab_start(pointer, new grab_floating_resize_t(this, master_view,
-//			BTN_LEFT, x, y, edges));
+void page_t::destroy_surface(surface_t * s) {
+	if(s->_master_view.expired())
+		return;
+
+//	if(_grab_handler and s->_has_popup_grab) {
+//		seat->pointer->grab_stop(_grab_handler->base.grab.pointer);
 //	}
-//}
+
+	detach(s->_master_view.lock());
+	assert(s->_master_view.expired());
+	//weston_compositor_damage_all(ec);
+	sync_tree_view();
+}
+
+void page_t::start_move(surface_t * s, page_seat * seat, uint32_t serial) {
+	//printf("call %s\n", __PRETTY_FUNCTION__);
+	if(s->_master_view.expired())
+		return;
+
+	auto pointer = seat->pointer;
+
+	gfloat x = pointer->x;
+	gfloat y = pointer->y;
+
+	auto master_view = s->_master_view.lock();
+	if(master_view->is(MANAGED_NOTEBOOK)) {
+		seat->pointer->start_grab(make_shared<grab_bind_client_t>(this, master_view, BTN_LEFT, rect(x, y, 1, 1)));
+	} else if(master_view->is(MANAGED_FLOATING)) {
+		seat->pointer->start_grab(make_shared<grab_floating_move_t>(this, master_view, BTN_LEFT, x, y));
+	}
+}
+
+void page_t::start_resize(surface_t * s, page_seat * seat, uint32_t serial, edge_e edges) {
+	if(s->_master_view.expired())
+		return;
+
+	auto pointer = seat->pointer;
+	double x = pointer->x;
+	double y = pointer->y;
+
+	auto master_view = s->_master_view.lock();
+	if(master_view->is(MANAGED_FLOATING)) {
+		pointer->start_grab(make_shared<grab_floating_resize_t>(this, master_view, BTN_LEFT, x, y, edges));
+	}
+}
 
 //time64_t const page_t::default_wait{1000000000L / 120L};
 
@@ -280,6 +289,9 @@ void page_t::init(int * argc, char *** argv)
 
 	configuration._fade_in_time = _conf.get_long("compositor", "fade_in_time");
 
+	wl_global_create(dpy, &xdg_shell_interface, xdg_shell_vtable::INTERFACE_VERSION, this, &wrapper_bind_xdg_v5_shell);
+
+	seat->pointer->set_default_grab(make_shared<default_pointer_grab>(this));
 
 }
 
@@ -301,6 +313,16 @@ void page_t::run() {
 
 	g_logfile = fopen(_conf.get_string("default", "log_file").c_str() ,"w");
 
+	/** Initialize theme **/
+	if(_theme_engine == "tiny") {
+		cout << "using tiny theme engine" << endl;
+		_theme = new tiny_theme_t{_conf};
+	} else {
+		/* The default theme engine */
+		cout << "using simple theme engine" << endl;
+		_theme = new simple2_theme_t{_conf};
+	}
+
 	/** initialize the empty desktop **/
 	_root = make_shared<page_root_t>(this);
 
@@ -310,17 +332,11 @@ void page_t::run() {
 		_root->_desktop_list.push_back(d);
 		_root->_desktop_stack->push_front(d);
 		d->hide();
-	}
 
-	/** Initialize theme **/
-
-	if(_theme_engine == "tiny") {
-		cout << "using tiny theme engine" << endl;
-		_theme = new tiny_theme_t{_conf};
-	} else {
-		/* The default theme engine */
-		cout << "using simple theme engine" << endl;
-		_theme = new simple2_theme_t{_conf};
+		vector<shared_ptr<viewport_t>> new_layout;
+		new_layout.push_back(make_shared<viewport_t>(this, rect{0, 0, 1600, 1600}));
+		d->set_layout(new_layout);
+		d->update_default_pop();
 	}
 
 	_global_wl_shell = wl_global_create(dpy, &wl_shell_interface, 1, this,
@@ -1214,12 +1230,12 @@ void page_t::manage_client(surface_t * s) {
 
 	/** case is notebook window **/
 
-//	if(s->_transient_for == nullptr) {
-//		bind_window(view);
-//	} else {
-//		insert_in_tree_using_transient_for(view);
-//	}
-//
+	if(s->_transient_for == nullptr) {
+		bind_window(view);
+	} else {
+		insert_in_tree_using_transient_for(view);
+	}
+
 //	weston_seat * seat;
 //	wl_list_for_each(seat, &ec->seat_list, link) {
 //		set_keyboard_focus(seat, view);
@@ -1448,40 +1464,27 @@ auto page_t::conf() const -> page_configuration_t const & {
  **/
 void page_t::sync_tree_view() {
 
-//	/* create the list of weston views */
-//	list<ClutterActor *> views;
-//	auto children = _root->get_all_children();
-//	printf("found %lu children\n", children.size());
-//	for(auto x: children) {
-//		auto v = x->get_default_view();
-//		if(v)
-//			views.push_back(v);
-//	}
-//
-//	//_root->print_tree(0);
-//
-//	printf("found %lu views\n", views.size());
-//
-//	/* remove all existing views */
-//	weston_layer_entry * nxt;
-//	weston_layer_entry * cur;
-//	wl_list_for_each_safe(cur, nxt, &default_layer.view_list.link, link) {
-//		ClutterActor * v = wl_container_of(cur, v, layer_link);
-//		weston_layer_entry_remove(&v->layer_link);
-//	}
-//
-//	for(auto v: views) {
-//		weston_layer_entry_insert(&default_layer.view_list, &v->layer_link);
-//		weston_view_geometry_dirty(v);
-//		weston_view_update_transform(v);
-//	}
-//
-//	wl_list_for_each_safe(cur, nxt, &default_layer.view_list.link, link) {
-//		ClutterActor * v = wl_container_of(cur, v, layer_link);
-//		printf("view=%p,output=%p,role='%s',surface=%p,x=%f,y=%f\n", v, v->output, weston_surface_get_role(v->surface), v->surface, v->geometry.x, v->geometry.y);
-//	}
-//
-//	schedule_repaint();
+	/* create the list of weston views */
+	list<ClutterActor *> views;
+	auto children = _root->get_all_children();
+	printf("found %lu children\n", children.size());
+	for(auto x: children) {
+		auto v = x->get_default_view();
+		if(v)
+			views.push_back(v);
+	}
+
+	clutter_actor_remove_all_children(_main_stage);
+
+	//_root->print_tree(0);
+
+	printf("found %lu views\n", views.size());
+
+	for(auto actor: views) {
+		clutter_actor_add_child(_main_stage, actor);
+	}
+
+	//schedule_repaint();
 
 }
 

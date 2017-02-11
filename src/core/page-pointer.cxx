@@ -20,6 +20,7 @@
 
 #include "page-pointer.hxx"
 
+#include <cassert>
 #include <algorithm>
 #include <linux/input.h>
 
@@ -39,12 +40,14 @@ page_pointer::page_pointer(page_seat * seat) :
 		focus_serial{0},
 		focus_surface{nullptr},
 		seat{seat},
-		button_count{0}
+		button_count{0},
+		x{0.0},
+		y{0.0}
 {
 	// TODO Auto-generated constructor stub
 
-	default_grab = new page_default_pointer_grab { this };
-	grab = default_grab;
+	default_grab = nullptr;
+	grab = nullptr;
 
 	auto manager = clutter_device_manager_get_default();
 	device = clutter_device_manager_get_core_device(manager, CLUTTER_POINTER_DEVICE);
@@ -52,7 +55,7 @@ page_pointer::page_pointer(page_seat * seat) :
 }
 
 page_pointer::~page_pointer() {
-	delete default_grab;
+
 }
 
 /**
@@ -148,6 +151,8 @@ void page_pointer::update_pointer_focus_for_event(ClutterEvent const & event)
 {
 	grab->focus(event);
 	button_count = count_buttons(event);
+
+	clutter_event_get_coords(&event, &x, &y);
 
 	//sync_focus_surface();
 	//meta_wayland_pointer_update_cursor_surface (pointer);
@@ -347,6 +352,24 @@ void page_pointer::broadcast_frame()
 	for(auto i = range.first; i != range.second; ++i) {
 		i->second->send_frame();
 	}
+}
+
+void page_pointer::set_default_grab(shared_ptr<page_pointer_grab> g)
+{
+	grab = g;
+	default_grab = g;
+}
+
+void page_pointer::start_grab(shared_ptr<page_pointer_grab> g)
+{
+	assert(grab == default_grab);
+	grab = g;
+}
+
+void page_pointer::stop_grab()
+{
+	assert(grab != default_grab);
+	grab = default_grab;
 }
 
 } /* namespace page */

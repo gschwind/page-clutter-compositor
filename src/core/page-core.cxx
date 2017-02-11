@@ -68,10 +68,6 @@ static void wrapper_bind_wl_shell(struct wl_client *client, void *data, uint32_t
 	reinterpret_cast<page_core*>(data)->bind_wl_shell(client, version, id);
 }
 
-static void wrapper_bind_xdg_v5_shell(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
-	reinterpret_cast<page_core*>(data)->bind_xdg_v5_shell(client, version, id);
-}
-
 static void wrapper_bind_wl_subcompositor(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
 	reinterpret_cast<page_core*>(data)->bind_wl_subcompositor(client, version, id);
 }
@@ -229,7 +225,6 @@ void page_core::wayland_init() {
 
 	/* TODO: should be moved to sh */
 	wl_global_create(dpy, &wl_shell_interface, wl_shell_vtable::INTERFACE_VERSION, this, &wrapper_bind_wl_shell);
-	wl_global_create(dpy, &xdg_shell_interface, xdg_shell_vtable::INTERFACE_VERSION, this, &wrapper_bind_xdg_v5_shell);
 
 	auto default_output = new page_output{this};
 	output_list.push_back(default_output);
@@ -360,11 +355,6 @@ void page_core::bind_wl_shell(struct wl_client *client, uint32_t version, uint32
 void page_core::bind_wl_subcompositor(struct wl_client *client, uint32_t version, uint32_t id)
 {
 	new wl::wl_subcompositor{client, version, id};
-}
-
-void page_core::bind_xdg_v5_shell(struct wl_client *client, uint32_t version, uint32_t id)
-{
-	new sh::xdg_v5_shell{client, version, id, this};
 }
 
 void page_core::after_stage_paint(ClutterStage * stage) {

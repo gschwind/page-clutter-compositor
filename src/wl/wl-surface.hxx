@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef SRC_SURFACE_HXX_
-#define SRC_SURFACE_HXX_
+#ifndef SRC_WL_WL_SURFACE_HXX_
+#define SRC_WL_WL_SURFACE_HXX_
 
 #include <cairo/cairo.h>
 #include <list>
@@ -58,6 +58,8 @@ struct wl_surface : public wl_surface_vtable {
 	 * if the list is not empty. */
 	list<wl_subsurface *> subsurface_list;
 	list<wl_subsurface *> subsurface_pending_list;
+
+	signal<wl_surface *> on_commit;
 
 //	struct wl_resource *resource;
 //	struct wl_signal destroy_signal; /* callback argument: this surface */
@@ -177,4 +179,4 @@ struct wl_surface : public wl_surface_vtable {
 }
 } /* namespace page */
 
-#endif /* SRC_SURFACE_HXX_ */
+#endif /* SRC_WL_WL_SURFACE_HXX_ */

@@ -308,6 +308,8 @@ void wl_surface::recv_commit(struct wl_client * client, struct wl_resource * res
 		commit_synchronized_state_recursively();
 	}
 
+	on_commit.emit(this);
+
 }
 
 void wl_surface::recv_set_buffer_transform(struct wl_client * client, struct wl_resource * resource, int32_t transform) {

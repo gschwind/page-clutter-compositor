@@ -116,6 +116,8 @@ struct page_t : public page_core, public connectable {
 	/* run page main loop */
 	void run();
 
+	void bind_xdg_v5_shell(struct wl_client *client, uint32_t version, uint32_t id);
+
 	void xdg_shell_v5_client_destroy(sh::xdg_v5_shell *);
 	void xdg_shell_v6_client_destroy(sh::xdg_v5_shell *);
 	void wl_shell_client_destroy(wl::wl_shell *);
@@ -368,8 +370,8 @@ struct page_t : public page_core, public connectable {
 	void configure_popup(surface_t * s);
 	void schedule_repaint();
 	void destroy_surface(surface_t * s);
-	//void start_move(surface_t * s, struct weston_seat *seat, uint32_t serial);
-	//void start_resize(surface_t * s, struct weston_seat * seat, uint32_t serial, edge_e edges);
+	void start_move(surface_t * s, page_seat * seat, uint32_t serial);
+	void start_resize(surface_t * s, page_seat * seat, uint32_t serial, edge_e edges);
 
 };
 

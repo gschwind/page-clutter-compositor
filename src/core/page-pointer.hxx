@@ -21,6 +21,7 @@
 #ifndef SRC_PAGE_POINTER_HXX_
 #define SRC_PAGE_POINTER_HXX_
 
+#include <memory>
 #include <list>
 #include <unordered_map>
 #include <wayland-server-core.h>
@@ -56,14 +57,14 @@ struct page_pointer {
 	//struct wl_listener sprite_destroy_listener;
 	//int32_t hotspot_x, hotspot_y;
 
-	page_pointer_grab * grab;
-	page_pointer_grab * default_grab;
+	shared_ptr<page_pointer_grab> grab;
+	shared_ptr<page_pointer_grab> default_grab;
 	//wl_fixed_t grab_x, grab_y;
 	//uint32_t grab_button;
 	//uint32_t grab_serial;
 	//uint32_t grab_time;
 
-	//wl_fixed_t x, y;
+	gfloat x, y;
 	//wl_fixed_t sx, sy;
 	uint32_t button_count;
 
@@ -90,6 +91,10 @@ struct page_pointer {
 	void broadcast_enter(uint32_t serial, wl::wl_surface * surface);
 	void broadcast_leave(uint32_t serial, wl::wl_surface * surface);
 	void broadcast_frame();
+
+	void set_default_grab(shared_ptr<page_pointer_grab> grab);
+	void start_grab(shared_ptr<page_pointer_grab> grab);
+	void stop_grab();
 
 };
 
