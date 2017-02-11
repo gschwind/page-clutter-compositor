@@ -74,6 +74,7 @@ page_compositor_SOURCES = \
 	page/default-pointer-grab.hxx \
 	page/dropdown_menu.cxx \
 	page/grab_handlers.cxx \
+	page/grab_handlers.hxx \
 	page/leak_checker.cxx \
 	page/page.cxx \
 	page/page_root.cxx \
@@ -88,7 +89,6 @@ page_compositor_SOURCES = \
 	page/dropdown_menu.hxx \
 	page/exception.hxx \
 	page/floating_event.hxx \
-	page/grab_handlers.hxx \
 	page/key_desc.hxx \
 	page/keymap.hxx \
 	page/leak_checker.hxx \

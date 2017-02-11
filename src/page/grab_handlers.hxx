@@ -64,13 +64,13 @@ public:
 
 	virtual ~grab_split_t();
 
-	virtual void focus(ClutterEvent const & event) override;
+	using default_pointer_grab::focus;
 	virtual void motion(ClutterEvent const & event) override;
 	virtual void button(ClutterEvent const & event) override;
-	virtual void axis(ClutterEvent const & event) override;
-	virtual void axis_source(uint32_t source) override;
-	virtual void frame() override;
-	virtual void cancel() override;
+	using default_pointer_grab::axis;
+	using default_pointer_grab::axis_source;
+	using default_pointer_grab::frame;
+	using default_pointer_grab::cancel;
 
 };
 
@@ -94,13 +94,13 @@ public:
 
 	virtual ~grab_bind_client_t();
 
-	virtual void focus(ClutterEvent const & event) override;
+	using default_pointer_grab::focus;
 	virtual void motion(ClutterEvent const & event) override;
 	virtual void button(ClutterEvent const & event) override;
-	virtual void axis(ClutterEvent const & event) override;
-	virtual void axis_source(uint32_t source) override;
-	virtual void frame() override;
-	virtual void cancel() override;
+	using default_pointer_grab::axis;
+	using default_pointer_grab::axis_source;
+	using default_pointer_grab::frame;
+	using default_pointer_grab::cancel;
 
 };
 
@@ -151,13 +151,13 @@ struct grab_floating_move_t : public default_pointer_grab {
 
 	virtual ~grab_floating_move_t();
 
-	virtual void focus(ClutterEvent const & event) override;
+	using default_pointer_grab::focus;
 	virtual void motion(ClutterEvent const & event) override;
 	virtual void button(ClutterEvent const & event) override;
-	virtual void axis(ClutterEvent const & event) override;
-	virtual void axis_source(uint32_t source) override;
-	virtual void frame() override;
-	virtual void cancel() override;
+	using default_pointer_grab::axis;
+	using default_pointer_grab::axis_source;
+	using default_pointer_grab::frame;
+	using default_pointer_grab::cancel;
 
 };
 
@@ -181,13 +181,13 @@ public:
 
 	virtual ~grab_floating_resize_t();
 
-	virtual void focus(ClutterEvent const & event) override;
+	using default_pointer_grab::focus;
 	virtual void motion(ClutterEvent const & event) override;
 	virtual void button(ClutterEvent const & event) override;
-	virtual void axis(ClutterEvent const & event) override;
-	virtual void axis_source(uint32_t source) override;
-	virtual void frame() override;
-	virtual void cancel() override;
+	using default_pointer_grab::axis;
+	using default_pointer_grab::axis_source;
+	using default_pointer_grab::frame;
+	using default_pointer_grab::cancel;
 
 };
 
@@ -204,13 +204,13 @@ public:
 
 	virtual ~grab_fullscreen_client_t();
 
-	virtual void focus(ClutterEvent const & event) override;
+	using default_pointer_grab::focus;
 	virtual void motion(ClutterEvent const & event) override;
 	virtual void button(ClutterEvent const & event) override;
-	virtual void axis(ClutterEvent const & event) override;
-	virtual void axis_source(uint32_t source) override;
-	virtual void frame() override;
-	virtual void cancel() override;
+	using default_pointer_grab::axis;
+	using default_pointer_grab::axis_source;
+	using default_pointer_grab::frame;
+	using default_pointer_grab::cancel;
 
 };
 
