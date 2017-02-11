@@ -198,26 +198,26 @@ page_compositor_SOURCES = \
 	wl/wl-subcompositor.hxx \
 	wl/wl-subsurface.cxx \
 	wl/wl-subsurface.hxx \
-	libpage/page-core.cxx \
-	libpage/page-core.hxx \
-	libpage/page-seat.cxx \
-	libpage/page-seat.hxx \
-	libpage/page-keyboard.cxx \
-	libpage/page-keyboard.hxx \
-	libpage/page-pointer.cxx \
-	libpage/page-pointer.hxx \
-	libpage/page-touch.cxx \
-	libpage/page-touch.hxx \
-	libpage/page-output.cxx \
-	libpage/page-output.hxx \
-	libpage/page-default-pointer-grab.cxx \
-	libpage/page-default-pointer-grab.hxx \
-	libpage/page-pointer-grab.cxx \
-	libpage/page-pointer-grab.hxx \
-	libpage/page-default-keyboard-grab.cxx \
-	libpage/page-default-keyboard-grab.hxx \
-	libpage/page-keyboard-grab.cxx \
-	libpage/page-keyboard-grab.hxx \
+	core/page-core.cxx \
+	core/page-core.hxx \
+	core/page-seat.cxx \
+	core/page-seat.hxx \
+	core/page-keyboard.cxx \
+	core/page-keyboard.hxx \
+	core/page-pointer.cxx \
+	core/page-pointer.hxx \
+	core/page-touch.cxx \
+	core/page-touch.hxx \
+	core/page-output.cxx \
+	core/page-output.hxx \
+	core/page-default-pointer-grab.cxx \
+	core/page-default-pointer-grab.hxx \
+	core/page-pointer-grab.cxx \
+	core/page-pointer-grab.hxx \
+	core/page-default-keyboard-grab.cxx \
+	core/page-default-keyboard-grab.hxx \
+	core/page-keyboard-grab.cxx \
+	core/page-keyboard-grab.hxx \
 	wayland-interface.cxx \
 	wayland-interface.hxx \
 	xdg-shell-unstable-v5-interface.cxx \

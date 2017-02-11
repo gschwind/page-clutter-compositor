@@ -29,7 +29,7 @@
 #include "sh/sh-types.hxx"
 
 
-#include "libpage/signals.hxx"
+#include "core/signals.hxx"
 #include "page/xpage-types.hxx"
 #include "page/page_context.hxx"
 

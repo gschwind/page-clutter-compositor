@@ -26,7 +26,7 @@
 #include "wl-keyboard.hxx"
 #include "wl-touch.hxx"
 
-#include "libpage/page-seat.hxx"
+#include "core/page-seat.hxx"
 
 
 namespace page {

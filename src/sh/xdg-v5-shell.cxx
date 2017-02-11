@@ -20,7 +20,7 @@
 
 #include "xdg-v5-shell.hxx"
 
-#include "libpage/page-core.hxx"
+#include "core/page-core.hxx"
 #include "sh/xdg-v5-surface.hxx"
 #include "wl/wl-surface.hxx"
 

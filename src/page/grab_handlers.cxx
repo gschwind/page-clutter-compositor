@@ -10,8 +10,8 @@
 #include "grab_handlers.hxx"
 #include "page_context.hxx"
 #include "view.hxx"
-#include "libpage/page-seat.hxx"
-#include "libpage/page-keyboard.hxx"
+#include "core/page-seat.hxx"
+#include "core/page-keyboard.hxx"
 
 namespace page {
 

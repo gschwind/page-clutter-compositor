@@ -21,7 +21,7 @@
 #ifndef SRC_PAGE_DEFAULT_KEYBOARD_GRAB_HXX_
 #define SRC_PAGE_DEFAULT_KEYBOARD_GRAB_HXX_
 
-#include "libpage/page-default-keyboard-grab.hxx"
+#include "core/page-default-keyboard-grab.hxx"
 
 namespace page {
 

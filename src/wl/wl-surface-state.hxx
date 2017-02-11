@@ -24,7 +24,7 @@
 #include <wayland-server-core.h>
 #include <cairo/cairo.h>
 #include <list>
-#include "libpage/signals.hxx"
+#include "core/signals.hxx"
 #include "wl/wl-types.hxx"
 
 namespace page {

@@ -23,7 +23,7 @@
 
 #include "xdg-shell-unstable-v6-interface.hxx"
 
-#include "libpage/page-types.hxx"
+#include "core/page-types.hxx"
 
 namespace page {
 namespace sh {

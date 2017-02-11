@@ -61,10 +61,10 @@
 #include "sh/xdg-v5-shell.hxx"
 #include "sh/xdg-v6-shell.hxx"
 
-#include "libpage/page-core.hxx"
-#include "libpage/page-keyboard.hxx"
-#include "libpage/page-pointer.hxx"
-#include "libpage/page-seat.hxx"
+#include "core/page-core.hxx"
+#include "core/page-keyboard.hxx"
+#include "core/page-pointer.hxx"
+#include "core/page-seat.hxx"
 
 /* ICCCM definition */
 #define _NET_WM_STATE_REMOVE 0

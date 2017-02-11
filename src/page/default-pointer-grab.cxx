@@ -20,15 +20,14 @@
 
 #include "default-pointer-grab.hxx"
 
-#include "libpage/page-pointer.hxx"
-#include "libpage/page-keyboard.hxx"
-#include "libpage/page-seat.hxx"
+#include "core/page-pointer.hxx"
+#include "core/page-keyboard.hxx"
+#include "core/page-seat.hxx"
 
 namespace page {
 
 default_pointer_grab::default_pointer_grab(page_context_t * ctx, page_pointer * pointer) :
-		_ctx{ctx},
-		pointer{pointer}
+		_ctx{ctx}
 {
 	// TODO Auto-generated constructor stub
 
@@ -41,6 +40,7 @@ default_pointer_grab::~default_pointer_grab()
 
 void default_pointer_grab::focus(ClutterEvent const & event)
 {
+	auto pointer = _ctx->seat->pointer;
 	/* passive pointer grab, do not refocus */
 	if(pointer->button_count > 0)
 		return;

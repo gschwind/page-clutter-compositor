@@ -26,7 +26,7 @@
 #include "sh-types.hxx"
 #include "wl/wl-types.hxx"
 
-#include "libpage/signals.hxx"
+#include "core/signals.hxx"
 #include "page/page_context.hxx"
 
 namespace page {

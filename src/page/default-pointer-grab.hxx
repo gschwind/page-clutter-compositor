@@ -21,7 +21,7 @@
 #ifndef SRC_PAGE_DEFAULT_POINTER_GRAB_HXX_
 #define SRC_PAGE_DEFAULT_POINTER_GRAB_HXX_
 
-#include "libpage/page-pointer-grab.hxx"
+#include "core/page-pointer-grab.hxx"
 #include "page_context.hxx"
 
 namespace page {

@@ -10,8 +10,8 @@
 
 #include <typeinfo>
 
-#include "libpage/page-pointer.hxx"
-#include "libpage/page-pointer-grab.hxx"
+#include "core/page-pointer.hxx"
+#include "core/page-pointer-grab.hxx"
 
 #include "tree-types.hxx"
 #include "theme_split.hxx"

@@ -8,7 +8,7 @@
 #ifndef SRC_GRAB_HANDLERS_HXX_
 #define SRC_GRAB_HANDLERS_HXX_
 
-#include "libpage/page-keyboard-grab.hxx"
+#include "core/page-keyboard-grab.hxx"
 
 #include "default-pointer-grab.hxx"
 

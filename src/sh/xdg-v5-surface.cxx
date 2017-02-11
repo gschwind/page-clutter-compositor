@@ -24,7 +24,7 @@
 
 #include "xdg-v5-shell.hxx"
 #include "page/page_context.hxx"
-#include "libpage/page-core.hxx"
+#include "core/page-core.hxx"
 
 #include "wl/wl-surface.hxx"
 

@@ -25,10 +25,10 @@
 
 #include "wl-types.hxx"
 #include "page/page_context.hxx"
-#include "libpage/page-types.hxx"
+#include "core/page-types.hxx"
 #include "wayland-interface.hxx"
 #include "page/xpage-types.hxx"
-#include "libpage/signals.hxx"
+#include "core/signals.hxx"
 
 namespace page {
 namespace wl {

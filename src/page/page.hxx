@@ -19,7 +19,7 @@
 #include <thread>
 
 #include "config.hxx"
-#include "libpage/page-core.hxx"
+#include "core/page-core.hxx"
 
 #include "time.hxx"
 
