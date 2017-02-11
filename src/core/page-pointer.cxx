@@ -124,6 +124,32 @@ int page_pointer::count_buttons(ClutterEvent const & event)
 	return count;
 }
 
+/* NOTE: this mapping is valid for x11 backend */
+int32_t page_pointer::get_x11_button(ClutterEvent const & event)
+{
+	int32_t button = clutter_event_get_button(&event);
+	switch (button) {
+	case 1:
+		button = BTN_LEFT;
+		break;
+
+		/* The evdev input right and middle button numbers are swapped
+		 relative to how Clutter numbers them */
+	case 2:
+		button = BTN_MIDDLE;
+		break;
+
+	case 3:
+		button = BTN_RIGHT;
+		break;
+
+	default:
+		button = button + (BTN_LEFT - 1) + 4;
+		break;
+	}
+	return button;
+}
+
 void page_pointer::handle_pointer_event(ClutterEvent const & event) {
 	update_pointer_focus_for_event(event);
 
@@ -257,26 +283,7 @@ void page_pointer::broadcast_button(ClutterEvent const & event)
 		else
 #endif
 		{
-			button = clutter_event_get_button(&event);
-			switch (button) {
-			case 1:
-				button = BTN_LEFT;
-				break;
-
-				/* The evdev input right and middle button numbers are swapped
-				 relative to how Clutter numbers them */
-			case 2:
-				button = BTN_MIDDLE;
-				break;
-
-			case 3:
-				button = BTN_RIGHT;
-				break;
-
-			default:
-				button = button + (BTN_LEFT - 1) + 4;
-				break;
-			}
+			button = get_x11_button(event);
 		}
 
 		time = clutter_event_get_time(&event);

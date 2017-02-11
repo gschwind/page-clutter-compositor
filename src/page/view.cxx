@@ -109,12 +109,14 @@ void view_t::update_view() {
 				_page_surface->height() * ratio)/2.0);
 
 		clutter_actor_set_pivot_point(get_default_view(), 0, 0);
-		clutter_actor_set_position(get_default_view(), x-_page_surface->width()/2, y-_page_surface->height()/2);
+		clutter_actor_set_position(get_default_view(), x, y);
 
 	} else {
 		_wished_position = _floating_wished_position;
+
+		clutter_actor_set_pivot_point(get_default_view(), 0, 0);
 		clutter_actor_set_position(get_default_view(),
-				_floating_wished_position.x, _floating_wished_position.y);
+				_wished_position.x, _wished_position.y);
 	}
 
 }

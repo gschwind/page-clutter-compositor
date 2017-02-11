@@ -864,115 +864,112 @@ void notebook_t::_stop_exposay() {
 }
 
 bool notebook_t::button(page_pointer_grab * grab, ClutterEvent const & event) {
-//
+	printf("call %s\n", __PRETTY_FUNCTION__);
+	auto pointer = _ctx->seat->pointer;
 //	if (pointer->focus != get_parent_default_view()) {
 //		return false;
 //	}
-//
-//	printf("button = %d\n", button);
-//
-//	wl_fixed_t vx, vy;
-//
-//	weston_view_from_global_fixed(pointer->focus, pointer->x,
-//			pointer->y, &vx, &vy);
-//
-//	double x = wl_fixed_to_double(vx);
-//	double y = wl_fixed_to_double(vy);
-//
-//	/* left click on page window */
-//	if (state == WL_POINTER_BUTTON_STATE_PRESSED and button == BTN_LEFT) {
-//		if (_area.button_close.is_inside(x, y)) {
-//			_ctx->notebook_close(shared_from_this());
-//			return true;
-//		} else if (_area.button_hsplit.is_inside(x, y)) {
-//			if(_can_hsplit)
-//				_ctx->split_bottom(shared_from_this(), nullptr);
-//			return true;
-//		} else if (_area.button_vsplit.is_inside(x, y)) {
-//			if(_can_vsplit)
-//				_ctx->split_right(shared_from_this(), nullptr);
-//			return true;
-//		} else if (_area.button_select.is_inside(x, y)) {
-//			_ctx->get_current_workspace()->set_default_pop(shared_from_this());
-//			return true;
-//		} else if (_area.button_exposay.is_inside(x, y)) {
-//			start_exposay();
-//			return true;
-//		} else if (_area.close_client.is_inside(x, y)) {
-//			if(_selected != nullptr)
-//				_selected->send_close();
-//			return true;
-//		} else if (_area.undck_client.is_inside(x, y)) {
-//			if (_selected != nullptr)
-//				_ctx->unbind_window(_selected);
-//			return true;
-//		} else if (_area.left_scroll_arrow.is_inside(x, y)) {
-//			_scroll_left(30);
-//			return true;
-//		} else if (_area.right_scroll_arrow.is_inside(x, y)) {
-//			_scroll_right(30);
-//			return true;
-//		} else {
+
+	int button = page_pointer::get_x11_button(event);
+	double x = pointer->x - _allocation.x;
+	double y = pointer->y - _allocation.y;
+
+	printf("button = %x (%f,%f)\n", button, x, y);
+
+	/* left click on page window */
+	if (event.type == CLUTTER_BUTTON_PRESS and button == BTN_LEFT) {
+		if (_area.button_close.is_inside(x, y)) {
+			_ctx->notebook_close(shared_from_this());
+			return true;
+		} else if (_area.button_hsplit.is_inside(x, y)) {
+			if(_can_hsplit)
+				_ctx->split_bottom(shared_from_this(), nullptr);
+			return true;
+		} else if (_area.button_vsplit.is_inside(x, y)) {
+			if(_can_vsplit)
+				_ctx->split_right(shared_from_this(), nullptr);
+			return true;
+		} else if (_area.button_select.is_inside(x, y)) {
+			_ctx->get_current_workspace()->set_default_pop(shared_from_this());
+			return true;
+		} else if (_area.button_exposay.is_inside(x, y)) {
+			start_exposay();
+			return true;
+		} else if (_area.close_client.is_inside(x, y)) {
+			if(_selected != nullptr)
+				_selected->send_close();
+			return true;
+		} else if (_area.undck_client.is_inside(x, y)) {
+			if (_selected != nullptr)
+				_ctx->unbind_window(_selected);
+			return true;
+		} else if (_area.left_scroll_arrow.is_inside(x, y)) {
+			_scroll_left(30);
+			return true;
+		} else if (_area.right_scroll_arrow.is_inside(x, y)) {
+			_scroll_right(30);
+			return true;
+		} else {
+			for(auto & i: _client_buttons) {
+				if(std::get<0>(i).is_inside(x, y)) {
+					auto c = std::get<1>(i).lock();
+					pointer->start_grab(make_shared<grab_bind_client_t>(_ctx, c, BTN_LEFT, to_root_position(std::get<0>(i))));
+					_mouse_over_reset();
+					return true;
+				}
+			}
+
+			for(auto & i: _exposay_buttons) {
+				if(std::get<0>(i).is_inside(x, y) and not std::get<1>(i).expired()) {
+					auto c = std::get<1>(i).lock();
+					pointer->start_grab(make_shared<grab_bind_client_t>(_ctx, c, BTN_LEFT, to_root_position(std::get<0>(i))));
+					return true;
+				}
+			}
+		}
+
+	/* rigth click on page */
+	} else if (event.type == CLUTTER_BUTTON_PRESS and button == BTN_RIGHT) {
+		if (_area.button_close.is_inside(x, y)) {
+
+		} else if (_area.button_hsplit.is_inside(x, y)) {
+
+		} else if (_area.button_vsplit.is_inside(x, y)) {
+
+		} else if (_area.button_select.is_inside(x, y)) {
+
+		} else if (_area.button_exposay.is_inside(x, y)) {
+
+		} else if (_area.close_client.is_inside(x, y)) {
+
+		} else if (_area.undck_client.is_inside(x, y)) {
+
+		} else {
 //			for(auto & i: _client_buttons) {
 //				if(std::get<0>(i).is_inside(x, y)) {
-//					auto c = std::get<1>(i).lock();
-//					_ctx->grab_start(pointer, new grab_bind_client_t{_ctx, c, BTN_LEFT, to_root_position(std::get<0>(i))});
-//					_mouse_over_reset();
+//					_start_client_menu(std::get<1>(i).lock(), e->detail, e->root_x, e->root_y);
 //					return true;
 //				}
 //			}
 //
 //			for(auto & i: _exposay_buttons) {
-//				if(std::get<0>(i).is_inside(x, y) and not std::get<1>(i).expired()) {
-//					auto c = std::get<1>(i).lock();
-//					_ctx->grab_start(pointer, new grab_bind_client_t{_ctx, c, BTN_LEFT, to_root_position(std::get<0>(i))});
+//				if(std::get<0>(i).is_inside(x, y)) {
+//					_start_client_menu(std::get<1>(i).lock(), e->detail, e->root_x, e->root_y);
 //					return true;
 //				}
 //			}
-//		}
-//
-//	/* rigth click on page */
-//	} else if (state == WL_POINTER_BUTTON_STATE_PRESSED and button == BTN_RIGHT) {
-//		if (_area.button_close.is_inside(x, y)) {
-//
-//		} else if (_area.button_hsplit.is_inside(x, y)) {
-//
-//		} else if (_area.button_vsplit.is_inside(x, y)) {
-//
-//		} else if (_area.button_select.is_inside(x, y)) {
-//
-//		} else if (_area.button_exposay.is_inside(x, y)) {
-//
-//		} else if (_area.close_client.is_inside(x, y)) {
-//
-//		} else if (_area.undck_client.is_inside(x, y)) {
-//
-//		} else {
-////			for(auto & i: _client_buttons) {
-////				if(std::get<0>(i).is_inside(x, y)) {
-////					_start_client_menu(std::get<1>(i).lock(), e->detail, e->root_x, e->root_y);
-////					return true;
-////				}
-////			}
-////
-////			for(auto & i: _exposay_buttons) {
-////				if(std::get<0>(i).is_inside(x, y)) {
-////					_start_client_menu(std::get<1>(i).lock(), e->detail, e->root_x, e->root_y);
-////					return true;
-////				}
-////			}
-//		}
-//	} else if (state == WL_POINTER_BUTTON_STATE_PRESSED and button == BTN_FORWARD) {
-//		if(_theme_client_tabs_area.is_inside(x, y)) {
-//			_scroll_left(15);
-//			return true;
-//		}
-//	} else if (state == WL_POINTER_BUTTON_STATE_PRESSED and button == BTN_BACK) {
-//		if(_theme_client_tabs_area.is_inside(x, y)) {
-//			_scroll_right(15);
-//			return true;
-//		}
-//	}
+		}
+	} else if (event.type == CLUTTER_BUTTON_PRESS and button == BTN_FORWARD) {
+		if(_theme_client_tabs_area.is_inside(x, y)) {
+			_scroll_left(15);
+			return true;
+		}
+	} else if (event.type == CLUTTER_BUTTON_PRESS and button == BTN_BACK) {
+		if(_theme_client_tabs_area.is_inside(x, y)) {
+			_scroll_right(15);
+			return true;
+		}
+	}
 
 	return false;
 
@@ -1370,6 +1367,7 @@ void notebook_t::_set_theme_tab_offset(int x) {
 
 void notebook_t::_schedule_repaint() {
 	_layout_is_durty = true;
+	update_layout();
 	queue_redraw();
 }
 

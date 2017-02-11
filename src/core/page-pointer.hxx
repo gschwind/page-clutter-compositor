@@ -77,6 +77,7 @@ struct page_pointer {
 	auto pick_surface_actor(ClutterEvent const * event, wl_fixed_t & sx, wl_fixed_t & sy) -> wl::wl_surface *;
 
 	static int count_buttons(ClutterEvent const & event);
+	static int32_t get_x11_button(ClutterEvent const & event);
 
 	void handle_pointer_event(ClutterEvent const & event);
 	void update_pointer_focus_for_event(ClutterEvent const & event);
