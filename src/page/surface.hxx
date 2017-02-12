@@ -32,7 +32,7 @@ struct surface_t {
 
 	/* data related to popup */
 	surface_t * _parent;
-	struct weston_seat * _seat;
+	page_seat * _seat;
 	uint32_t _serial;
 	int32_t _x_offset;
 	int32_t _y_offset;

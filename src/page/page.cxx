@@ -90,13 +90,16 @@ void page_t::destroy_surface(surface_t * s) {
 	if(s->_master_view.expired())
 		return;
 
-//	if(_grab_handler and s->_has_popup_grab) {
-//		seat->pointer->grab_stop(_grab_handler->base.grab.pointer);
-//	}
+	if(s->_has_popup_grab) {
+		seat->pointer->stop_grab();
+	}
+
+	if(seat->pointer->focus_surface == s->surface()) {
+		seat->pointer->set_focus(nullptr, -1, -1);
+	}
 
 	detach(s->_master_view.lock());
 	assert(s->_master_view.expired());
-	//weston_compositor_damage_all(ec);
 	sync_tree_view();
 }
 
@@ -1210,40 +1213,38 @@ void page_t::manage_client(surface_t * s) {
 }
 
 void page_t::manage_popup(surface_t * s) {
-//	printf("call %s %p\n", __PRETTY_FUNCTION__, this);
-//	assert(s->_parent != nullptr);
-//
-//	auto grab = dynamic_cast<grab_popup_t *>(_grab_handler);
-//
-//	/* starting popup while another grab is ongoing is wrong */
-//	if(s->_seat and _grab_handler and grab == nullptr)
-//		return;
-//
-//	auto parent_view = s->_parent->_master_view.lock();
-//
-//	if(parent_view != nullptr) {
-//		auto view = make_shared<view_t>(this, s);
-//		s->_master_view = view;
-//		printf("%s x=%d, y=%d\n", __PRETTY_FUNCTION__, s->_x_offset, s->_y_offset);
-//		parent_view->add_popup_child(view, s->_x_offset, s->_y_offset);
-//		sync_tree_view();
-//		if(s->_seat) {
-//			set_keyboard_focus(s->_seat, parent_view);
-//
-//			if(grab) {
-//				grab->_surface->_has_popup_grab = false;
-//				grab_stop(grab->base.grab.pointer);
-//			}
-//
-//			s->_has_popup_grab = true;
-//			grab_start(weston_seat_get_pointer(s->_seat), new grab_popup_t{this, s});
-//		}
-//	}
+	printf("call %s %p\n", __PRETTY_FUNCTION__, this);
+	assert(s->_parent != nullptr);
+
+	/* starting popup while another grab is ongoing is wrong */
+	if(seat->pointer->grab != seat->pointer->default_grab)
+		return;
+
+	auto parent_view = s->_parent->_master_view.lock();
+
+	if(parent_view != nullptr) {
+		auto view = make_shared<view_t>(this, s);
+		s->_master_view = view;
+		printf("%s x=%d, y=%d\n", __PRETTY_FUNCTION__, s->_x_offset, s->_y_offset);
+		parent_view->add_popup_child(view, s->_x_offset, s->_y_offset);
+		sync_tree_view();
+		if(s->_seat) {
+			set_keyboard_focus(s->_seat, parent_view);
+			s->_has_popup_grab = true;
+			seat->pointer->start_grab(make_shared<grab_popup_t>(this, s));
+		}
+		sync_tree_view();
+	}
 }
 
 void page_t::configure_popup(surface_t * s) {
 	printf("call %s %p\n", __PRETTY_FUNCTION__, this);
 	s->send_configure_popup(s->_x_offset, s->_y_offset, s->width(), s->height());
+}
+
+void page_t::schedule_repaint()
+{
+	clutter_actor_queue_redraw(_main_stage);
 }
 
 //void page_t::create_unmanaged_window(xcb_window_t w, xcb_atom_t type) {
@@ -1448,7 +1449,7 @@ void page_t::sync_tree_view() {
 		clutter_actor_show(actor);
 	}
 
-	//schedule_repaint();
+	schedule_repaint();
 
 }
 

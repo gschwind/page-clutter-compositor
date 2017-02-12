@@ -32,7 +32,7 @@ class view_t : public tree_t {
 	/** -- **/
 	rect _wished_position;
 
-	ClutterActor * _default_view;
+	rect _actual_position;
 
 	shared_ptr<tree_t> _transient_childdren;
 	shared_ptr<tree_t> _popups_childdren;

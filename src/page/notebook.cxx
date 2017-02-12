@@ -874,7 +874,7 @@ bool notebook_t::button(page_pointer_grab * grab, ClutterEvent const & event) {
 	double x = pointer->x;
 	double y = pointer->y;
 
-	printf("button = %x (%f,%f)\n", button, x, y);
+	printf("button = %x (%f,%f) %d\n", button, x, y, event.type);
 
 	/* left click on page window */
 	if (event.type == CLUTTER_BUTTON_PRESS and button == BTN_LEFT) {
@@ -919,13 +919,13 @@ bool notebook_t::button(page_pointer_grab * grab, ClutterEvent const & event) {
 				}
 			}
 
-			for(auto & i: _exposay_buttons) {
-				if(std::get<0>(i).is_inside(x, y) and not std::get<1>(i).expired()) {
-					auto c = std::get<1>(i).lock();
-					pointer->start_grab(make_shared<grab_bind_client_t>(_ctx, c, BTN_LEFT, to_root_position(std::get<0>(i))));
-					return true;
-				}
-			}
+//			for(auto & i: _exposay_buttons) {
+//				if(std::get<0>(i).is_inside(x, y) and not std::get<1>(i).expired()) {
+//					auto c = std::get<1>(i).lock();
+//					pointer->start_grab(make_shared<grab_bind_client_t>(_ctx, c, BTN_LEFT, to_root_position(std::get<0>(i))));
+//					return true;
+//				}
+//			}
 		}
 
 	/* rigth click on page */

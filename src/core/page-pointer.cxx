@@ -189,30 +189,19 @@ void page_pointer::set_focus(wl::wl_surface * surface, wl_fixed_t sx, wl_fixed_t
 	if (focus_surface != nullptr) {
 		auto client = wl_resource_get_client(focus_surface->_self_resource);
 		auto display = wl_client_get_display(client);
-		uint32_t serial;
-
-		serial = wl_display_next_serial(display);
-
-		if (focus_surface) {
-			broadcast_leave(serial, focus_surface);
-			focus_surface = NULL;
-		}
-
-		//wl_list_remove(&pointer->focus_surface_listener.link);
-		focus_surface = NULL;
+		uint32_t serial = wl_display_next_serial(display);
+		broadcast_leave(serial, focus_surface);
+		focus_surface = nullptr;
 	}
 
 	if (surface != nullptr) {
 		struct wl_client *client = wl_resource_get_client(surface->_self_resource);
 		struct wl_display *display = wl_client_get_display(client);
-		ClutterPoint pos;
 
 		focus_surface = surface;
-		//wl_resource_add_destroy_listener(pointer->focus_surface->resource,
-		//		&pointer->focus_surface_listener);
 
-		clutter_input_device_get_coords(device, NULL, &pos);
-
+//		ClutterPoint pos;
+//		clutter_input_device_get_coords(device, NULL, &pos);
 //		if (focus_surface->window)
 //			meta_window_handle_enter(focus_surface,
 //			/* XXX -- can we reliably get a timestamp for setting focus? */
@@ -323,6 +312,7 @@ void page_pointer::broadcast_motion(ClutterEvent const & event)
 
 }
 
+/* send enter event to all wl_pointers belong the same client */
 void page_pointer::broadcast_enter(uint32_t serial, wl::wl_surface * surface)
 {
 	wl_fixed_t sx, sy;
@@ -335,6 +325,7 @@ void page_pointer::broadcast_enter(uint32_t serial, wl::wl_surface * surface)
 	broadcast_frame();
 }
 
+/* send leave event to all wl_pointers belong the same client */
 void page_pointer::broadcast_leave(uint32_t serial, wl::wl_surface * surface)
 {
 
@@ -346,6 +337,7 @@ void page_pointer::broadcast_leave(uint32_t serial, wl::wl_surface * surface)
 	broadcast_frame();
 }
 
+/* send frame event to all wl_pointers belong the same client */
 void page_pointer::broadcast_frame()
 {
 	auto client = wl_resource_get_client(focus_surface->_self_resource);

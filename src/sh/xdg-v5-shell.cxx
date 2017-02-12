@@ -20,9 +20,15 @@
 
 #include "xdg-v5-shell.hxx"
 
+#include <typeinfo>
+
+#include "xdg-shell-unstable-v5-server-protocol.h"
+
 #include "core/page-core.hxx"
 #include "sh/xdg-v5-surface.hxx"
+#include "sh/xdg-v5-popup.hxx"
 #include "wl/wl-surface.hxx"
+#include "wl/wl-seat.hxx"
 
 namespace page {
 namespace sh {
@@ -59,19 +65,14 @@ void xdg_v5_shell::recv_use_unstable_version(struct wl_client * client, struct w
 void xdg_v5_shell::recv_get_xdg_surface(struct wl_client * client, struct wl_resource * resource, uint32_t id, struct wl_resource * surface_resource)
 {
 	printf("call %s\n", __PRETTY_FUNCTION__);
-
-//	/* disable shared_ptr, they are managed by wl_resource */
-//	auto xdg_surface = new xdg_surface_toplevel_t(_ctx, client, surface, id);
-//
-////	surfaces_map[surface] = xdg_surface;
-////	xdg_surface_toplevel_map[id] = xdg_surface;
-////	connect(xdg_surface->destroy, this, &xdg_shell_client_t::destroy_toplevel);
-//
-//	printf("exit %s\n", __PRETTY_FUNCTION__);
-//
 	auto surface = wl::wl_surface::get(surface_resource);
-	auto xdg = new xdg_v5_surface(client, wl_resource_get_version(resource), id, this, surface);
 
+	if (surface->role) {
+		wl_resource_post_error(_self_resource, XDG_SHELL_ERROR_ROLE, "invalid role aisignation");
+		return;
+	}
+
+	auto xdg = new xdg_v5_surface(client, wl_resource_get_version(resource), id, this, surface);
 }
 
 void xdg_v5_shell::recv_get_xdg_popup(struct wl_client * client,
@@ -82,22 +83,29 @@ void xdg_v5_shell::recv_get_xdg_popup(struct wl_client * client,
 		uint32_t serial, int32_t x, int32_t y)
 {
 	printf("call %s\n", __PRETTY_FUNCTION__);
-//	/* In our case nullptr */
-//	auto surface = wl::wl_surface::get(surface_resource);
-//	auto parent = wl::wl_surface::get(parent_resource);
-//	auto seat = wl::wl_seat::get(seat_resource);
-//
-//	printf("p=%p, x=%d, y=%d\n", surface, x, y);
-//
-//	/* TODO: check for serial */
-//
-//	/* disable shared_ptr for now, the resource is managed by wl_resource */
-//	auto xdg_popup = new xdg_v5_popup(client, resource, id,
-//			this, _ctx, surface, parent, seat, x, y);
+	/* In our case nullptr */
+	auto surface = wl::wl_surface::get(surface_resource);
+	auto parent = wl::wl_surface::get(parent_resource);
+	auto seat = wl::wl_seat::get(seat_resource);
 
-//	surfaces_map[surface] = xdg_popup;
-//	xdg_surface_popup_map[id] = xdg_popup;
-//	connect(xdg_popup->destroy, this, &xdg_shell_client_t::destroy_popup);
+	printf("p=%p, x=%d, y=%d\n", surface, x, y);
+
+	if (surface->role) {
+		wl_resource_post_error(_self_resource, XDG_SHELL_ERROR_ROLE, "invalid role aisignation");
+		return;
+	}
+
+	if (typeid(*parent->role) != typeid(xdg_v5_surface)
+			and typeid(*parent->role) != typeid(xdg_v5_popup))
+	{
+		wl_resource_post_error(_self_resource, XDG_SHELL_ERROR_INVALID_POPUP_PARENT, "invalid popup parent");
+		return;
+	}
+
+	/* TODO: check for serial */
+
+	/* disable shared_ptr for now, the resource is managed by wl_resource */
+	new xdg_v5_popup(client, wl_resource_get_version(resource), id, this, surface, parent, seat, serial, x, y);
 
 }
 

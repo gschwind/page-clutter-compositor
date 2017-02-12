@@ -21,31 +21,62 @@
 #include "xdg-v5-popup.hxx"
 #include "xdg-v5-shell.hxx"
 
+#include "wl/wl-surface.hxx"
+#include "sh/xdg-v5-shell.hxx"
+#include "wl/wl-seat.hxx"
+
 namespace page {
 namespace sh {
 
 xdg_v5_popup::xdg_v5_popup(struct wl_client *client, uint32_t version,
 		uint32_t id,
 		xdg_v5_shell * shell,
-		page_t * ctx, wl::wl_surface * surface,
+		wl::wl_surface * surface,
 		wl::wl_surface * parent,
+		wl::wl_seat * seat,
+		uint32_t serial,
 		int32_t x, int32_t y) :
 		xdg_popup_vtable{client, version, id},
 		shell{shell},
 		_id{id},
 		_client{client},
-		_ctx{ctx},
-		_surface{surface},
-		_parent{parent},
-		y{y}, x{x}
+		_surface{surface}
 {
-	// TODO Auto-generated constructor stub
+
+	_surface->role = this;
+	_parent = parent->role;
+	_x_offset = x;
+	_y_offset = y;
+
+	_seat = seat->seat;
+	_serial = serial;
+
+	connect(_surface->on_commit, this, &xdg_v5_popup::surface_first_commit);
+	shell->ctx->configure_popup(this);
 
 }
 
 xdg_v5_popup::~xdg_v5_popup()
 {
-	// TODO Auto-generated destructor stub
+	shell->ctx->destroy_surface(this); // unmanage
+	destroy.emit(this);
+}
+
+void xdg_v5_popup::surface_first_commit(wl::wl_surface * es)
+{
+	printf("call %s\n", __PRETTY_FUNCTION__);
+
+	shell->ctx->manage_popup(this);
+	disconnect(_surface->on_commit);
+	connect(_surface->on_commit, this, &xdg_v5_popup::surface_commit);
+
+}
+
+
+void xdg_v5_popup::surface_commit(wl::wl_surface * es)
+{
+	printf("call %s\n", __PRETTY_FUNCTION__);
+
 }
 
 /* xdg_popup_vtable */
@@ -66,13 +97,11 @@ wl::wl_surface * xdg_v5_popup::surface() const {
 }
 
 int32_t xdg_v5_popup::width() const {
-	return 0;
-//	return _surface->width;
+	return _surface->width;
 }
 
 int32_t xdg_v5_popup::height() const {
-	return 0;
-//	return _surface->height;
+	return _surface->height;
 }
 
 string const & xdg_v5_popup::title() const {

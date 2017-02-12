@@ -54,16 +54,14 @@ xdg_v5_surface::xdg_v5_surface(struct wl_client *client, uint32_t version,
 		_client{client}
 {
 	printf("call %s (%p)\n", __PRETTY_FUNCTION__, this);
-//	clutter_actor_add_child(CLUTTER_ACTOR(shell->core->_main_stage), CLUTTER_ACTOR(surface->actor));
-//	clutter_actor_show(CLUTTER_ACTOR(surface->actor));
-
+	_surface->role = this;
 	connect(_surface->on_commit, this, &xdg_v5_surface::surface_first_commit);
-
 }
 
 xdg_v5_surface::~xdg_v5_surface()
 {
-
+	shell->ctx->destroy_surface(this); // unmanage
+	destroy.emit(this);
 }
 
 xdg_v5_surface * xdg_v5_surface::get(struct wl_resource * r) {
@@ -140,8 +138,6 @@ edge_e xdg_v5_surface::edge_map(uint32_t edge) {
 void xdg_v5_surface::recv_destroy(struct wl_client * client, struct wl_resource * resource)
 {
 	printf("call %s %p\n", __PRETTY_FUNCTION__, this);
-	shell->ctx->destroy_surface(this); // unmanage
-	destroy.emit(this);
 	wl_resource_destroy(_self_resource);
 }
 

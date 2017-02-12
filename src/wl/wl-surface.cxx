@@ -43,7 +43,8 @@ wl_surface::wl_surface(wl_compositor * compositor, struct wl_client *client, uin
 	buffer{nullptr},
 	subsurface{nullptr},
 	width{-1},
-	height{-1}
+	height{-1},
+	role{nullptr}
 {
 	/* NOTE: following the source of clutter surface is not used by clutter,
 	 * this is just user data that can be retrieved by 	clutter_wayland_stage_get_wl_surface() */

@@ -29,7 +29,9 @@ void view_t::add_transient_child(view_p c) {
 void view_t::add_popup_child(view_p c,
 		int x, int y)
 {
-	/* TODO */
+	c->set_managed_type(MANAGED_POPUP);
+	_popups_childdren->push_back(c);
+	clutter_actor_set_position(c->get_default_view(), _actual_position.x + x, _actual_position.y + y);
 }
 
 view_t::view_t(
@@ -40,7 +42,6 @@ view_t::view_t(
 	_notebook_wished_position{},
 	_wished_position{},
 	_page_surface{xdg_surface},
-	_default_view{nullptr},
 	_has_keyboard_focus{false},
 	_has_change{true}
 {
@@ -99,16 +100,18 @@ void view_t::update_view() {
 
 		printf("window scale = %f\n", ratio);
 
-		float x = floor(_wished_position.x + (_wished_position.w -
+		_actual_position.x = floor(_wished_position.x + (_wished_position.w -
 				_page_surface->width() * ratio)/2.0);
-		float y = floor(_wished_position.y + (_wished_position.h -
+		_actual_position.y = floor(_wished_position.y + (_wished_position.h -
 				_page_surface->height() * ratio)/2.0);
 
 		clutter_actor_set_pivot_point(get_default_view(), 0.0, 0.0);
 		clutter_actor_save_easing_state(get_default_view());
 		clutter_actor_set_scale(get_default_view(), ratio, ratio);
-		clutter_actor_set_position(get_default_view(), x, y);
+		clutter_actor_set_position(get_default_view(), _actual_position.x, _actual_position.y);
 		clutter_actor_restore_easing_state(get_default_view());
+
+
 
 	} else {
 		_wished_position = _floating_wished_position;
@@ -116,6 +119,8 @@ void view_t::update_view() {
 		clutter_actor_set_pivot_point(get_default_view(), 0, 0);
 		clutter_actor_set_position(get_default_view(),
 				_wished_position.x, _wished_position.y);
+		_actual_position.x = _wished_position.x;
+		_actual_position.y = _wished_position.y;
 	}
 
 }

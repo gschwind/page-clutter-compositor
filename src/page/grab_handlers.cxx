@@ -22,7 +22,12 @@ grab_popup_t::grab_popup_t(page_t * ctx, surface_t * s) :
 		default_pointer_grab{ctx},
 		surface{s}
 {
+	auto pointer = _ctx->seat->pointer;
 
+	wl_fixed_t sx, sy;
+	auto x = surface->surface();
+	pointer->get_relative_coordinates(*x, sx, sx);
+	pointer->set_focus(x, sx, sy);
 }
 
 grab_popup_t::~grab_popup_t() {
@@ -30,12 +35,7 @@ grab_popup_t::~grab_popup_t() {
 }
 
 void grab_popup_t::focus(ClutterEvent const & event) {
-	auto pointer = _ctx->seat->pointer;
-	wl_fixed_t sx, sy;
-	if (pointer->button_count > 0)
-		return;
-	auto surface = pointer->pick_surface_actor(&event, sx, sy);
-	pointer->set_focus(surface, sx, sy);
+	/* disable refocus */
 }
 
 void grab_popup_t::motion(ClutterEvent const & event) {
@@ -43,33 +43,8 @@ void grab_popup_t::motion(ClutterEvent const & event) {
 }
 
 void grab_popup_t::button(ClutterEvent const & event) {
-	auto pointer = _ctx->seat->pointer;
-
-	/* TODO: remove following because it must be set by the wm */
-	wl_fixed_t sx, sy;
-	auto surface = pointer->pick_surface_actor(&event, sx, sy);
-	if(surface)
-		pointer->seat->keyboard->set_focus(surface);
-
+	_ctx->seat->pointer->broadcast_button(event);
 }
-
-void grab_popup_t::axis(ClutterEvent const & event) {
-	/* TODO */
-}
-
-void grab_popup_t::axis_source(uint32_t source) {
-	/* TODO */
-}
-void grab_popup_t::frame() {
-	_ctx->seat->pointer->broadcast_frame();
-}
-
-void grab_popup_t::cancel() {
-	/* TODO */
-	//printf("call %s\n", __PRETTY_FUNCTION__);
-	//_ctx->grab_stop(base.grab.pointer);
-}
-
 
 grab_split_t::grab_split_t(page_t * ctx, split_p s) :
 		default_pointer_grab{ctx},

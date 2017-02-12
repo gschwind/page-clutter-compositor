@@ -36,25 +36,20 @@ namespace sh {
 using namespace wayland_cxx_wrapper;
 using namespace std;
 
-struct xdg_v5_popup : public xdg_popup_vtable, public surface_t {
+struct xdg_v5_popup : public xdg_popup_vtable, public surface_t, public connectable {
 	xdg_v5_shell * shell;
 
-	page_t *       _ctx;
 	wl_client *            _client;
 	wl::wl_surface *       _surface;
 	uint32_t               _id;
-	wl::wl_surface *       _parent;
-
-	wl_listener            _surface_destroy;
-
-	// relative position of the popup against the parent
-	int32_t x;
-	int32_t y;
 
 	signal<xdg_v5_popup *> destroy;
 
-	xdg_v5_popup(struct wl_client *client, uint32_t version, uint32_t id, xdg_v5_shell * shell, page_t * ctx, wl::wl_surface * surface, wl::wl_surface * parent, int32_t x, int32_t y);
+	xdg_v5_popup(struct wl_client *client, uint32_t version, uint32_t id, xdg_v5_shell * shell, wl::wl_surface * surface, wl::wl_surface * parent, wl::wl_seat * seat, uint32_t serial, int32_t x, int32_t y);
 	virtual ~xdg_v5_popup();
+
+	void surface_first_commit(wl::wl_surface * s);
+	void surface_commit(wl::wl_surface * s);
 
 	/* xdg_popup_vtable */
 	virtual void recv_destroy(struct wl_client * client, struct wl_resource * resource) override;
