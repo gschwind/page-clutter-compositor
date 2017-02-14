@@ -365,69 +365,67 @@ grab_floating_move_t::~grab_floating_move_t() {
 
 void grab_floating_move_t::motion(ClutterEvent const & event)
 {
-//	auto pointer = base.grab.pointer;
-//
-//	/** update pointer position **/
-//	weston_pointer_move(pointer, event);
-//
-//	if(f.expired()) {
-//		_ctx->grab_stop(pointer);
-//		return;
-//	}
-//
-//	auto f = this->f.lock();
-//
-//	/** current global position **/
-//	double x = wl_fixed_to_double(pointer->x);
-//	double y = wl_fixed_to_double(pointer->y);
-//
-//	printf("x = %f, y = %f\n", x, y);
-//
-//	/* compute new window position */
-//	rect new_position = original_position;
-//	new_position.x += x - x_root;
-//	new_position.y += y - y_root;
-//	final_position = new_position;
-//
-//	f->set_floating_wished_position(new_position);
-//
-//	/* moving the window, does not need a buffer resize, thus we do not need
-//	 * reconfigure */
-//	f->update_view();
-//
-//	rect new_popup_position = popup_original_position;
-//	new_popup_position.x += x - x_root;
-//	new_popup_position.y += y - y_root;
-//	//pfm->move_resize(new_popup_position);
+	auto pointer = _ctx->seat->pointer;
+
+
+	if(f.expired()) {
+		pointer->stop_grab();
+		return;
+	}
+
+	auto f = this->f.lock();
+
+	/** current global position **/
+	double x = pointer->x;
+	double y = pointer->y;
+
+	printf("x = %f, y = %f\n", x, y);
+
+	/* compute new window position */
+	rect new_position = original_position;
+	new_position.x += x - x_root;
+	new_position.y += y - y_root;
+	final_position = new_position;
+
+	f->set_floating_wished_position(new_position);
+
+	/* moving the window, does not need a buffer resize, thus we do not need
+	 * reconfigure */
+	f->update_view();
+
+	rect new_popup_position = popup_original_position;
+	new_popup_position.x += x - x_root;
+	new_popup_position.y += y - y_root;
+	//pfm->move_resize(new_popup_position);
 
 }
 
 void grab_floating_move_t::button(ClutterEvent const & event)
 {
-//	auto pointer = base.grab.pointer;
-//
-//	if (f.expired()) {
-//		_ctx->grab_stop(pointer);
-//		return;
-//	}
-//
-//	double x = wl_fixed_to_double(pointer->x);
-//	double y = wl_fixed_to_double(pointer->y);
-//
-//	auto f = this->f.lock();
-//
-//	if (pointer->button_count == 0
-//			and state == WL_POINTER_BUTTON_STATE_RELEASED) {
-//
-//		//_ctx->dpy()->set_window_cursor(f->base(), XCB_NONE);
-//		//_ctx->dpy()->set_window_cursor(f->orig(), XCB_NONE);
-//
-//		f->set_floating_wished_position(final_position);
-//		f->reconfigure();
-//
-//		//_ctx->set_focus(f, time);
-//		_ctx->grab_stop(pointer);
-//	}
+	auto pointer = _ctx->seat->pointer;
+
+	if (f.expired()) {
+		pointer->stop_grab();
+		return;
+	}
+
+	double x = pointer->x;
+	double y = pointer->y;
+
+	auto f = this->f.lock();
+
+	if (pointer->button_count == 0
+			and event.type == CLUTTER_BUTTON_RELEASE) {
+
+		//_ctx->dpy()->set_window_cursor(f->base(), XCB_NONE);
+		//_ctx->dpy()->set_window_cursor(f->orig(), XCB_NONE);
+
+		f->set_floating_wished_position(final_position);
+		f->reconfigure();
+
+		//_ctx->set_focus(f, time);
+		pointer->stop_grab();
+	}
 }
 
 
