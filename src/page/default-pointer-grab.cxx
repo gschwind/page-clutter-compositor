@@ -56,12 +56,13 @@ void default_pointer_grab::focus(ClutterEvent const & event)
 		pointer->get_relative_coordinates(*surface, sx, sx);
 		pointer->set_focus(surface, sx, sy);
 	} else {
-		pointer->set_focus(nullptr, -1, -1);
+		pointer->set_focus(nullptr, wl_fixed_from_int(-1), wl_fixed_from_int(-1));
 	}
 }
 
 void default_pointer_grab::motion(ClutterEvent const & event)
 {
+	focus(event);
 	_ctx->seat->pointer->broadcast_motion(event);
 	if(_ctx->seat->pointer->focus_surface == nullptr)
 		_ctx->_root->broadcast_motion(this, event);
@@ -70,14 +71,19 @@ void default_pointer_grab::motion(ClutterEvent const & event)
 void default_pointer_grab::button(ClutterEvent const & event)
 {
 	auto pointer = _ctx->seat->pointer;
+
+	// Send event to client if required
+	// refocus if needed.
 	pointer->broadcast_button(event);
 
 	// click on given surface, will focus keyboard on it, if this is not
 	// already the case.
-	wl_fixed_t sx, sy;
-	auto surface = pointer->pick_surface_actor(&event, sx, sy);
-	if(surface)
-		pointer->seat->keyboard->set_focus(surface);
+	if (event.type == CLUTTER_BUTTON_PRESS) {
+		wl_fixed_t sx, sy;
+		auto surface = pointer->pick_surface_actor(&event, sx, sy);
+		if(surface)
+			pointer->seat->keyboard->set_focus(surface);
+	}
 
 	if(_ctx->seat->pointer->focus_surface == nullptr)
 		_ctx->_root->broadcast_button(this, event);

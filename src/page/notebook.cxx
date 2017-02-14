@@ -356,7 +356,7 @@ void notebook_t::activate(shared_ptr<tree_t> t) {
 
 string notebook_t::get_node_name() const {
 	ostringstream oss;
-	oss << _get_node_name<'N'>() << " selected = " << _selected;
+	oss << _get_node_name<'N'>() << _allocation.to_string() << " selected = " << _selected;
 	return oss.str();
 }
 
@@ -864,7 +864,7 @@ void notebook_t::_stop_exposay() {
 }
 
 bool notebook_t::button(page_pointer_grab * grab, ClutterEvent const & event) {
-	printf("call %s\n", __PRETTY_FUNCTION__);
+	printf("call %s (%p)\n", __PRETTY_FUNCTION__, this);
 	auto pointer = _ctx->seat->pointer;
 //	if (pointer->focus != get_parent_default_view()) {
 //		return false;
@@ -918,7 +918,7 @@ bool notebook_t::button(page_pointer_grab * grab, ClutterEvent const & event) {
 					return true;
 				}
 			}
-
+//
 //			for(auto & i: _exposay_buttons) {
 //				if(std::get<0>(i).is_inside(x, y) and not std::get<1>(i).expired()) {
 //					auto c = std::get<1>(i).lock();

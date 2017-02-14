@@ -249,7 +249,7 @@ bool view_t::button(page_pointer_grab * pointer, ClutterEvent const & event) {
 //		_ctx->set_keyboard_focus(pointer->seat, shared_from_this());
 //	}
 
-	return true;
+	return false;
 
 }
 

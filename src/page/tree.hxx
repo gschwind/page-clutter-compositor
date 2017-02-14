@@ -123,8 +123,6 @@ public:
 
 	void broadcast_trigger_redraw();
 
-	bool broadcast_button(page_pointer_grab * grab, ClutterEvent const && event) = delete;
-	bool broadcast_motion(page_pointer_grab * grab, ClutterEvent const && event) = delete;
 	bool broadcast_button(page_pointer_grab * grab, ClutterEvent const & event);
 	bool broadcast_motion(page_pointer_grab * grab, ClutterEvent const & event);
 	void broadcast_update_layout(time64_t const time);

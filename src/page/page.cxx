@@ -964,7 +964,6 @@ void page_t::bind_window(view_p mw) {
 
 void page_t::unbind_window(view_p mw) {
 	detach(mw);
-	mw->set_managed_type(MANAGED_FLOATING);
 	insert_in_tree_using_transient_for(mw);
 	mw->queue_redraw();
 	mw->show();

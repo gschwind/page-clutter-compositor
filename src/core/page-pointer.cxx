@@ -195,8 +195,8 @@ void page_pointer::set_focus(wl::wl_surface * surface, wl_fixed_t sx, wl_fixed_t
 	}
 
 	if (surface != nullptr) {
-		struct wl_client *client = wl_resource_get_client(surface->_self_resource);
-		struct wl_display *display = wl_client_get_display(client);
+		auto client = wl_resource_get_client(surface->_self_resource);
+		auto display = wl_client_get_display(client);
 
 		focus_surface = surface;
 
@@ -282,7 +282,7 @@ void page_pointer::broadcast_button(ClutterEvent const & event)
 
 	}
 
-	if (button_count == 0 && event_type == CLUTTER_BUTTON_RELEASE)
+	if (button_count == 0 and event_type == CLUTTER_BUTTON_RELEASE)
 		grab->focus(event);
 
 }
@@ -355,12 +355,14 @@ void page_pointer::set_default_grab(shared_ptr<page_pointer_grab> g)
 
 void page_pointer::start_grab(shared_ptr<page_pointer_grab> g)
 {
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	assert(grab == default_grab);
 	grab = g;
 }
 
 void page_pointer::stop_grab()
 {
+	printf("call %s\n", __PRETTY_FUNCTION__);
 	assert(grab != default_grab);
 	grab = default_grab;
 }
