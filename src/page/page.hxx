@@ -50,10 +50,10 @@ struct page_configuration_t {
 };
 
 
-struct key_bind_cmd_t {
-	key_desc_t key;
-	string cmd;
-};
+//struct key_bind_cmd_t {
+//	key_desc_t key;
+//	string cmd;
+//};
 
 struct page_t : public page_core, public connectable {
 	shared_ptr<page_root_t> _root;
@@ -80,19 +80,19 @@ struct page_t : public page_core, public connectable {
 	struct wl_global * _global_xdg_shell_v5;
 	struct wl_global * _global_xdg_shell_v6;
 
-	key_desc_t bind_page_quit;
-	key_desc_t bind_toggle_fullscreen;
-	key_desc_t bind_toggle_compositor;
-	key_desc_t bind_close;
-
-	key_desc_t bind_right_desktop;
-	key_desc_t bind_left_desktop;
-
-	key_desc_t bind_bind_window;
-	key_desc_t bind_fullscreen_window;
-	key_desc_t bind_float_window;
-
-	array<key_bind_cmd_t, 10> bind_cmd;
+//	key_desc_t bind_page_quit;
+//	key_desc_t bind_toggle_fullscreen;
+//	key_desc_t bind_toggle_compositor;
+//	key_desc_t bind_close;
+//
+//	key_desc_t bind_right_desktop;
+//	key_desc_t bind_left_desktop;
+//
+//	key_desc_t bind_bind_window;
+//	key_desc_t bind_fullscreen_window;
+//	key_desc_t bind_float_window;
+//
+//	array<key_bind_cmd_t, 10> bind_cmd;
 
 	//xcb_timestamp_t _last_focus_time;
 	//xcb_timestamp_t _last_button_press;
@@ -100,6 +100,8 @@ struct page_t : public page_core, public connectable {
 	/** store all client in mapping order, older first **/
 	list<view_w> _net_client_list;
 	list<view_w> _global_focus_history;
+
+	list<key_desc_t> key_bindings;
 
 //	int _left_most_border;
 //	int _top_most_border;
@@ -329,6 +331,10 @@ struct page_t : public page_core, public connectable {
 //
 //	auto find_client_managed_with(xcb_window_t w) -> shared_ptr<xdg_surface_toplevel_t>;
 
+	void noop();
+
+	void add_key_binding(string const & section, string const & key, void(page_t::*func)());
+	void add_key_command_binding(string const & section, string const & key, string const & cmd);
 
 	static void bind_wl_shell(wl_client * client, void * data,
 					      uint32_t version, uint32_t id);

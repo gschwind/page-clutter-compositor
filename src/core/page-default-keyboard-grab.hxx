@@ -33,7 +33,9 @@ struct page_default_keyboard_grab : public page_keyboard_grab {
 	page_default_keyboard_grab(page_keyboard * keyboard);
 	virtual ~page_default_keyboard_grab();
 
+	/* send a key event to the focussed client */
 	virtual bool key(ClutterEvent const & event) override;
+	/* send modifiers events to the focussed client */
 	virtual void modifiers() override;
 	virtual void cancel() override;
 

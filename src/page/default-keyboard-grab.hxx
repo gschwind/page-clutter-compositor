@@ -21,12 +21,20 @@
 #ifndef SRC_PAGE_DEFAULT_KEYBOARD_GRAB_HXX_
 #define SRC_PAGE_DEFAULT_KEYBOARD_GRAB_HXX_
 
-#include "core/page-default-keyboard-grab.hxx"
+#include "core/page-keyboard-grab.hxx"
+#include "page/ui-types.hxx"
 
 namespace page {
 
-struct default_keyboard_grab : public page_default_keyboard_grab {
+struct default_keyboard_grab : public page_keyboard_grab {
 	page_t * _ctx;
+
+	default_keyboard_grab(page_t * ctx);
+	virtual ~default_keyboard_grab();
+
+	virtual bool key(ClutterEvent const & event) override;
+	virtual void modifiers() override;
+	virtual void cancel() override;
 
 };
 

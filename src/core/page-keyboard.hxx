@@ -26,6 +26,7 @@
 #include <wayland-server-core.h>
 #include <clutter/clutter.h>
 #include <xkbcommon/xkbcommon.h>
+#include <memory>
 
 #include "page-types.hxx"
 #include "wl/wl-types.hxx"
@@ -46,8 +47,8 @@ struct page_keyboard {
 
 	enum xkb_state_component mods_changed;
 
-	page_keyboard_grab * grab;
-	page_keyboard_grab * default_grab;
+	shared_ptr<page_keyboard_grab> grab;
+	shared_ptr<page_keyboard_grab> default_grab;
 
 	struct {
 		struct xkb_keymap *keymap;
@@ -74,23 +75,13 @@ struct page_keyboard {
 //	uint32_t grab_time;
 
 //	struct wl_array keys;
-//
-//	struct {
-//		uint32_t mods_depressed;
-//		uint32_t mods_latched;
-//		uint32_t mods_locked;
-//		uint32_t group;
-//	} modifiers;
-//
-//	struct weston_keyboard_grab input_method_grab;
-//	struct wl_resource *input_method_resource;
-//
-//	struct weston_xkb_info *xkb_info;
-//	struct {
-//		struct xkb_state *state;
-//		enum weston_led leds;
-//	} xkb_state;
-//	struct xkb_keymap *pending_keymap;
+
+	struct {
+		uint32_t mods_depressed;
+		uint32_t mods_latched;
+		uint32_t mods_locked;
+		uint32_t group;
+	} modifiers;
 
 	page_keyboard(page_seat * seat);
 	~page_keyboard();
@@ -109,6 +100,8 @@ struct page_keyboard {
 
 	void register_keyboard(wl::wl_keyboard * keyboard);
 	void unregister_keyboard(wl::wl_keyboard * keyboard);
+
+	void set_default_grab(shared_ptr<page_keyboard_grab> g);
 
 
 };

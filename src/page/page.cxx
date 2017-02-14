@@ -71,6 +71,7 @@
 #include "core/page-seat.hxx"
 
 #include "page/page_root.hxx"
+#include "page/default-keyboard-grab.hxx"
 
 /* ICCCM definition */
 #define _NET_WM_STATE_REMOVE 0
@@ -150,6 +151,24 @@ void page_t::bind_xdg_v6_shell(struct wl_client * client, void * data,
 	auto c = new sh::xdg_v6_shell(client, version, id, ths);
 }
 
+void page_t::noop()
+{
+	printf("call %s\n", __PRETTY_FUNCTION__);
+}
+
+void page_t::add_key_binding(string const & section, string const & key, void(page_t::*func)())
+{
+	auto desc = _conf.get_string(section.c_str(), key.c_str());
+	key_bindings.push_back(key_desc_t(seat->keyboard, desc, [this,func](){ (this->*func)(); }));
+}
+
+void page_t::add_key_command_binding(string const & section, string const & key, string const & xcmd)
+{
+	auto desc = _conf.get_string(section.c_str(), key.c_str());
+	string cmd = _conf.get_string(section.c_str(), xcmd.c_str());
+	key_bindings.push_back(key_desc_t(seat->keyboard, desc, [this,cmd]() { this->run_cmd(cmd); }));
+}
+
 void page_t::bind_wl_shell(struct wl_client * client, void * data,
 				      uint32_t version, uint32_t id)
 {
@@ -212,7 +231,7 @@ void page_t::init(int * argc, char *** argv)
 		char const * chome = getenv("HOME");
 		if(chome != nullptr) {
 			string xhome = chome;
-			string file = xhome + "/.page.conf";
+			string file = xhome + "/.page-compositor.conf";
 			_conf.merge_from_file_if_exist(file);
 		}
 	}
@@ -228,40 +247,6 @@ void page_t::init(int * argc, char *** argv)
 
 //	_left_most_border = std::numeric_limits<int>::max();
 //	_top_most_border = std::numeric_limits<int>::max();
-
-
-	bind_page_quit           = _conf.get_string("default", "bind_page_quit");
-	bind_close               = _conf.get_string("default", "bind_close");
-	bind_toggle_fullscreen   = _conf.get_string("default", "bind_toggle_fullscreen");
-	bind_toggle_compositor   = _conf.get_string("default", "bind_toggle_compositor");
-	bind_right_desktop       = _conf.get_string("default", "bind_right_desktop");
-	bind_left_desktop        = _conf.get_string("default", "bind_left_desktop");
-
-	bind_bind_window         = _conf.get_string("default", "bind_bind_window");
-	bind_fullscreen_window   = _conf.get_string("default", "bind_fullscreen_window");
-	bind_float_window        = _conf.get_string("default", "bind_float_window");
-
-	bind_cmd[0].key = _conf.get_string("default", "bind_cmd_0");
-	bind_cmd[1].key = _conf.get_string("default", "bind_cmd_1");
-	bind_cmd[2].key = _conf.get_string("default", "bind_cmd_2");
-	bind_cmd[3].key = _conf.get_string("default", "bind_cmd_3");
-	bind_cmd[4].key = _conf.get_string("default", "bind_cmd_4");
-	bind_cmd[5].key = _conf.get_string("default", "bind_cmd_5");
-	bind_cmd[6].key = _conf.get_string("default", "bind_cmd_6");
-	bind_cmd[7].key = _conf.get_string("default", "bind_cmd_7");
-	bind_cmd[8].key = _conf.get_string("default", "bind_cmd_8");
-	bind_cmd[9].key = _conf.get_string("default", "bind_cmd_9");
-
-	bind_cmd[0].cmd = _conf.get_string("default", "exec_cmd_0");
-	bind_cmd[1].cmd = _conf.get_string("default", "exec_cmd_1");
-	bind_cmd[2].cmd = _conf.get_string("default", "exec_cmd_2");
-	bind_cmd[3].cmd = _conf.get_string("default", "exec_cmd_3");
-	bind_cmd[4].cmd = _conf.get_string("default", "exec_cmd_4");
-	bind_cmd[5].cmd = _conf.get_string("default", "exec_cmd_5");
-	bind_cmd[6].cmd = _conf.get_string("default", "exec_cmd_6");
-	bind_cmd[7].cmd = _conf.get_string("default", "exec_cmd_7");
-	bind_cmd[8].cmd = _conf.get_string("default", "exec_cmd_8");
-	bind_cmd[9].cmd = _conf.get_string("default", "exec_cmd_9");
 
 	if(_conf.get_string("default", "auto_refocus") == "true") {
 		configuration._auto_refocus = true;
@@ -290,6 +275,7 @@ void page_t::init(int * argc, char *** argv)
 	configuration._fade_in_time = _conf.get_long("compositor", "fade_in_time");
 
 	seat->pointer->set_default_grab(make_shared<default_pointer_grab>(this));
+	seat->keyboard->set_default_grab(make_shared<default_keyboard_grab>(this));
 
 }
 
@@ -344,6 +330,27 @@ void page_t::run() {
 			&page_t::bind_xdg_v5_shell);
 	_global_xdg_shell_v6 = wl_global_create(dpy, &zxdg_shell_v6_interface, 1, this,
 			&page_t::bind_xdg_v6_shell);
+
+
+	add_key_binding("default", "bind_page_quit", &page_t::noop);
+	add_key_binding("default", "bind_close", &page_t::noop);
+	add_key_binding("default", "bind_toggle_fullscreen", &page_t::noop);
+	add_key_binding("default", "bind_right_desktop", &page_t::noop);
+	add_key_binding("default", "bind_left_desktop", &page_t::noop);
+	add_key_binding("default", "bind_bind_window", &page_t::noop);
+	add_key_binding("default", "bind_fullscreen_window", &page_t::noop);
+	add_key_binding("default", "bind_float_window", &page_t::noop);
+
+	add_key_command_binding("default", "bind_cmd_0", "exec_cmd_0");
+	add_key_command_binding("default", "bind_cmd_1", "exec_cmd_1");
+	add_key_command_binding("default", "bind_cmd_2", "exec_cmd_2");
+	add_key_command_binding("default", "bind_cmd_3", "exec_cmd_3");
+	add_key_command_binding("default", "bind_cmd_4", "exec_cmd_4");
+	add_key_command_binding("default", "bind_cmd_5", "exec_cmd_5");
+	add_key_command_binding("default", "bind_cmd_6", "exec_cmd_6");
+	add_key_command_binding("default", "bind_cmd_7", "exec_cmd_7");
+	add_key_command_binding("default", "bind_cmd_8", "exec_cmd_8");
+	add_key_command_binding("default", "bind_cmd_9", "exec_cmd_9");
 
 	sync_tree_view();
 	page_core::run();
@@ -539,56 +546,56 @@ void page_t::handle_alt_right_button(page_pointer *pointer, ClutterEvent const &
 //			BTN_LEFT, x, y, EDGE_BOTTOM_RIGHT));
 //	}
 }
-
-void page_t::handle_bind_cmd_0(page_keyboard * wk, ClutterEvent const & event) {
-	printf("call %s\n", __PRETTY_FUNCTION__);
-	run_cmd(bind_cmd[0].cmd);
-}
-
-void page_t::handle_bind_cmd_1(page_keyboard * wk, ClutterEvent const & event) {
-	printf("call %s\n", __PRETTY_FUNCTION__);
-	run_cmd(bind_cmd[1].cmd);
-}
-
-void page_t::handle_bind_cmd_2(page_keyboard * wk, ClutterEvent const & event) {
-	printf("call %s\n", __PRETTY_FUNCTION__);
-	run_cmd(bind_cmd[2].cmd);
-}
-
-void page_t::handle_bind_cmd_3(page_keyboard * wk, ClutterEvent const & event) {
-	printf("call %s\n", __PRETTY_FUNCTION__);
-	run_cmd(bind_cmd[3].cmd);
-}
-
-void page_t::handle_bind_cmd_4(page_keyboard * wk, ClutterEvent const & event) {
-	printf("call %s\n", __PRETTY_FUNCTION__);
-	run_cmd(bind_cmd[4].cmd);
-}
-
-void page_t::handle_bind_cmd_5(page_keyboard * wk, ClutterEvent const & event) {
-	printf("call %s\n", __PRETTY_FUNCTION__);
-	run_cmd(bind_cmd[5].cmd);
-}
-
-void page_t::handle_bind_cmd_6(page_keyboard * wk, ClutterEvent const & event) {
-	printf("call %s\n", __PRETTY_FUNCTION__);
-	run_cmd(bind_cmd[6].cmd);
-}
-
-void page_t::handle_bind_cmd_7(page_keyboard * wk, ClutterEvent const & event) {
-	printf("call %s\n", __PRETTY_FUNCTION__);
-	run_cmd(bind_cmd[7].cmd);
-}
-
-void page_t::handle_bind_cmd_8(page_keyboard * wk, ClutterEvent const & event) {
-	printf("call %s\n", __PRETTY_FUNCTION__);
-	run_cmd(bind_cmd[8].cmd);
-}
-
-void page_t::handle_bind_cmd_9(page_keyboard * wk, ClutterEvent const & event) {
-	printf("call %s\n", __PRETTY_FUNCTION__);
-	run_cmd(bind_cmd[9].cmd);
-}
+//
+//void page_t::handle_bind_cmd_0(page_keyboard * wk, ClutterEvent const & event) {
+//	printf("call %s\n", __PRETTY_FUNCTION__);
+//	run_cmd(bind_cmd[0].cmd);
+//}
+//
+//void page_t::handle_bind_cmd_1(page_keyboard * wk, ClutterEvent const & event) {
+//	printf("call %s\n", __PRETTY_FUNCTION__);
+//	run_cmd(bind_cmd[1].cmd);
+//}
+//
+//void page_t::handle_bind_cmd_2(page_keyboard * wk, ClutterEvent const & event) {
+//	printf("call %s\n", __PRETTY_FUNCTION__);
+//	run_cmd(bind_cmd[2].cmd);
+//}
+//
+//void page_t::handle_bind_cmd_3(page_keyboard * wk, ClutterEvent const & event) {
+//	printf("call %s\n", __PRETTY_FUNCTION__);
+//	run_cmd(bind_cmd[3].cmd);
+//}
+//
+//void page_t::handle_bind_cmd_4(page_keyboard * wk, ClutterEvent const & event) {
+//	printf("call %s\n", __PRETTY_FUNCTION__);
+//	run_cmd(bind_cmd[4].cmd);
+//}
+//
+//void page_t::handle_bind_cmd_5(page_keyboard * wk, ClutterEvent const & event) {
+//	printf("call %s\n", __PRETTY_FUNCTION__);
+//	run_cmd(bind_cmd[5].cmd);
+//}
+//
+//void page_t::handle_bind_cmd_6(page_keyboard * wk, ClutterEvent const & event) {
+//	printf("call %s\n", __PRETTY_FUNCTION__);
+//	run_cmd(bind_cmd[6].cmd);
+//}
+//
+//void page_t::handle_bind_cmd_7(page_keyboard * wk, ClutterEvent const & event) {
+//	printf("call %s\n", __PRETTY_FUNCTION__);
+//	run_cmd(bind_cmd[7].cmd);
+//}
+//
+//void page_t::handle_bind_cmd_8(page_keyboard * wk, ClutterEvent const & event) {
+//	printf("call %s\n", __PRETTY_FUNCTION__);
+//	run_cmd(bind_cmd[8].cmd);
+//}
+//
+//void page_t::handle_bind_cmd_9(page_keyboard * wk, ClutterEvent const & event) {
+//	printf("call %s\n", __PRETTY_FUNCTION__);
+//	run_cmd(bind_cmd[9].cmd);
+//}
 
 
 view_p page_t::lookup_for_view(ClutterActor * v) {

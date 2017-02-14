@@ -43,7 +43,7 @@ page_keyboard::page_keyboard(page_seat * seat) :
 		seat{seat}
 {
 	keyboard_info.keymap_fd = -1;
-	default_grab = new page_default_keyboard_grab{this};
+	default_grab = nullptr;
 	grab = default_grab;
 
 	take_keymap(x11_get_keymap());
@@ -214,6 +214,7 @@ bool page_keyboard::handle_keyboard_event(ClutterEvent const & event)
 
 		mods_changed = xkb_state_update_key(keyboard_info.state,
 				event.key.hardware_keycode, is_press ? XKB_KEY_DOWN : XKB_KEY_UP);
+
 	}
 
 	//meta_verbose("Handling key %s event code %d\n",
@@ -306,15 +307,15 @@ void page_keyboard::broadcast_modifiers()
 	uint32_t serial = wl_display_next_serial(display);
 
 	struct xkb_state *state = keyboard_info.state;
-	xkb_mod_mask_t depressed, latched, locked, group;
 
-	depressed = xkb_state_serialize_mods(state, XKB_STATE_MODS_DEPRESSED);
-	latched = xkb_state_serialize_mods(state, XKB_STATE_MODS_LATCHED);
-	locked = xkb_state_serialize_mods(state, XKB_STATE_MODS_LOCKED);
-	group = xkb_state_serialize_layout(state, XKB_STATE_LAYOUT_EFFECTIVE);
+	modifiers.mods_depressed = xkb_state_serialize_mods(state, XKB_STATE_MODS_DEPRESSED);
+	modifiers.mods_latched = xkb_state_serialize_mods(state, XKB_STATE_MODS_LATCHED);
+	modifiers.mods_locked = xkb_state_serialize_mods(state, XKB_STATE_MODS_LOCKED);
+	modifiers.group = xkb_state_serialize_layout(state, XKB_STATE_LAYOUT_EFFECTIVE);
 
 	for (auto i = range.first; i != range.second; ++i) {
-		i->second->send_modifiers(serial, depressed, latched, locked, group);
+		i->second->send_modifiers(serial, modifiers.mods_depressed,
+				modifiers.mods_latched, modifiers.mods_locked, modifiers.group);
 	}
 
 }
@@ -333,6 +334,12 @@ void page_keyboard::unregister_keyboard(wl::wl_keyboard * k)
 			[k](pair<struct wl_client *, wl::wl_keyboard *> x) -> bool { return k == x.second; });
 	if(x != client_keyboards.end())
 		client_keyboards.erase(x);
+}
+
+void page_keyboard::set_default_grab(shared_ptr<page_keyboard_grab> g)
+{
+	grab = g;
+	default_grab = g;
 }
 
 void page_keyboard::broadcast_focus()
